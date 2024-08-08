@@ -1,0 +1,3 @@
+<template>
+    collectionSetup
+</template>
