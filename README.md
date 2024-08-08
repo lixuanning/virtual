@@ -1,4 +1,4 @@
-# my-project
+# virtual
 
 ## Project setup
 ```
