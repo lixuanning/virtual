@@ -7,7 +7,7 @@
         type="text"
         @click="switchLanguage"
       >
-        <span v-if="language === 'en'">CN</span>
+        <span v-if="locale === 'en'">CN</span>
         <span v-else>EN</span>
       </el-button>
 
@@ -54,6 +54,7 @@ import store from "@/store/index";
 
 onMounted(() => {
   store.setUserinfo({});
+  sessionStorage.clear();
 });
 const { locale, t } = useI18n();
 
@@ -83,11 +84,9 @@ const rules = ref({
 const formRef = ref(null);
 const router = useRouter();
 
-const language = ref("zh");
 
 const switchLanguage = () => {
-  language.value = language.value === "zh" ? "en" : "zh";
-  locale.value = language.value === "zh" ? "en" : "zh";
+  locale.value = locale.value === "zh" ? "en" : "zh";
 };
 
 const submitForm = () => {

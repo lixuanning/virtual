@@ -3,7 +3,12 @@ import { reactive } from "vue";
 const store = {
   debug: true,
   state: reactive({
-    userInfo: {
+    // userInfo: {
+    //   name: "",
+    //   code: "",
+    //   role: "",
+    // },
+    userInfo: JSON.parse(sessionStorage.getItem('userInfo')) || {
       name: "",
       code: "",
       role: "",
@@ -11,6 +16,7 @@ const store = {
   }),
   setUserinfo(obj) { 
     this.state.userInfo = {...obj};
+    sessionStorage.setItem('userInfo', JSON.stringify(this.state.userInfo));
   },
   getRole(){
     return  this.state.userInfo.role;

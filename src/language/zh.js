@@ -15,7 +15,7 @@ export default {
   layout:{
     agentTitile:'中介后台管理',
     buyerTitile:'商家后台管理',
-    sellerTitile:'OTC后台管理',
+    sellerTitle:'OTC后台管理',
     logout:'退出登录'
   },
   sellerRouterName:{

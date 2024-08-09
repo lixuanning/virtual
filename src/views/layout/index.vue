@@ -9,9 +9,13 @@
           </span>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item command="logout">{{
-                $t("layout.logout")
-              }}   </el-dropdown-item>
+              <el-dropdown-item command="logout"
+                >{{ $t("layout.logout") }}
+              </el-dropdown-item>
+              <el-dropdown-item command="language">
+                <span v-if="locale === 'en'" @click="switchLanguage">CN</span>
+                <span v-else @click="switchLanguage">EN</span>
+              </el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
@@ -43,7 +47,6 @@
               :key="item.path"
               :index="item.path"
             >
-         
               {{ $t(item.meta.pathName) }}
             </el-menu-item>
           </el-sub-menu>
@@ -75,8 +78,8 @@
 import { computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
-import store from '@/store/index'
-const { t } = useI18n();
+import store from "@/store/index";
+const { t, locale } = useI18n();
 
 const router = useRouter();
 const route = useRoute();
@@ -85,7 +88,6 @@ const route = useRoute();
 const menuRoutes = computed(() => {
   const role = store.getRole();
   const roleRoutes = router.getRoutes().find((r) => r.meta.role === role);
-  console.log(roleRoutes.children);
   return roleRoutes ? roleRoutes.children : [];
 });
 // 计算当前路径对应的面包屑项
@@ -125,19 +127,29 @@ const handleCommand = (command) => {
     } else {
       router.push("/");
     }
+  } else if (command === "language") {
+    locale.value = locale.value === "zh" ? "en" : "zh";
   }
 };
 
 // 获取当前角色
-const role = computed(() => localStorage.getItem("role"));
+const role = computed(() => store.getRole());
 
 // 根据角色显示不同的文字内容
 const roleText = computed(() => {
-  if (role.value === "agent") return t("layout.agentTitile");
-  if (role.value === "buyer") return t("layout.buyerTitile");
-  if (role.value === "seller") return t("layout.sellerTitile");
-  return "用户管理面板";
+  const currentRole = role.value;
+  switch (currentRole) {
+    case "agent":
+      return t("layout.agentTitle");
+    case "buyer":
+      return t("layout.buyerTitle");
+    case "seller":
+      return t("layout.sellerTitle");
+    default:
+      return '';
+  }
 });
+
 </script>
 
 <style scoped>

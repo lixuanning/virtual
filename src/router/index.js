@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
-import store from '@/store/index'
+import store from "@/store/index";
 import Layout from "../views/layout/index.vue";
 import AgentLogin from "../views/agent/agentLogin/index.vue";
 import BuyerLogin from "../views/buyer/buyerLogin/index.vue";
@@ -53,7 +53,7 @@ const router = createRouter({
 
 // 路由守卫
 router.beforeEach((to, from, next) => {
-  const role = store.getRole()
+  const role = store.getRole();
   if (to.meta.whiteList) {
     // 如果页面不需要身份验证，直接放行
     next();
@@ -70,10 +70,11 @@ router.beforeEach((to, from, next) => {
       next("/");
     }
   } else {
-    // 已登录，但访问的路径不属于该角色，跳转到相应的角色首页
     if (
       to.matched.some((record) => record.meta.role && record.meta.role !== role)
     ) {
+      // 已登录，但访问的路径不属于该角色，跳转到相应的角色首页
+
       if (role === "agent") {
         next("/agent-login");
       } else if (role === "buyer") {
