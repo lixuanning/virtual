@@ -9,12 +9,12 @@
           </span>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item command="logout"
-                >{{ $t("layout.logout") }}
-              </el-dropdown-item>
               <el-dropdown-item command="language">
                 <span v-if="locale === 'en'" @click="switchLanguage">CN</span>
                 <span v-else @click="switchLanguage">EN</span>
+              </el-dropdown-item>
+              <el-dropdown-item command="logout"
+                >{{ $t("layout.logout") }}
               </el-dropdown-item>
             </el-dropdown-menu>
           </template>
@@ -116,7 +116,7 @@ const handleSelect = (index) => {
 // 处理下拉菜单命令
 const handleCommand = (command) => {
   if (command === "logout") {
-    const role = localStorage.getItem("role");
+    const role = store.getRole();
     localStorage.removeItem("role");
     if (role === "agent") {
       router.push("/agent-login");
@@ -146,10 +146,9 @@ const roleText = computed(() => {
     case "seller":
       return t("layout.sellerTitle");
     default:
-      return '';
+      return "";
   }
 });
-
 </script>
 
 <style scoped>

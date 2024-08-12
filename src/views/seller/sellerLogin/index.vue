@@ -93,7 +93,7 @@ const submitForm = () => {
   formRef.value.validate((valid) => {
     if (valid) {
       store.setUserinfo({ role: "seller" });
-      router.push("/seller/home");
+      router.push("/seller/home/dashboard");
     } else {
       ElMessage.error("表单验证失败");
     }
