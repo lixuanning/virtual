@@ -48,6 +48,10 @@ export default {
     personalSetting:'个人设置',
     setting:'设置',
   },
+  buyerRouterName:{
+    home:'首页',
+    dashboard:'数据看板',
+  },
   router:{
     userList:'用户列表',
     UserManagement:'用户管理',

@@ -6,7 +6,7 @@ const routes = [
     children: [
       {
         path: "/seller/home/dashboard",
-        name: "dashboard",
+        name: "sellerDashboard",
         component: () => import("@/views/seller/sellerDashboard/index.vue"),
         meta: { pathName: "sellerRouterName.dashboard" },
       },

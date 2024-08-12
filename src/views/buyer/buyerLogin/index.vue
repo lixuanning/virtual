@@ -1,18 +1,65 @@
 <template>
   <div class="login-container">
     <div class="form-container">
-      <el-button class="language" size="small" type="text" @click="switchLanguage">
-        <span v-if="language === 'en'">CN</span>
+      <!-- 切换语言按钮 -->
+      <el-button
+        class="language"
+        size="small"
+        type="text"
+        @click="switchLanguage"
+      >
+        <span v-if="locale === 'en'">CN</span>
         <span v-else>EN</span>
       </el-button>
 
-      <p class="title">{{ $t("login.buyerTitle") }}</p>
+      <!-- 表单标题 -->
+      <p class="title">
+        {{ isLogin ? $t("login.buyerTitle") : $t("register.title") }}
+      </p>
+
+      <!-- 登录表单 -->
+      <el-form
+        :model="loginForm"
+        :rules="loginRules"
+        ref="loginFormRef"
+        @submit.prevent="loginSubmitForm"
+        label-width="100px"
+        v-if="isLogin"
+      >
+        <el-form-item :label="$t('login.email')" prop="email">
+          <el-input
+            v-model="loginForm.email"
+            :placeholder="$t('login.email')"
+          ></el-input>
+        </el-form-item>
+        <el-form-item :label="$t('login.password')" prop="password">
+          <el-input
+            type="password"
+            v-model="loginForm.password"
+            :placeholder="$t('login.password')"
+          ></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="loginSubmitForm">{{
+            $t("login.submit")
+          }}</el-button>
+          <el-button type="text" @click="forgotPassword">{{
+            $t("login.forgot_password")
+          }}</el-button>
+          <el-button type="text" @click="toggleForm">{{
+            $t("register.title")
+          }}</el-button>
+        </el-form-item>
+      </el-form>
+
+      <!-- 注册表单 -->
       <el-form
         :model="form"
-        :rules="rules"
+        :rules="registerRules"
         ref="formRef"
         @submit.prevent="submitForm"
-        label-width="80px"
+        label-width="150px"
+        v-if="!isLogin"
       >
         <el-form-item :label="$t('login.email')" prop="email">
           <el-input
@@ -20,6 +67,21 @@
             :placeholder="$t('login.email')"
           ></el-input>
         </el-form-item>
+
+        <el-form-item :label="$t('register.name')" prop="name">
+          <el-input
+            v-model="form.name"
+            :placeholder="$t('register.name')"
+          ></el-input>
+        </el-form-item>
+
+        <el-form-item :label="$t('register.mobile')" prop="mobile">
+          <el-input
+            v-model="form.mobile"
+            :placeholder="$t('register.mobile')"
+          ></el-input>
+        </el-form-item>
+
         <el-form-item :label="$t('login.password')" prop="password">
           <el-input
             type="password"
@@ -29,10 +91,10 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="submitForm">{{
-            $t("login.submit")
+            $t("register.submit")
           }}</el-button>
-          <el-button type="text" @click="forgotPassword">{{
-            $t("login.forgot_password")
+          <el-button type="text" @click="toggleForm">{{
+            $t("login.submit")
           }}</el-button>
         </el-form-item>
       </el-form>
@@ -41,23 +103,35 @@
 </template>
 
 <script setup>
-import { ref,onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 import { useI18n } from "vue-i18n";
-
-const { locale, t } = useI18n();
 import store from "@/store/index";
-
+import { uploadPicture, previewPicture } from "@/api/file";
+import { registerForMerchant } from "@/api/buyer";
+import { login } from "@/api/auth";
+const { locale, t } = useI18n();
+const router = useRouter();
+const formRef = ref(null);
+const loginFormRef = ref(null);
+const isLogin = ref(true);
 onMounted(() => {
   store.setUserinfo({});
 });
-const form = ref({
+
+const loginForm = ref({
   email: "",
   password: "",
 });
+const form = ref({
+  email: "",
+  name: "",
+  mobile: "",
+  password: "",
+});
 
-const rules = ref({
+const loginRules = ref({
   email: [
     { required: true, message: t("login.email_placeholder"), trigger: "blur" },
     {
@@ -75,21 +149,65 @@ const rules = ref({
   ],
 });
 
-const formRef = ref(null);
-const router = useRouter();
-
-const language = ref("zh");
+const registerRules = ref({
+  email: [
+    { required: true, message: t("login.email_placeholder"), trigger: "blur" },
+    {
+      type: "email",
+      message: t("login.email_format_error"),
+      trigger: ["blur", "change"],
+    },
+  ],
+  name: [
+    {
+      required: true,
+      message: t("register.name_placeholder"),
+      trigger: "blur",
+    },
+  ],
+  mobile: [
+    {
+      required: true,
+      message: t("register.mobile_placeholder"),
+      trigger: "blur",
+    },
+  ],
+  password: [
+    {
+      required: true,
+      message: t("login.password_placeholder"),
+      trigger: "blur",
+    },
+  ],
+});
 
 const switchLanguage = () => {
-  language.value = language.value === "zh" ? "en" : "zh";
-  locale.value = language.value === "zh" ? "en" : "zh";
+  locale.value = locale.value === "zh" ? "en" : "zh";
 };
 
-const submitForm = () => {
-  formRef.value.validate((valid) => {
+const toggleForm = () => {
+  isLogin.value = !isLogin.value;
+};
+const loginSubmitForm = async () => {
+  loginFormRef.value.validate(async (valid) => {
     if (valid) {
-      store.setUserinfo({ role: "buyer" });
-      router.push('/buyer');
+      const res = await login({
+        ...loginForm.value,
+      });
+      store.setUserinfo({ role: "buyer", token: res.token });
+      router.push("/buyer/home/dashboard");
+    }
+  });
+};
+const submitForm = async () => {
+  formRef.value.validate(async (valid) => {
+    if (valid) {
+      // 调用注册 API，成功后跳转到登录页面或首页
+      const res = await registerForMerchant({
+        ...form.value,
+      });
+      ElMessage.success("注册成功！");
+      isLogin.value = true;
     } else {
       ElMessage.error("表单验证失败");
     }
@@ -149,9 +267,10 @@ const forgotPassword = () => {
   top: 10px;
   right: 10px;
 }
-.title{
-  text-align:center;
-  font-size:18px;
-  font-weight:500
+
+.title {
+  text-align: center;
+  font-size: 18px;
+  font-weight: 500;
 }
 </style>

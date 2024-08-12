@@ -102,9 +102,7 @@
             :http-request="(file) => customUpload(file, 'idCardFrontId')"
             :limit="1"
           >
-            <el-button type="text">{{
-              $t("register.uploadFront")
-            }}</el-button>
+            <el-button type="text">{{ $t("register.uploadFront") }}</el-button>
           </el-upload>
           <span v-if="form.idCardFrontId">{{ form.idCardFrontId }}</span>
         </el-form-item>
@@ -117,9 +115,7 @@
             :http-request="(file) => customUpload(file, 'idCardBackId')"
             :limit="1"
           >
-            <el-button type="text">{{
-              $t("register.uploadBack")
-            }}</el-button>
+            <el-button type="text">{{ $t("register.uploadBack") }}</el-button>
           </el-upload>
           <span v-if="form.idCardBackId">{{ form.idCardBackId }}</span>
         </el-form-item>
@@ -164,7 +160,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 import { useI18n } from "vue-i18n";
@@ -177,6 +173,9 @@ const router = useRouter();
 const formRef = ref(null);
 const loginFormRef = ref(null);
 const isLogin = ref(true);
+onMounted(() => {
+  store.setUserinfo({});
+});
 
 const loginForm = ref({
   email: "",
@@ -289,20 +288,12 @@ const loginSubmitForm = async () => {
 const submitForm = async () => {
   formRef.value.validate(async (valid) => {
     if (valid) {
-      if (isLogin.value) {
-        const res = await login({
-          ...form.value,
-        });
-        store.setUserinfo({ role: "seller" });
-        router.push("/seller/home/dashboard");
-      } else {
-        // 调用注册 API，成功后跳转到登录页面或首页
-        const res = await registerForOtc({
-          ...form.value,
-        });
-        ElMessage.success("注册成功！");
-        isLogin.value = true;
-      }
+      // 调用注册 API，成功后跳转到登录页面或首页
+      const res = await registerForOtc({
+        ...form.value,
+      });
+      ElMessage.success("注册成功！");
+      isLogin.value = true;
     } else {
       ElMessage.error("表单验证失败");
     }
