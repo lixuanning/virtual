@@ -12,6 +12,23 @@ export default {
     password_placeholder: "请输入您的密码",
     email_format_error: "请输入有效的邮箱地址",
   },
+  register: {
+    name: "姓名",
+    mobile: "手机",
+    submit: "注册",
+    name_placeholder: "请输入您的姓名",
+    mobile_placeholder: "请输入您的手机号码",
+    idCardFrontId: "身份证正面",
+    idCardBackId: "身份证反面",
+    idCardInHandId: "手持身份证",
+    idCardFront_placeholder: "请上传您的身份证正面",
+    idCardBack_placeholder: "请上传您的身份证反面",
+    idCardInHand_placeholder: "请上传您的手持身份证",
+    uploadFront: "上传",
+    uploadBack: "上传",
+    uploadInHand: "上传",
+    title: "注册"
+  },
   layout:{
     agentTitile:'中介后台管理',
     buyerTitile:'商家后台管理',

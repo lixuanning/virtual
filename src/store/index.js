@@ -12,6 +12,7 @@ const store = {
       name: "",
       code: "",
       role: "",
+      token:''
     },
   }),
   setUserinfo(obj) { 
@@ -20,6 +21,9 @@ const store = {
   },
   getRole(){
     return  this.state.userInfo.role;
+  },
+  getToken(){
+    return  this.state.userInfo.token;
   }
 };
 

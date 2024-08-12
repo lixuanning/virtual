@@ -11,6 +11,23 @@ export default {
     password_placeholder: "Please enter your password",
     email_format_error: "Please enter a valid email address",
   },
+  register: {
+    name: "Name",
+    mobile: "Mobile",
+    submit: "Register",
+    name_placeholder: "Please enter your name",
+    mobile_placeholder: "Please enter your mobile number",
+    idCardFrontId: "ID Card Front",
+    idCardBackId: "ID Card Back",
+    idCardInHandId: "ID Card In Hand",
+    idCardFront_placeholder: "Please upload your ID card front",
+    idCardBack_placeholder: "Please upload your ID card back",
+    idCardInHand_placeholder: "Please upload your ID card in hand",
+    uploadFront: "Upload Front",
+    uploadBack: "Upload Back",
+    uploadInHand: "Upload In Hand",
+    title: "Register"
+  },
   layout: {
     agentTitle: 'Broker Admin',
     buyerTitle: 'Merchant Admin',
