@@ -301,15 +301,14 @@ const loginSubmitForm = async () => {
         ...loginForm.value,
       });
       console.log(res, "res");
-      if (res.data.tpye === 2) {
+      if (res.data.type === 2) {
         if (res.data.token) {
-        store.setUserinfo({ role: "seller", token: res.data.token });
-        router.push("/seller/home/dashboard");
+          store.setUserinfo({ role: "seller", token: res.data.token });
+          router.push("/seller/home/dashboard");
+        }
+      } else {
+        ElMessage.error("用户名或密码错误");
       }
-      }else{
-        ElMessage.error('用户名或密码错误');
-      }
-     
     }
   });
 };
@@ -347,14 +346,15 @@ const beforeUpload = (file) => {
   return isJPG && isLt2M;
 };
 
+// 将图片数据转换为 base64 URL
+
 const customUpload = async ({ file, onSuccess, onError }, field) => {
   try {
     const response = await uploadPicture({ file: file });
     form.value[field] = response.data.pictureId;
     const url = await previewPicture({ pictureId: response.data.pictureId });
-    console.log(url, "url");
-    const objUrl = URL.createObjectURL(url); //
-    imgUrl.value[field] = objUrl;
+    const base64Url = `data:image/jpeg;base64,${url.data.picture}`;
+    imgUrl.value[field] = base64Url;
     ElMessage.success("图片上传成功");
   } catch (error) {
     onError(error);

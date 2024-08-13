@@ -2,13 +2,13 @@ const routes = [
   {
     path: "/seller/home",
     name: "sellerHome",
-    meta: { pathName: "sellerRouterName.home", icon: "HomeFilled" },
+    meta: { pathName: "routerName.home", icon: "HomeFilled" },
     children: [
       {
         path: "/seller/home/dashboard",
         name: "sellerDashboard",
         component: () => import("@/views/seller/sellerDashboard/index.vue"),
-        meta: { pathName: "sellerRouterName.dashboard" },
+        meta: { pathName: "routerName.dashboard" },
       },
     ],
   },
@@ -16,7 +16,7 @@ const routes = [
     path: "/seller/transactionManagement",
     name: "transactionManagement",
     meta: {
-      pathName: "sellerRouterName.transactionManagement",
+      pathName: "routerName.transactionManagement",
       icon: "Management",
     },
     children: [
@@ -25,38 +25,38 @@ const routes = [
         name: "advertisingManagement",
         component: () =>
           import("@/views/seller/advertisingManagement/index.vue"),
-        meta: { pathName: "sellerRouterName.advertisingManagement" },
+        meta: { pathName: "routerName.advertisingManagement" },
       },
       {
         path: "/seller/transactionManagement/withdraw",
         name: "withdraw",
         component: () => import("@/views/seller/withdraw/index.vue"),
-        meta: { pathName: "sellerRouterName.withdraw" },
+        meta: { pathName: "routerName.withdraw" },
       },
       {
         path: "/seller/rectransactionManagementharge/recharge",
         name: "recharge",
         component: () => import("@/views/seller/recharge/index.vue"),
-        meta: { pathName: "sellerRouterName.recharge" },
+        meta: { pathName: "routerName.recharge" },
       },
     ],
   },
   {
     path: "/seller/setting",
     name: "setting",
-    meta: { pathName: "sellerRouterName.setting", icon: "CreditCard" },
+    meta: { pathName: "routerName.setting", icon: "CreditCard" },
     children: [
       {
         path: "/seller/setting/personalSetting",
         name: "personalSetting",
         component: () => import("@/views/seller/personalSetting/index.vue"),
-        meta: { pathName: "sellerRouterName.personalSetting" },
+        meta: { pathName: "routerName.personalSetting" },
       },
       {
         path: "/seller/setting/collectionSetup",
         name: "collectionSetup",
         component: () => import("@/views/seller/collectionSetup/index.vue"),
-        meta: { pathName: "sellerRouterName.collectionSetup" },
+        meta: { pathName: "routerName.collectionSetup" },
       },
     ],
   },

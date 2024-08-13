@@ -2,13 +2,13 @@ const routes = [
   {
     path: "/buyer/home",
     name: "buyerHome",
-    meta: { pathName: "buyerRouterName.home", icon: "HomeFilled" },
+    meta: { pathName: "routerName.home", icon: "HomeFilled" },
     children: [
       {
         path: "/buyer/home/dashboard",
         name: "buyerDashboard",
         component: () => import("@/views/buyer/buyerDashboard/index.vue"),
-        meta: { pathName: "buyerRouterName.dashboard" },
+        meta: { pathName: "routerName.dashboard" },
       },
     ],
   },

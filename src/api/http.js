@@ -62,9 +62,9 @@ instance.interceptors.request.use(
     if (store.getToken()) {
       config.headers["token"] = store.getToken();
     }
-    if (config.url.includes("previewPicture")) {
-      config["responseType"] = "blob";
-    }
+    // if (config.url.includes("previewPicture")) {
+    //   config["responseType"] = "blob";
+    // }
     return config;
   },
   (error) => {
@@ -81,26 +81,17 @@ instance.interceptors.response.use(
   (res) => {
     if (res.data.code === "0") {
       return res.data;
-    } else if (res.data.code === "70001") {
-      console.log("70001");
+    } else if (res.data.code.includes[("70001", "70002", "70003")]) {
       if (res.data.msg) {
         ElMessage.error(res.data.msg);
       }
       roleToPath();
       return Promise.reject(res.data);
-    } else if (res.data.code === "70002") {
-      console.log("70002", res.data);
-      if (res.data.msg) {
-        ElMessage.error(res.data.msg);
-      }
-      roleToPath();
-      return Promise.reject(res.data);
-    } else if (res.data.code === "50000") {
-      if (res.data.msg) {
-        ElMessage.error(res.data.msg);
-      }
     } else {
-      return res.data;
+      if (res.data.msg) {
+        ElMessage.error(res.data.msg);
+      }
+      return Promise.reject(res.data);
     }
   },
   // 请求失败
