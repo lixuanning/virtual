@@ -5,6 +5,8 @@
 import axios from "axios";
 import { baseUrl } from "./baseUrl";
 import store from "@/store/index";
+import router from "@/router/index";
+import { ElMessage } from "element-plus";
 
 // 创建axios实例
 const config = {
@@ -25,20 +27,30 @@ const roleMap = {
   seller: 2,
   buyer: 3,
 };
+
+const roleToPath = () => {
+  const role = store.getRole();
+  if (role === "agent") {
+    router.push("/agent-login");
+  } else if (role === "buyer") {
+    router.push("/buyer-login");
+  } else if (role === "seller") {
+    router.push("/seller-login");
+  }
+};
 /**
  * 请求拦截器
  */
 instance.interceptors.request.use(
   (config) => {
     const role = store.getRole();
-    config.type = roleMap[role];
+    config.headers["type"] = roleMap[role];
     console.log(config.data, "config.data");
     let env = process.env.NODE_ENV;
     if (env === "development") {
       //开发环境添加api 开启跨域代理
       config.url = `/api${config.url}`;
     }
-    console.log(config.url, "config.url");
     if (config.data && config.data.file) {
       if (
         Object.prototype.toString.call(config.data.file) === "[object File]"
@@ -48,7 +60,7 @@ instance.interceptors.request.use(
       }
     }
     if (store.getToken()) {
-      config.token = store.getToken();
+      config.headers["token"] = store.getToken();
     }
     if (config.url.includes("previewPicture")) {
       config["responseType"] = "blob";
@@ -69,13 +81,31 @@ instance.interceptors.response.use(
   (res) => {
     if (res.data.code === "0") {
       return res.data;
+    } else if (res.data.code === "70001") {
+      console.log("70001");
+      if (res.data.msg) {
+        ElMessage.error(res.data.msg);
+      }
+      roleToPath();
+      return Promise.reject(res.data);
+    } else if (res.data.code === "70002") {
+      console.log("70002", res.data);
+      if (res.data.msg) {
+        ElMessage.error(res.data.msg);
+      }
+      roleToPath();
+      return Promise.reject(res.data);
+    } else if (res.data.code === "50000") {
+      if (res.data.msg) {
+        ElMessage.error(res.data.msg);
+      }
     } else {
-      return Promise.reject(res);
+      return res.data;
     }
   },
   // 请求失败
   (error) => {
-    console.log("error", error);
+    console.log("erro11r", error);
     return Promise.reject(error);
   }
 );

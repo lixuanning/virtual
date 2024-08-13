@@ -1,291 +1,463 @@
 <template>
-    <el-container>
-      <!-- 顶部搜索表单 -->
-      <el-header class="header">
-        <el-form :inline="true" :model="searchForm" class="demo-form-inline">
-          <el-form-item :label="$t('form.label')">
-            <el-input v-model="searchForm.query"></el-input>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="handleSearch">{{ $t('form.search') }}</el-button>
-            <el-button @click="handleReset">{{ $t('form.reset') }}</el-button>
-          </el-form-item>
-        </el-form>
-      </el-header>
-  
-      <!-- 顶部操作按钮 -->
-      <el-header class="header">
-        <el-button type="primary" @click="showAddDialog">{{ $t('form.add') }}</el-button>
-      </el-header>
-  
-      <!-- 表格和分页 -->
-      <el-main>
-        <el-table :data="tableData" style="width: 100%" v-loading="tableLoading">
-          <el-table-column prop="date" :label="$t('form.date')" width="180"></el-table-column>
-          <el-table-column prop="name" :label="$t('form.name')" width="180"></el-table-column>
-          <el-table-column prop="address" :label="$t('form.address')"></el-table-column>
-          <el-table-column :label="$t('form.actions')" width="300">
-            <template #default="scope">
-              <el-button type="text" @click="showViewDialog(scope.row)">{{ $t('form.view') }}</el-button>
-              <el-button type="text" @click="showEditDialog(scope.row)">{{ $t('form.edit') }}</el-button>
-              <el-popconfirm
-                title="确定要删除这条记录吗？"
-                confirm-button-text="是"
-                cancel-button-text="否"
-                @confirm="() => handleDelete(scope.row)"
-              >
-                <template #reference>
-                  <el-button type="text">{{ $t('form.delete') }}</el-button>
-                </template>
-              </el-popconfirm>
-            </template>
-          </el-table-column>
-        </el-table>
-        <el-pagination
-          background
-          layout="prev, pager, next"
-          :total="totalItems"
-          :page-size="pageSize"
-          :current-page="currentPage"
-          @current-change="handlePageChange"
-        ></el-pagination>
-      </el-main>
-  
-      <!-- 查看详情对话框 -->
-      <el-dialog :title="$t('form.view')" v-model="isViewDialogVisible">
-        <el-form :model="viewForm" label-width="100px">
-          <el-form-item :label="$t('form.date')">
-            <el-input v-model="viewForm.date" disabled></el-input>
-          </el-form-item>
-          <el-form-item :label="$t('form.name')">
-            <el-input v-model="viewForm.name" disabled></el-input>
-          </el-form-item>
-          <el-form-item :label="$t('form.address')">
-            <el-input v-model="viewForm.address" disabled></el-input>
-          </el-form-item>
-        </el-form>
-        <template #footer>
-          <el-button @click="isViewDialogVisible = false">{{ $t('form.close') }}</el-button>
-        </template>
-      </el-dialog>
-  
-      <!-- 新增对话框 -->
-      <el-dialog :title="$t('form.add')" v-model="isAddDialogVisible">
-        <el-form :model="addForm" :rules="rules" ref="addFormRef" label-width="100px">
-          <el-form-item :label="$t('form.date')" prop="date">
-            <el-input v-model="addForm.date"></el-input>
-          </el-form-item>
-          <el-form-item :label="$t('form.name')" prop="name">
-            <el-input v-model="addForm.name"></el-input>
-          </el-form-item>
-          <el-form-item :label="$t('form.address')" prop="address">
-            <el-input v-model="addForm.address"></el-input>
-          </el-form-item>
-        </el-form>
-        <template #footer>
-          <el-button @click="isAddDialogVisible = false">{{ $t('form.cancel') }}</el-button>
-          <el-button type="primary" :loading="dialogLoading" @click="handleAddSubmit">{{ $t('form.add') }}</el-button>
-        </template>
-      </el-dialog>
-  
-      <!-- 编辑对话框 -->
-      <el-dialog :title="$t('form.edit')" v-model="isEditDialogVisible">
-        <el-form :model="editForm" :rules="rules" ref="editFormRef" label-width="100px">
-          <el-form-item :label="$t('form.date')" prop="date">
-            <el-input v-model="editForm.date"></el-input>
-          </el-form-item>
-          <el-form-item :label="$t('form.name')" prop="name">
-            <el-input v-model="editForm.name"></el-input>
-          </el-form-item>
-          <el-form-item :label="$t('form.address')" prop="address">
-            <el-input v-model="editForm.address"></el-input>
-          </el-form-item>
-        </el-form>
-        <template #footer>
-          <el-button @click="isEditDialogVisible = false">{{ $t('form.cancel') }}</el-button>
-          <el-button type="primary" :loading="dialogLoading" @click="handleEditSubmit">{{ $t('form.save') }}</el-button>
-        </template>
-      </el-dialog>
-    </el-container>
-  </template>
-  
-  <script setup>
-  import { ref, onMounted } from 'vue';
-  import { useI18n } from 'vue-i18n';
-  import { ElMessage } from 'element-plus';
-  
-  // 模拟获取数据的函数
-  const fetchData = async (query = '', page = 1, pageSize = 10) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const total = 100;
-        const data = Array.from({ length: pageSize }, (_, index) => ({
-          date: `2016-05-${String(index + 1).padStart(2, '0')}`,
-          name: `John Doe ${index + (page - 1) * pageSize}`,
-          address: `No. 189, Grove St, Los Angeles`
-        }));
-        resolve({ data, total });
-      }, 500);
+  <el-container>
+    <!-- 筛选表单 -->
+    <el-header class="header">
+      <el-form :inline="true" :model="searchForm" class="demo-form-inline">
+        <el-form-item :label="$t('form.coin')">
+          <el-select
+            width="100%"
+            v-model="searchForm.coin"
+            :placeholder="$t('form.select')"
+          >
+            <el-option
+              v-for="item in coinOptions"
+              :key="item"
+              :label="item"
+              :value="item"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item :label="$t('form.legalCurrency')">
+          <el-select
+            v-model="searchForm.legalCurrency"
+            :placeholder="$t('form.select')"
+          >
+            <el-option
+              v-for="item in legalCurrencyOptions"
+              :key="item"
+              :label="item"
+              :value="item"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item :label="$t('form.status')">
+          <el-select v-model="searchForm.status"  :placeholder="$t('form.select')">
+            <el-option :label="$t('form.putaway')" :value="1"></el-option>
+            <el-option :label="$t('form.takeaway')" :value="2"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="handleSearch">
+            {{ $t("form.search") }}
+          </el-button>
+          <el-button @click="handleReset">{{ $t("form.reset") }}</el-button>
+        </el-form-item>
+      </el-form>
+    </el-header>
+
+    <!-- 新增按钮 -->
+    <el-header class="header">
+      <el-button type="primary" @click="showAddDialog">
+        {{ $t("form.add") }}
+      </el-button>
+    </el-header>
+
+    <!-- 表格和分页 -->
+    <el-main>
+      <el-table :data="tableData" style="width: 100%" v-loading="tableLoading">
+        <el-table-column
+          prop="coin"
+          :label="$t('form.coin')"
+          width="100"
+        ></el-table-column>
+        <el-table-column
+          prop="total"
+          :label="$t('form.total')"
+          width="100"
+        ></el-table-column>
+        <el-table-column
+          prop="legalCurrency"
+          :label="$t('form.legalCurrency')"
+          width="100"
+        ></el-table-column>
+        <el-table-column
+          prop="buyMin"
+          :label="$t('form.buyMin')"
+          width="150"
+        ></el-table-column>
+        <el-table-column
+          prop="buyMax"
+          :label="$t('form.buyMax')"
+          width="150"
+        ></el-table-column>
+        <el-table-column
+          prop="saleStartDate"
+          :label="$t('form.tabSaleStartDate')"
+          width="200"
+        >
+          <template #default="scope">
+            {{ moment(scope.row.saleStartDate).format("YYYY-MM-DD") }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="saleEndDate"
+          :label="$t('form.tabSaleEndDate')"
+          width="200"
+        >
+          <template #default="scope">
+            {{ moment(scope.row.saleEndDate).format("YYYY-MM-DD") }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="residue"
+          :label="$t('form.residue')"
+          width="100"
+        ></el-table-column>
+        <el-table-column :label="$t('form.actions')" width="150" fixed="right">
+          <template #default="scope">
+            <!-- <el-button type="text" @click="showViewDialog(scope.row)">
+              {{ $t("form.view") }}
+            </el-button>
+            <el-button type="text" @click="showEditDialog(scope.row)">
+              {{ $t("form.edit") }}
+            </el-button> -->
+            <el-popconfirm
+              :title="$t('form.isPutaway')"
+              confirm-button-text="是"
+              cancel-button-text="否"
+              @confirm="() => handleDelete(scope.row)"
+              v-if="scope.row.status === 2"
+            >
+              <template #reference>
+                <el-button type="text">{{ $t("form.putaway") }}</el-button>
+              </template>
+            </el-popconfirm>
+            <el-popconfirm
+              :title="$t('form.isTakeaway')"
+              confirm-button-text="是"
+              cancel-button-text="否"
+              @confirm="() => handleDelete(scope.row)"
+              v-else
+            >
+              <template #reference>
+                <el-button type="text">{{ $t("form.takeaway") }}</el-button>
+              </template>
+            </el-popconfirm>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="totalItems"
+        :page-size="pageSize"
+        :current-page="currentPage"
+        @current-change="handlePageChange"
+      ></el-pagination>
+    </el-main>
+
+    <!-- 新增对话框 -->
+    <el-dialog :title="$t('form.add')" v-model="isAddDialogVisible">
+      <el-form
+        :model="addForm"
+        :rules="rules"
+        ref="addFormRef"
+        label-width="100px"
+      >
+        <el-form-item :label="$t('form.coin')" prop="coin">
+          <el-select v-model="addForm.coin" placeholder="Select Coin">
+            <el-option
+              v-for="item in coinOptions"
+              :key="item"
+              :label="item"
+              :value="item"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item :label="$t('form.total')" prop="total">
+          <el-input type="number" v-model="addForm.total"></el-input>
+        </el-form-item>
+        <el-form-item :label="$t('form.legalCurrency')" prop="legalCurrency">
+          <el-select
+            v-model="addForm.legalCurrency"
+            placeholder="Select Currency"
+          >
+            <el-option
+              v-for="item in legalCurrencyOptions"
+              :key="item"
+              :label="item"
+              :value="item"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item :label="$t('form.buyMin')" prop="buyMin">
+          <el-input type="number" v-model="addForm.buyMin"></el-input>
+        </el-form-item>
+        <el-form-item :label="$t('form.buyMax')" prop="buyMax">
+          <el-input type="number" v-model="addForm.buyMax"></el-input>
+        </el-form-item>
+        <el-form-item :label="$t('form.desc')" prop="desc">
+          <el-input type="textarea" v-model="addForm.desc"></el-input>
+        </el-form-item>
+        <el-form-item :label="$t('form.mark')" prop="mark">
+          <el-input type="textarea" v-model="addForm.mark"></el-input>
+        </el-form-item>
+        <el-form-item :label="$t('form.supportPay')" prop="supportPay">
+          <el-checkbox-group v-model="addForm.supportPay">
+            <el-checkbox
+              v-for="item in playList"
+              :key="item.key"
+              :label="item.key"
+              >{{ item.name }}</el-checkbox
+            >
+          </el-checkbox-group>
+        </el-form-item>
+        <el-form-item :label="$t('form.saleStartDate')" prop="dateList">
+          <el-date-picker
+            v-model="addForm.dateList"
+            type="daterange"
+            start-placeholder="Start Date"
+            end-placeholder="End Date"
+            align="right"
+            format="YYYY/MM/DD"
+          ></el-date-picker>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="isAddDialogVisible = false">
+          {{ $t("form.cancel") }}
+        </el-button>
+        <el-button
+          type="primary"
+          :loading="dialogLoading"
+          @click="handleAddSubmit"
+        >
+          {{ $t("form.add") }}
+        </el-button>
+      </template>
+    </el-dialog>
+  </el-container>
+</template>
+
+<script setup>
+import { ref, onMounted } from "vue";
+import { useI18n } from "vue-i18n";
+import {
+  addProduct,
+  queryProductList,
+  updateProductStatus,
+} from "@/api/otc.js";
+import { ElMessage } from "element-plus";
+import moment from "moment";
+const { t } = useI18n();
+
+// 初始化数据
+const coinOptions = ref([]);
+const legalCurrencyOptions = ref([]);
+
+// 表单相关状态
+const searchForm = ref({ coin: "", legalCurrency: "", status: "" });
+const addForm = ref({
+  coin: "",
+  total: "",
+  legalCurrency: "",
+  buyMin: "",
+  buyMax: "",
+  desc: "",
+  mark: "",
+  supportPay: [],
+  saleStartDate: null,
+  saleEndDate: null,
+  dateList: [],
+});
+
+const rules = ref({
+  coin: [{ required: true, message: t("form.requiredText"), trigger: "blur" }],
+  supportPay: [
+    { required: true, message: t("form.requiredText"), trigger: "blur" },
+  ],
+  total: [{ required: true, message: t("form.requiredText"), trigger: "blur" }],
+  legalCurrency: [
+    {
+      required: true,
+      message: t("form.requiredText"),
+      trigger: "blur",
+    },
+  ],
+  buyMin: [
+    { required: true, message: t("form.requiredText"), trigger: "blur" },
+  ],
+  buyMax: [
+    { required: true, message: t("form.requiredText"), trigger: "blur" },
+  ],
+  dateList: [
+    {
+      required: true,
+      message: t("form.requiredText"),
+      trigger: "blur",
+    },
+  ],
+});
+
+const tableData = ref([]);
+const totalItems = ref(0);
+const currentPage = ref(1);
+const pageSize = ref(10);
+const tableLoading = ref(false);
+const dialogLoading = ref(false);
+const isAddDialogVisible = ref(false);
+const addFormRef = ref(null);
+// 1:银行卡 2:微信 3:支付宝
+const playList = ref([
+  {
+    key: 2,
+    name: "银行卡",
+  },
+  {
+    key: 1,
+    name: "微信",
+  },
+  {
+    key: 1,
+    name: "支付宝",
+  },
+]);
+
+// 模拟获取 coin 和 legalCurrency 列表
+const fetchOptions = () => {
+  coinOptions.value = ["USDT"];
+  legalCurrencyOptions.value = ["CNY"];
+};
+
+// 查询列表数据
+const loadData = async () => {
+  tableLoading.value = true;
+  try {
+    const { data } = await queryProductList({
+      pageNum: currentPage.value,
+      pageSize: pageSize.value,
+      status: searchForm.value.status,
+      coin: searchForm.value.coin,
+      legalCurrency: searchForm.value.legalCurrency,
     });
-  };
-  
-  const { t } = useI18n();
-  
-  const searchForm = ref({
-    query: ''
-  });
-  
-  const tableData = ref([]);
-  const totalItems = ref(0);
-  const pageSize = ref(10);
-  const currentPage = ref(1);
-  
-  const viewForm = ref({});
-  const addForm = ref({
-    date: '',
-    name: '',
-    address: ''
-  });
-  const editForm = ref({
-    date: '',
-    name: '',
-    address: ''
-  });
-  
-  const rules = ref({
-    date: [{ required: true, message: t('form.date_required'), trigger: 'blur' }],
-    name: [{ required: true, message: t('form.name_required'), trigger: 'blur' }],
-    address: [{ required: true, message: t('form.address_required'), trigger: 'blur' }]
-  });
-  
-  const isViewDialogVisible = ref(false);
-  const isAddDialogVisible = ref(false);
-  const isEditDialogVisible = ref(false);
-  const addFormRef = ref(null);
-  const editFormRef = ref(null);
-  const dialogLoading = ref(false); // 对话框按钮加载状态
-  const tableLoading = ref(false); // 表格加载状态
-  
-  // 加载数据函数
-  const loadData = async () => {
-    tableLoading.value = true;
-    console.log(currentPage);
-    const { data, total } = await fetchData(searchForm.value.query, currentPage.value, pageSize.value);
-    tableData.value = data;
-    totalItems.value = total;
+    tableData.value = data.records;
+    totalItems.value = data.total;
+  } catch (error) {
+    ElMessage.error(t("message.loadDataError"));
+  } finally {
     tableLoading.value = false;
-  };
-  
-  // 处理搜索
-  const handleSearch = () => {
-    currentPage.value = 1; // 重置到第一页
-    loadData();
-  };
-  
-  // 处理重置
-  const handleReset = () => {
-    searchForm.value.query = '';
-    handleSearch();
-  };
-  
-  // 处理删除
-  const handleDelete = (row) => {
-    ElMessage.success(`Deleted ${row.name}`);
-    // 模拟删除后刷新数据
-    loadData();
-  };
-  
-  // 处理查看详情
-  const handleView = (row) => {
-    viewForm.value = { ...row };
-    isViewDialogVisible.value = true;
-  };
-  
-  // 处理分页
-  const handlePageChange = (page) => {
-    currentPage.value = page;
-    loadData();
-  };
-  
-  // 处理新增提交
-  const handleAddSubmit = () => {
-    dialogLoading.value = true;
-    addFormRef.value.validate((valid) => {
-      if (valid) {
-        setTimeout(() => {
-          ElMessage.success('Added successfully');
-          // 模拟添加后刷新数据
-          isAddDialogVisible.value = false;
-          dialogLoading.value = false;
-          loadData();
-        }, 1000); // 模拟请求延迟
-      } else {
+  }
+};
+
+// 新增产品
+const handleAddSubmit = () => {
+  dialogLoading.value = true;
+  addFormRef.value.validate(async (valid) => {
+    const {
+      coin,
+      total,
+      legalCurrency,
+      buyMin,
+      buyMax,
+      desc,
+      mark,
+      supportPay,
+      dateList,
+    } = addForm.value;
+    if (valid) {
+      try {
+        await addProduct({
+          coin,
+          total,
+          legalCurrency,
+          buyMin,
+          buyMax,
+          desc,
+          mark,
+          supportPay,
+          saleStartDate: moment(dateList[0]).format("YYYY-MM-DD"),
+          saleEndDate: moment(dateList[1]).format("YYYY-MM-DD"),
+        });
+        ElMessage.success(t("form.addSuccess"));
+        isAddDialogVisible.value = false;
+        loadData(); // 重新加载数据
+      } catch (error) {
+        dialogLoading.value = false;
+        // console.log(error,'error');
+        // ElMessage.error(error.data.msg || 'errpr');
+      } finally {
         dialogLoading.value = false;
       }
-    });
-  };
-  
-  // 处理编辑提交
-  const handleEditSubmit = () => {
-    dialogLoading.value = true;
-    editFormRef.value.validate((valid) => {
-      if (valid) {
-        setTimeout(() => {
-          ElMessage.success('Updated successfully');
-          // 模拟编辑后刷新数据
-          isEditDialogVisible.value = false;
-          dialogLoading.value = false;
-          loadData();
-        }, 1000); // 模拟请求延迟
-      } else {
-        dialogLoading.value = false;
-      }
-    });
-  };
-  
-  // 显示查看对话框
-  const showViewDialog = (row) => {
-    viewForm.value = { ...row };
-    isViewDialogVisible.value = true;
-  };
-  
-  // 显示新增对话框
-  const showAddDialog = () => {
-    addForm.value = {
-      date: '',
-      name: '',
-      address: ''
-    };
-    isAddDialogVisible.value = true;
-  };
-  
-  // 显示编辑对话框
-  const showEditDialog = (row) => {
-    editForm.value = { ...row };
-    isEditDialogVisible.value = true;
-  };
-  
-  // 页面挂载时加载数据
-  onMounted(() => {
-    loadData();
+    } else {
+      dialogLoading.value = false;
+    }
   });
-  </script>
-  
-  <style scoped>
-  .header {
-    padding: 10px;
-    background-color: #f0f2f5;
-    display: flex;
-    align-items: center;
-  }
-  
-  .demo-form-inline .el-form-item {
-    margin-right: 10px;
-  }
-  
-  .el-main {
-    padding: 20px;
-    background-color: #fff;
-  }
-  </style>
-  
+};
+
+// 搜索功能
+const handleSearch = () => {
+  currentPage.value = 1;
+  loadData();
+};
+//上架和下载
+const handleDelete = async (row) => {
+  const status = row.status === 1 ? 2 : 1;
+  const res = await updateProductStatus({
+    productId: row.productId,
+    status: status,
+  });
+  ElMessage.success(
+    status === 1 ? t("form.putaway_success") : t("form.takeaway_success")
+  );
+  loadData()
+};
+// 重置搜索表单
+const handleReset = () => {
+  searchForm.value = { coin: "", legalCurrency: "", status: "" };
+  loadData();
+};
+
+// 分页功能
+const handlePageChange = (page) => {
+  currentPage.value = page;
+  loadData();
+};
+
+// 显示新增对话框
+const showAddDialog = () => {
+  addForm.value = {
+    coin: "",
+    total: "",
+    legalCurrency: "",
+    buyMin: "",
+    buyMax: "",
+    desc: "",
+    mark: "",
+    supportPay: [],
+    saleStartDate: null,
+    saleEndDate: null,
+  };
+  isAddDialogVisible.value = true;
+};
+
+// 页面加载时初始化数据
+onMounted(() => {
+  fetchOptions();
+  loadData();
+});
+</script>
+
+<style scoped>
+.header {
+  padding: 10px;
+  background-color: #f0f2f5;
+  display: flex;
+  align-items: center;
+}
+
+.demo-form-inline .el-form-item {
+  margin-right: 10px;
+}
+.demo-form-inline .el-input {
+  --el-input-width: 220px;
+}
+
+.demo-form-inline .el-select {
+  --el-select-width: 220px;
+}
+
+.el-main {
+  padding: 20px;
+  background-color: #fff;
+}
+</style>

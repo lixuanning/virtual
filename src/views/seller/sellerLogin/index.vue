@@ -104,7 +104,17 @@
           >
             <el-button type="text">{{ $t("register.uploadFront") }}</el-button>
           </el-upload>
-          <span v-if="form.idCardFrontId">{{ form.idCardFrontId }}</span>
+          <span v-if="form.idCardFrontId">
+            <el-image
+              style="width: 100px; height: 100px"
+              :src="imgUrl.idCardFrontId"
+              :zoom-rate="1.2"
+              :max-scale="7"
+              :min-scale="0.2"
+              :preview-src-list="[imgUrl.idCardFrontId]"
+              :initial-index="1"
+              fit="cover"
+          /></span>
         </el-form-item>
 
         <el-form-item :label="$t('register.idCardBackId')" prop="idCardBackId">
@@ -113,11 +123,21 @@
             :before-upload="beforeUpload"
             :show-file-list="false"
             :http-request="(file) => customUpload(file, 'idCardBackId')"
-            :limit="1"
+            :limit="2"
           >
             <el-button type="text">{{ $t("register.uploadBack") }}</el-button>
           </el-upload>
-          <span v-if="form.idCardBackId">{{ form.idCardBackId }}</span>
+          <span v-if="form.idCardBackId">
+            <el-image
+              style="width: 100px; height: 100px"
+              :src="imgUrl.idCardBackId"
+              :zoom-rate="1.2"
+              :max-scale="7"
+              :min-scale="0.2"
+              :preview-src-list="[imgUrl.idCardBackId]"
+              :initial-index="1"
+              fit="cover"
+          /></span>
         </el-form-item>
 
         <el-form-item
@@ -129,7 +149,7 @@
             :before-upload="beforeUpload"
             :show-file-list="false"
             :http-request="(file) => customUpload(file, 'idCardInHandId')"
-            :limit="1"
+            :limit="2"
           >
             <el-button type="text">{{ $t("register.uploadInHand") }}</el-button>
           </el-upload>
@@ -280,8 +300,16 @@ const loginSubmitForm = async () => {
       const res = await login({
         ...loginForm.value,
       });
-      store.setUserinfo({ role: "seller", token: res.token });
-      router.push("/seller/home/dashboard");
+      console.log(res, "res");
+      if (res.data.tpye === 2) {
+        if (res.data.token) {
+        store.setUserinfo({ role: "seller", token: res.data.token });
+        router.push("/seller/home/dashboard");
+      }
+      }else{
+        ElMessage.error('用户名或密码错误');
+      }
+     
     }
   });
 };
@@ -324,8 +352,9 @@ const customUpload = async ({ file, onSuccess, onError }, field) => {
     const response = await uploadPicture({ file: file });
     form.value[field] = response.data.pictureId;
     const url = await previewPicture({ pictureId: response.data.pictureId });
-
-    imgUrl.value[field] = url;
+    console.log(url, "url");
+    const objUrl = URL.createObjectURL(url); //
+    imgUrl.value[field] = objUrl;
     ElMessage.success("图片上传成功");
   } catch (error) {
     onError(error);

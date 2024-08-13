@@ -78,9 +78,9 @@ router.beforeEach((to, from, next) => {
       if (role === "agent") {
         next("/agent-login");
       } else if (role === "buyer") {
-        next("/agent-login");
+        next("/buyer-login");
       } else if (role === "seller") {
-        next("/agent-login");
+        next("/seller-login");
       } else {
         next("/");
       }
