@@ -92,6 +92,7 @@ export default {
     legalCurrency_placeholder: "法币",
     status_placeholder: "选择状态",
     requiredText:'不能为空',
+    addSuccess:'新增成功！',
     validation: {
       required: "此项为必填项",
       dateRange: "请选择有效的时间范围",

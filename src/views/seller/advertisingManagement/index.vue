@@ -2,54 +2,58 @@
   <el-container>
     <!-- 筛选表单 -->
     <el-header class="header">
-      <el-form :inline="true" :model="searchForm" class="demo-form-inline">
-        <el-form-item :label="$t('form.coin')">
-          <el-select
-            width="100%"
-            v-model="searchForm.coin"
-            :placeholder="$t('form.select')"
-          >
-            <el-option
-              v-for="item in coinOptions"
-              :key="item"
-              :label="item"
-              :value="item"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="$t('form.legalCurrency')">
-          <el-select
-            v-model="searchForm.legalCurrency"
-            :placeholder="$t('form.select')"
-          >
-            <el-option
-              v-for="item in legalCurrencyOptions"
-              :key="item"
-              :label="item"
-              :value="item"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="$t('form.status')">
-          <el-select v-model="searchForm.status"  :placeholder="$t('form.select')">
-            <el-option :label="$t('form.putaway')" :value="1"></el-option>
-            <el-option :label="$t('form.takeaway')" :value="2"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="handleSearch">
-            {{ $t("form.search") }}
-          </el-button>
-          <el-button @click="handleReset">{{ $t("form.reset") }}</el-button>
-        </el-form-item>
-      </el-form>
-    </el-header>
+      <div>
+        <el-form :inline="true" :model="searchForm" class="demo-form-inline">
+          <el-form-item :label="$t('form.coin')">
+            <el-select
+              width="100%"
+              v-model="searchForm.coin"
+              :placeholder="$t('form.select')"
+            >
+              <el-option
+                v-for="item in coinOptions"
+                :key="item"
+                :label="item"
+                :value="item"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item :label="$t('form.legalCurrency')">
+            <el-select
+              v-model="searchForm.legalCurrency"
+              :placeholder="$t('form.select')"
+            >
+              <el-option
+                v-for="item in legalCurrencyOptions"
+                :key="item"
+                :label="item"
+                :value="item"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item :label="$t('form.status')">
+            <el-select
+              v-model="searchForm.status"
+              :placeholder="$t('form.select')"
+            >
+              <el-option :label="$t('form.putaway')" :value="1"></el-option>
+              <el-option :label="$t('form.takeaway')" :value="2"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="handleSearch">
+              {{ $t("form.search") }}
+            </el-button>
+            <el-button @click="handleReset">{{ $t("form.reset") }}</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
 
-    <!-- 新增按钮 -->
-    <el-header class="header">
-      <el-button type="primary" @click="showAddDialog">
-        {{ $t("form.add") }}
-      </el-button>
+      <div class="rigth">
+        <el-button type="primary" @click="showAddDialog">
+          {{ $t("form.add") }}
+        </el-button>
+      </div>
     </el-header>
 
     <!-- 表格和分页 -->
@@ -63,17 +67,14 @@
         <el-table-column
           prop="total"
           :label="$t('form.total')"
-          width="100"
         ></el-table-column>
         <el-table-column
           prop="legalCurrency"
           :label="$t('form.legalCurrency')"
-          width="100"
         ></el-table-column>
         <el-table-column
           prop="buyMin"
           :label="$t('form.buyMin')"
-          width="150"
         ></el-table-column>
         <el-table-column
           prop="buyMax"
@@ -136,14 +137,16 @@
           </template>
         </el-table-column>
       </el-table>
-      <el-pagination
-        background
-        layout="prev, pager, next"
-        :total="totalItems"
-        :page-size="pageSize"
-        :current-page="currentPage"
-        @current-change="handlePageChange"
-      ></el-pagination>
+      <div class="rigth">
+        <el-pagination
+          background
+          layout="prev, pager, next"
+          :total="totalItems"
+          :page-size="pageSize"
+          :current-page="currentPage"
+          @current-change="handlePageChange"
+        ></el-pagination>
+      </div>
     </el-main>
 
     <!-- 新增对话框 -->
@@ -331,7 +334,7 @@ const loadData = async () => {
       legalCurrency: searchForm.value.legalCurrency,
     });
     tableData.value = data.records;
-    totalItems.value = data.total;
+    totalItems.value = data.totalNum;
   } catch (error) {
     ElMessage.error(t("message.loadDataError"));
   } finally {
@@ -399,7 +402,7 @@ const handleDelete = async (row) => {
   ElMessage.success(
     status === 1 ? t("form.putaway_success") : t("form.takeaway_success")
   );
-  loadData()
+  loadData();
 };
 // 重置搜索表单
 const handleReset = () => {
@@ -426,7 +429,21 @@ const showAddDialog = () => {
     supportPay: [],
     saleStartDate: null,
     saleEndDate: null,
+    dateList: [],
   };
+  // addForm.value = {
+  //   buyMax: "3",
+  //   buyMin: "3",
+  //   coin: "USDT",
+  //   desc: "3",
+  //   legalCurrency: "CNY",
+  //   mark: "3",
+  //   saleEndDate: "2024-09-23",
+  //   saleStartDate: "2024-08-22",
+  //   supportPay: [2],
+  //   total: "33",
+  // };
+
   isAddDialogVisible.value = true;
 };
 
@@ -441,8 +458,7 @@ onMounted(() => {
 .header {
   padding: 10px;
   background-color: #f0f2f5;
-  display: flex;
-  align-items: center;
+  min-height: 120px;
 }
 
 .demo-form-inline .el-form-item {
@@ -459,5 +475,10 @@ onMounted(() => {
 .el-main {
   padding: 20px;
   background-color: #fff;
+}
+.rigth {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 20px;
 }
 </style>
