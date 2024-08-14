@@ -45,7 +45,6 @@ instance.interceptors.request.use(
   (config) => {
     const role = store.getRole();
     config.headers["type"] = roleMap[role];
-    console.log(config.data, "config.data");
     let env = process.env.NODE_ENV;
     if (env === "development") {
       //开发环境添加api 开启跨域代理
@@ -81,7 +80,9 @@ instance.interceptors.response.use(
   (res) => {
     if (res.data.code === "0") {
       return res.data;
-    } else if (res.data.code.includes[("70001", "70002", "70003")]) {
+    } else if (["70001", "70002", "70003"].includes(res.data.code)) {
+      console.log(res.data, "999");
+
       if (res.data.msg) {
         ElMessage.error(res.data.msg);
       }

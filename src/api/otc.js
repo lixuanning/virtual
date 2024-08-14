@@ -40,3 +40,9 @@ export const queryInOrderList = (params) => {
     ...params,
   });
 };
+// OTC 入金修改状态
+export const updateInOrderStatus = (params) => {
+  return http.post(`/updateInOrderStatus`, {
+    ...params,
+  });
+};
