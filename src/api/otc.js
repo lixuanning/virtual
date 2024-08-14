@@ -34,6 +34,12 @@ export const queryOutOrderList = (params) => {
   });
 };
 
+// OTC 出金状态修改
+export const updateOutOrderStatus = (params) => {
+  return http.post(`/updateOutOrderStatus`, {
+    ...params,
+  });
+};
 // OTC 入金
 export const queryInOrderList = (params) => {
   return http.post(`/queryInOrderList`, {

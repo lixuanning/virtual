@@ -36,8 +36,11 @@
               v-model="searchForm.status"
               :placeholder="$t('form.select')"
             >
-              <el-option :label="$t('form.putaway')" :value="1"></el-option>
-              <el-option :label="$t('form.takeaway')" :value="2"></el-option>
+              <el-option :label="$t('form.newBuilt')" :value="1"></el-option>
+              <el-option
+                :label="$t('form.confirmTheOkBtn')"
+                :value="2"
+              ></el-option>
             </el-select>
           </el-form-item>
           <el-form-item>
@@ -49,89 +52,93 @@
         </el-form>
       </div>
 
-      <div class="rigth">
+      <!-- <div class="rigth">
         <el-button type="primary" @click="showAddDialog">
           {{ $t("form.add") }}
         </el-button>
-      </div>
+      </div> -->
     </el-header>
 
     <!-- 表格和分页 -->
     <el-main>
-      <el-table :data="tableData" style="width: 100%" v-loading="tableLoading">
+      <el-table
+        :data="tableData"
+        max-height="520"
+        style="width: 100%"
+        v-loading="tableLoading"
+      >
         <el-table-column
-          prop="coin"
-          :label="$t('form.coin')"
+          prop="outOrderId"
+          :label="$t('form.outOrderId')"
+          width="200"
+        ></el-table-column>
+        <el-table-column prop="status" :label="$t('form.status')" width="100">
+          <template #default="scope">
+            <el-tag :type="getStatus(scope.row.status).type">
+              {{ getStatus(scope.row.status).name }}</el-tag
+            >
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="unitPrice"
+          :label="$t('form.unitPrice')"
+          width="70"
+        ></el-table-column>
+        <el-table-column
+          prop="quantity"
+          :label="$t('form.quantity')"
           width="100"
         ></el-table-column>
         <el-table-column
-          prop="total"
-          :label="$t('form.total')"
+          prop="totalPrice"
+          :label="$t('form.totalPrice')"
+          width="100"
         ></el-table-column>
+
+        <el-table-column
+          prop="coin"
+          :label="$t('form.coin')"
+          width="70"
+        ></el-table-column>
+
         <el-table-column
           prop="legalCurrency"
           :label="$t('form.legalCurrency')"
         ></el-table-column>
+
         <el-table-column
-          prop="buyMin"
-          :label="$t('form.buyMin')"
-        ></el-table-column>
-        <el-table-column
-          prop="buyMax"
-          :label="$t('form.buyMax')"
-          width="150"
-        ></el-table-column>
-        <el-table-column
-          prop="saleStartDate"
-          :label="$t('form.tabSaleStartDate')"
-          width="200"
-        >
-          <template #default="scope">
-            {{ moment(scope.row.saleStartDate).format("YYYY-MM-DD") }}
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="saleEndDate"
-          :label="$t('form.tabSaleEndDate')"
-          width="200"
-        >
-          <template #default="scope">
-            {{ moment(scope.row.saleEndDate).format("YYYY-MM-DD") }}
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="residue"
-          :label="$t('form.residue')"
+          prop="transferName"
+          :label="$t('form.transferName')"
           width="100"
         ></el-table-column>
-        <el-table-column :label="$t('form.actions')" width="150" fixed="right">
+        <el-table-column prop="payType" :label="$t('form.payType')" width="100">
           <template #default="scope">
-            <!-- <el-button type="text" @click="showViewDialog(scope.row)">
-               {{ $t("form.view") }}
-             </el-button>
-             <el-button type="text" @click="showEditDialog(scope.row)">
-               {{ $t("form.edit") }}
-             </el-button> -->
+            {{ getPlay(scope.row.payType).name }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="createDate"
+          :label="$t('form.createDate')"
+          width="120"
+        >
+          <template #default="scope">
+            {{ moment(scope.row.createDate).format("YYYY-MM-DD") }}
+          </template>
+        </el-table-column>
+
+        <el-table-column :label="$t('form.actions')" width="100" fixed="right">
+          <template #default="scope">
             <el-popconfirm
-              :title="$t('form.isPutaway')"
+              :title="$t('form.confirmTheOk')"
               confirm-button-text="是"
               cancel-button-text="否"
               @confirm="() => handleDelete(scope.row)"
-              v-if="scope.row.status === 2"
+              v-if="scope.row.status === 1"
             >
               <template #reference>
-                <el-button type="text">{{ $t("form.putaway") }}</el-button>
-              </template>
-            </el-popconfirm>
-            <el-popconfirm
-              :title="$t('form.isTakeaway')"
-              confirm-button-text="是"
-              cancel-button-text="否"
-              @confirm="() => handleDelete(scope.row)"
-              v-else
-            >
-              <template #reference>
-                <el-button type="text">{{ $t("form.takeaway") }}</el-button>
+                <el-button type="text">{{
+                  $t("form.confirmTheOkBtn")
+                }}</el-button>
               </template>
             </el-popconfirm>
           </template>
@@ -238,10 +245,12 @@ import { useI18n } from "vue-i18n";
 import {
   addProduct,
   queryOutOrderList,
-  updateProductStatus,
+  updateOutOrderStatus,
 } from "@/api/otc.js";
 import { ElMessage } from "element-plus";
 import moment from "moment";
+import { getPlay, getStatus } from "@/utils/enumerate.js";
+
 const { t } = useI18n();
 
 // 初始化数据
@@ -300,21 +309,6 @@ const tableLoading = ref(false);
 const dialogLoading = ref(false);
 const isAddDialogVisible = ref(false);
 const addFormRef = ref(null);
-// 1:银行卡 2:微信 3:支付宝
-const playList = ref([
-  {
-    key: 2,
-    name: "银行卡",
-  },
-  {
-    key: 1,
-    name: "微信",
-  },
-  {
-    key: 1,
-    name: "支付宝",
-  },
-]);
 
 // 模拟获取 coin 和 legalCurrency 列表
 const fetchOptions = () => {
@@ -394,14 +388,12 @@ const handleSearch = () => {
 };
 //上架和下载
 const handleDelete = async (row) => {
-  const status = row.status === 1 ? 2 : 1;
-  const res = await updateProductStatus({
-    productId: row.productId,
-    status: status,
+  const res = await updateOutOrderStatus({
+    outOrderId: row.outOrderId,
+    status: 2,
   });
-  ElMessage.success(
-    status === 1 ? t("form.putaway_success") : t("form.takeaway_success")
-  );
+  console.log(res);
+  ElMessage.success(t("form.success"));
   loadData();
 };
 // 重置搜索表单

@@ -36,8 +36,12 @@
               v-model="searchForm.status"
               :placeholder="$t('form.select')"
             >
-              <el-option :label="$t('form.putaway')" :value="1"></el-option>
-              <el-option :label="$t('form.takeaway')" :value="2"></el-option>
+              <el-option
+                v-for="item in getStatus()"
+                :key="item.key"
+                :value="item.key"
+                :label="item.name"
+              ></el-option>
             </el-select>
           </el-form-item>
           <el-form-item>
