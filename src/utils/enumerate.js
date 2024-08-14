@@ -1,16 +1,19 @@
 export const getPlay = (key) => {
   const list = [
     {
-      key: 2,
+      key: 1,
       name: "银行卡",
+      type: "warning",
     },
     {
-      key: 1,
+      key: 2,
       name: "微信",
+      type: "success",
     },
     {
-      key: 1,
+      key: 3,
       name: "支付宝",
+      type: "primary",
     },
   ];
   if (key) {

@@ -113,7 +113,35 @@
         ></el-table-column>
         <el-table-column prop="payType" :label="$t('form.payType')" width="100">
           <template #default="scope">
-            {{ getPlay(scope.row.payType).name }}
+            <el-tag :type="getPlay(scope.row.payType).type">
+              {{ getPlay(scope.row.payType).name }}</el-tag
+            >
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="cardId"
+          :label="$t('form.payAccount')"
+          width="150"
+        >
+          <template #default="scope">
+            <span v-if="scope.row.payType === 1">
+              {{ scope.row.cardId }}
+            </span>
+            <span v-else>
+              <el-image
+                style="width: 100px; height: 100px"
+                :src="`data:image/jpeg;base64,${scope.row.qrCodePicture}`"
+                :zoom-rate="1.2"
+                :max-scale="7"
+                :min-scale="0.2"
+                :preview-src-list="[
+                  `data:image/jpeg;base64,${scope.row.qrCodePicture}`,
+                ]"
+                :initial-index="1"
+                fit="cover"
+                :preview-teleported="true"
+              />
+            </span>
           </template>
         </el-table-column>
         <el-table-column
@@ -212,6 +240,7 @@
             >
           </el-checkbox-group>
         </el-form-item>
+
         <el-form-item :label="$t('form.saleStartDate')" prop="dateList">
           <el-date-picker
             v-model="addForm.dateList"

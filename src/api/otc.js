@@ -52,3 +52,8 @@ export const updateInOrderStatus = (params) => {
     ...params,
   });
 };
+
+// OTC 配置列表
+export const getPaymentConfigForOtc = () => {
+  return http.post(`/getPaymentConfigForOtc`);
+};
