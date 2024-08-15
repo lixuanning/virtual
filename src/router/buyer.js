@@ -12,6 +12,47 @@ const routes = [
       },
     ],
   },
+  {
+    path: "/buyer/transactionManagement",
+    name: "buyerTransactionManagement",
+    meta: {
+      pathName: "routerName.transactionManagement",
+      icon: "Management",
+    },
+    children: [
+      {
+        path: "/buyer/transactionManagement/withdraw",
+        name: "buyerWithdraw",
+        component: () => import("@/views/buyer/withdraw/index.vue"),
+        meta: { pathName: "routerName.withdraw" },
+      },
+      {
+        path: "/buyer/rectransactionManagementharge/recharge",
+        name: "rbuyerRcharge",
+        component: () => import("@/views/buyer/recharge/index.vue"),
+        meta: { pathName: "routerName.recharge" },
+      },
+      {
+        path: "/buyer/rectransactionManagementharge/withdrawalManagement",
+        name: "buyerWithdrawalManagement",
+        component: () => import("@/views/buyer/withdrawalManagement/index.vue"),
+        meta: { pathName: "routerName.withdrawalManagement" },
+      },
+    ],
+  },
+  // {
+  //   path: "/buyer/setting",
+  //   name: "buyerSetting",
+  //   meta: { pathName: "routerName.setting", icon: "CreditCard" },
+  //   children: [
+  //     {
+  //       path: "/buyer/setting/withdrawalManagement",
+  //       name: "buyerWithdrawalManagement",
+  //       component: () => import("@/views/buyer/withdrawalManagement/index.vue"),
+  //       meta: { pathName: "routerName.withdrawalManagement" },
+  //     },
+  //   ],
+  // },
 ];
 
 export default routes;

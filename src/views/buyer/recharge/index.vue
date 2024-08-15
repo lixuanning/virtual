@@ -257,8 +257,8 @@ import {
   addProduct,
   queryInOrderList,
   updateInOrderStatus,
-  getLegalCurrencyDict,
   getCoinDict,
+  getLegalCurrencyDict,
 } from "@/api/otc.js";
 import { ElMessage } from "element-plus";
 import moment from "moment";

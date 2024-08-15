@@ -67,3 +67,12 @@ export const addPaymentConfig = (params) => {
 export const delPaymentConfig = (params) => {
   return http.post(`/delPaymentConfig`, { ...params });
 };
+
+// 法币
+export const getLegalCurrencyDict = () => {
+  return http.post(`/getLegalCurrencyDict`);
+};
+// 币种
+export const getCoinDict = () => {
+  return http.post(`/getCoinDict`);
+};

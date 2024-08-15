@@ -47,6 +47,7 @@ export default {
     collectionSetup: "收款设置",
     personalSetting: "个人设置",
     setting: "设置",
+    withdrawalManagement: "提币管理",
   },
   router: {
     userList: "用户列表",

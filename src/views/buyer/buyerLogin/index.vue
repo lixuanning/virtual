@@ -194,8 +194,14 @@ const loginSubmitForm = async () => {
       const res = await login({
         ...loginForm.value,
       });
-      store.setUserinfo({ role: "buyer", token: res.token });
-      router.push("/buyer/home/dashboard");
+      if (res.data.type === 3) {
+        if (res.data.token) {
+          store.setUserinfo({ role: "buyer", token: res.data.token });
+          router.push("/buyer/home/dashboard");
+        }
+      } else {
+        ElMessage.error("用户名或密码错误");
+      }
     }
   });
 };

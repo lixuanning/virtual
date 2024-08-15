@@ -2,7 +2,7 @@
   <el-container>
     <!-- 筛选表单 -->
     <el-header class="header">
-      <div>
+      <!-- <div>
         <el-form :inline="true" :model="searchForm" class="demo-form-inline">
           <el-form-item :label="$t('form.coin')">
             <el-select
@@ -12,7 +12,7 @@
             >
               <el-option
                 v-for="item in coinOptions"
-                :key="item.id"
+                 :key="item.id"
                 :label="item.value"
                 :value="item.id"
               ></el-option>
@@ -36,10 +36,11 @@
               v-model="searchForm.status"
               :placeholder="$t('form.select')"
             >
-              <el-option :label="$t('form.newBuilt')" :value="1"></el-option>
               <el-option
-                :label="$t('form.confirmTheOkBtn')"
-                :value="2"
+                v-for="item in getStatus()"
+                :key="item.key"
+                :value="item.key"
+                :label="item.name"
               ></el-option>
             </el-select>
           </el-form-item>
@@ -50,13 +51,13 @@
             <el-button @click="handleReset">{{ $t("form.reset") }}</el-button>
           </el-form-item>
         </el-form>
-      </div>
+      </div> -->
 
-      <!-- <div class="rigth">
+      <div class="rigth">
         <el-button type="primary" @click="showAddDialog">
           {{ $t("form.add") }}
         </el-button>
-      </div> -->
+      </div>
     </el-header>
 
     <!-- 表格和分页 -->
@@ -67,65 +68,23 @@
         style="width: 100%"
         v-loading="tableLoading"
       >
-        <el-table-column
-          prop="outOrderId"
-          :label="$t('form.outOrderId')"
-          width="200"
-        ></el-table-column>
-        <el-table-column prop="status" :label="$t('form.status')" width="100">
+        <el-table-column prop="payee" :label="$t('form.payee')">
           <template #default="scope">
-            <el-tag :type="getStatus(scope.row.status).type">
-              {{ getStatus(scope.row.status).name }}</el-tag
+            {{ scope.row.payee }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="type" :label="$t('form.payType')">
+          <template #default="scope">
+            <el-tag :type="getPlay(scope.row.type).type">
+              {{ getPlay(scope.row.type).name }}</el-tag
             >
           </template>
         </el-table-column>
-        <el-table-column
-          prop="unitPrice"
-          :label="$t('form.unitPrice')"
-          width="70"
-        ></el-table-column>
-        <el-table-column
-          prop="quantity"
-          :label="$t('form.quantity')"
-          width="100"
-        ></el-table-column>
-        <el-table-column
-          prop="totalPrice"
-          :label="$t('form.totalPrice')"
-          width="100"
-        ></el-table-column>
 
-        <el-table-column
-          prop="coin"
-          :label="$t('form.coin')"
-          width="70"
-        ></el-table-column>
-
-        <el-table-column
-          prop="legalCurrency"
-          :label="$t('form.legalCurrency')"
-        ></el-table-column>
-
-        <el-table-column
-          prop="transferName"
-          :label="$t('form.transferName')"
-          width="100"
-        ></el-table-column>
-        <el-table-column prop="payType" :label="$t('form.payType')" width="100">
+        <el-table-column prop="cardId" :label="$t('form.payAccount')">
           <template #default="scope">
-            <el-tag :type="getPlay(scope.row.payType).type">
-              {{ getPlay(scope.row.payType).name }}</el-tag
-            >
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="cardId"
-          :label="$t('form.payAccount')"
-          width="150"
-        >
-          <template #default="scope">
-            <span v-if="scope.row.payType === 1">
-              {{ scope.row.cardId }}
+            <span v-if="scope.row.type === 1">
+              {{ scope.row.openingBank }} / {{ scope.row.cardId }}
             </span>
             <span v-else>
               <el-image
@@ -144,11 +103,13 @@
             </span>
           </template>
         </el-table-column>
-        <el-table-column
-          prop="createDate"
-          :label="$t('form.createDate')"
-          width="120"
-        >
+
+        <el-table-column prop="status" :label="$t('form.status')" width="100">
+          <template #default="scope">
+            {{ scope.row.status === 1 ? "启用" : "停用" }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="createDate" :label="$t('form.created')">
           <template #default="scope">
             {{ moment(scope.row.createDate).format("YYYY-MM-DD") }}
           </template>
@@ -157,16 +118,13 @@
         <el-table-column :label="$t('form.actions')" width="100" fixed="right">
           <template #default="scope">
             <el-popconfirm
-              :title="$t('form.confirmTheOk')"
+              :title="$t('form.confirmDelete')"
               confirm-button-text="是"
               cancel-button-text="否"
               @confirm="() => handleDelete(scope.row)"
-              v-if="scope.row.status === 1"
             >
               <template #reference>
-                <el-button type="text">{{
-                  $t("form.confirmTheOkBtn")
-                }}</el-button>
+                <el-button type="text">{{ $t("form.delete") }}</el-button>
               </template>
             </el-popconfirm>
           </template>
@@ -192,52 +150,85 @@
         ref="addFormRef"
         label-width="100px"
       >
-        <el-form-item :label="$t('form.legalCurrency')" prop="legalCurrency">
-          <el-select
-            v-model="addForm.legalCurrency"
-            placeholder="Select Currency"
-          >
+        <el-form-item :label="$t('form.supportPay')" prop="supportPay">
+          <el-select v-model="addForm.supportPay" @change="changeSupportPay">
             <el-option
-              v-for="item in legalCurrencyOptions"
-              :key="item"
-              :label="item"
-              :value="item"
+              v-for="item in paymentOptions"
+              :key="item.key"
+              :label="item.name"
+              :value="item.key"
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item :label="$t('form.buyMin')" prop="buyMin">
-          <el-input type="number" v-model="addForm.buyMin"></el-input>
+        <el-form-item :label="$t('form.payee')" prop="payee">
+          <el-input v-model="addForm.payee"></el-input>
         </el-form-item>
-        <el-form-item :label="$t('form.buyMax')" prop="buyMax">
-          <el-input type="number" v-model="addForm.buyMax"></el-input>
-        </el-form-item>
-        <el-form-item :label="$t('form.desc')" prop="desc">
-          <el-input type="textarea" v-model="addForm.desc"></el-input>
-        </el-form-item>
-        <el-form-item :label="$t('form.mark')" prop="mark">
-          <el-input type="textarea" v-model="addForm.mark"></el-input>
-        </el-form-item>
-        <el-form-item :label="$t('form.supportPay')" prop="supportPay">
-          <el-checkbox-group v-model="addForm.supportPay">
-            <el-checkbox
-              v-for="item in getPlay"
-              :key="item.key"
-              :label="item.key"
-              >{{ item.name }}</el-checkbox
+        <template v-if="addForm.supportPay === 1">
+          <el-form-item :label="$t('form.openingBank')" prop="openingBank">
+            <el-input v-model="addForm.openingBank"></el-input>
+          </el-form-item>
+          <el-form-item :label="$t('form.bank')" prop="bank">
+            <el-input v-model="addForm.bank"></el-input>
+          </el-form-item>
+        </template>
+        <template v-if="addForm.supportPay === 2">
+          <el-form-item
+            :label="$t('form.uploadWechatQRcode')"
+            prop="wechatQRcode"
+          >
+            <el-upload
+              class="upload-demo"
+              :before-upload="beforeUpload"
+              :show-file-list="false"
+              :http-request="(file) => customUpload(file, 'wechatQRcode')"
+              :limit="2"
             >
-          </el-checkbox-group>
-        </el-form-item>
-
-        <el-form-item :label="$t('form.saleStartDate')" prop="dateList">
-          <el-date-picker
-            v-model="addForm.dateList"
-            type="daterange"
-            start-placeholder="Start Date"
-            end-placeholder="End Date"
-            align="right"
-            format="YYYY/MM/DD"
-          ></el-date-picker>
-        </el-form-item>
+              <el-button type="text">{{
+                $t("register.uploadInHand")
+              }}</el-button>
+            </el-upload>
+            <span v-if="addForm.wechatQRcode">
+              <el-image
+                style="width: 100px; height: 100px"
+                :src="imgUrl.wechatQRcode"
+                :zoom-rate="1.2"
+                :max-scale="7"
+                :min-scale="0.2"
+                :preview-src-list="[imgUrl.wechatQRcode]"
+                :initial-index="1"
+                fit="cover"
+            /></span>
+          </el-form-item>
+        </template>
+        <template v-if="addForm.supportPay === 3">
+          <el-form-item
+            :label="$t('form.uploadAlipayQRcode')"
+            prop="alipayQRcode"
+          >
+            <el-upload
+              class="upload-demo"
+              :before-upload="beforeUpload"
+              :show-file-list="false"
+              :http-request="(file) => customUpload(file, 'alipayQRcode')"
+              :limit="2"
+            >
+              <el-button type="text">{{
+                $t("register.uploadInHand")
+              }}</el-button>
+            </el-upload>
+            <span v-if="addForm.alipayQRcode">
+              <el-image
+                style="width: 100px; height: 100px"
+                :src="imgUrl.alipayQRcode"
+                :zoom-rate="1.2"
+                :max-scale="7"
+                :min-scale="0.2"
+                :preview-src-list="[imgUrl.alipayQRcode]"
+                :initial-index="1"
+                fit="cover"
+            /></span>
+          </el-form-item>
+        </template>
       </el-form>
       <template #footer>
         <el-button @click="isAddDialogVisible = false">
@@ -256,19 +247,21 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useI18n } from "vue-i18n";
 import {
-  addProduct,
-  queryOutOrderList,
-  updateOutOrderStatus,
-  getCoinDict,
-  getLegalCurrencyDict,
+  addPaymentConfig,
+  getPaymentConfigForOtc,
+  delPaymentConfig,
 } from "@/api/otc.js";
 import { ElMessage } from "element-plus";
 import moment from "moment";
 import { getPlay, getStatus } from "@/utils/enumerate.js";
+import { uploadPicture, previewPicture } from "@/api/file";
 
+const paymentOptions = computed(() => getPlay());
+console.log(paymentOptions.value, "paymentOptionspaymentOptions");
+console.log(getPlay(), "getPlay");
 const { t } = useI18n();
 
 // 初始化数据
@@ -278,44 +271,58 @@ const legalCurrencyOptions = ref([]);
 // 表单相关状态
 const searchForm = ref({ coin: "", legalCurrency: "", status: "" });
 const addForm = ref({
-  coin: "",
-  total: "",
-  legalCurrency: "",
-  buyMin: "",
-  buyMax: "",
-  desc: "",
-  mark: "",
-  supportPay: [],
-  saleStartDate: null,
-  saleEndDate: null,
-  dateList: [],
+  supportPay: "",
+  wechatQRcode: "",
+  alipayQRcode: "",
+  bank: "",
+  payee: "",
+  openingBank: "",
 });
+const imgUrl = ref({
+  alipayQRcode: "",
+  wechatQRcode: "",
+});
+// 自定义上传配置
+const beforeUpload = (file) => {
+  const isJPG = file.type === "image/jpeg" || file.type === "image/png";
+  const isLt2M = file.size / 1024 / 1024 < 2;
+
+  if (!isJPG) {
+    ElMessage.error("上传图片只能是 JPG/PNG 格式!");
+  }
+  if (!isLt2M) {
+    ElMessage.error("上传图片大小不能超过 2MB!");
+  }
+  return isJPG && isLt2M;
+};
+const customUpload = async ({ file, onSuccess, onError }, field) => {
+  try {
+    const response = await uploadPicture({ file: file });
+    addForm.value[field] = response.data.pictureId;
+    const url = await previewPicture({ pictureId: response.data.pictureId });
+    const base64Url = `data:image/jpeg;base64,${url.data.picture}`;
+    imgUrl.value[field] = base64Url;
+    ElMessage.success("图片上传成功");
+  } catch (error) {
+    onError(error);
+  }
+};
 
 const rules = ref({
-  coin: [{ required: true, message: t("form.requiredText"), trigger: "blur" }],
   supportPay: [
     { required: true, message: t("form.requiredText"), trigger: "blur" },
   ],
-  total: [{ required: true, message: t("form.requiredText"), trigger: "blur" }],
-  legalCurrency: [
-    {
-      required: true,
-      message: t("form.requiredText"),
-      trigger: "blur",
-    },
-  ],
-  buyMin: [
+  wechatQRcode: [
     { required: true, message: t("form.requiredText"), trigger: "blur" },
   ],
-  buyMax: [
+  alipayQRcode: [
     { required: true, message: t("form.requiredText"), trigger: "blur" },
   ],
-  dateList: [
-    {
-      required: true,
-      message: t("form.requiredText"),
-      trigger: "blur",
-    },
+  bank: [{ required: true, message: t("form.requiredText"), trigger: "blur" }],
+
+  payee: [{ required: true, message: t("form.requiredText"), trigger: "blur" }],
+  openingBank: [
+    { required: true, message: t("form.requiredText"), trigger: "blur" },
   ],
 });
 
@@ -329,69 +336,69 @@ const isAddDialogVisible = ref(false);
 const addFormRef = ref(null);
 
 // 模拟获取 coin 和 legalCurrency 列表
-const fetchOptions = async () => {
-  const res = await getCoinDict();
-  const res2 = await getLegalCurrencyDict();
-  coinOptions.value = res.data;
-  legalCurrencyOptions.value = res2.data;
+const fetchOptions = () => {
+  coinOptions.value = ["USDT"];
+  legalCurrencyOptions.value = ["CNY"];
 };
 
 // 查询列表数据
 const loadData = async () => {
   tableLoading.value = true;
   try {
-    const { data } = await queryOutOrderList({
-      pageNum: currentPage.value,
-      pageSize: pageSize.value,
-      status: searchForm.value.status,
-      coin: searchForm.value.coin,
-      legalCurrency: searchForm.value.legalCurrency,
-    });
-    tableData.value = data.records;
-    totalItems.value = data.totalNum;
+    const { data } = await getPaymentConfigForOtc();
+    console.log(data, "datadata");
+    tableData.value = data;
   } catch (error) {
     ElMessage.error(t("message.loadDataError"));
   } finally {
     tableLoading.value = false;
   }
 };
+// 根据类型设置入参
+const setData = (value) => {
+  const mapping = {
+    1: {
+      key: "bank",
+      data: {
+        collection: value.bank,
+        payee: value.payee,
+        openingBank: value.openingBank,
+      },
+    },
+    2: {
+      key: "wechat",
+      data: {
+        collection: value.wechatQRcode,
+        payee: value.payee,
+      },
+    },
+    3: {
+      key: "alipay",
+      data: {
+        collection: value.alipayQRcode,
+        payee: value.payee,
+      },
+    },
+  };
+
+  const result = mapping[value.supportPay];
+  return result ? { [result.key]: [result.data] } : null;
+};
 
 // 新增产品
 const handleAddSubmit = () => {
   dialogLoading.value = true;
   addFormRef.value.validate(async (valid) => {
-    const {
-      coin,
-      total,
-      legalCurrency,
-      buyMin,
-      buyMax,
-      desc,
-      mark,
-      supportPay,
-      dateList,
-    } = addForm.value;
     if (valid) {
+      let newData = setData({ ...addForm.value });
+      console.log(newData, "newData", addForm.value);
       try {
-        await addProduct({
-          coin,
-          total,
-          legalCurrency,
-          buyMin,
-          buyMax,
-          desc,
-          mark,
-          supportPay,
-          saleStartDate: moment(dateList[0]).format("YYYY-MM-DD"),
-          saleEndDate: moment(dateList[1]).format("YYYY-MM-DD"),
-        });
+        await addPaymentConfig({ ...newData });
         ElMessage.success(t("form.addSuccess"));
         isAddDialogVisible.value = false;
         loadData(); // 重新加载数据
       } catch (error) {
         dialogLoading.value = false;
-        // console.log(error,'error');
-        // ElMessage.error(error.data.msg || 'errpr');
       } finally {
         dialogLoading.value = false;
       }
@@ -406,11 +413,10 @@ const handleSearch = () => {
   currentPage.value = 1;
   loadData();
 };
-//上架和下载
+//删除
 const handleDelete = async (row) => {
-  const res = await updateOutOrderStatus({
-    outOrderId: row.outOrderId,
-    status: 2,
+  const res = await delPaymentConfig({
+    id: row.id,
   });
   console.log(res);
   ElMessage.success(t("form.success"));
@@ -428,34 +434,25 @@ const handlePageChange = (page) => {
   loadData();
 };
 
+const changeSupportPay = () => {
+  addForm.value = {
+    ...addForm.value,
+    wechatQRcode: "",
+    alipayQRcode: "",
+    bank: "",
+    openingBank: "",
+  };
+};
 // 显示新增对话框
 const showAddDialog = () => {
   addForm.value = {
-    coin: "",
-    total: "",
-    legalCurrency: "",
-    buyMin: "",
-    buyMax: "",
-    desc: "",
-    mark: "",
-    supportPay: [],
-    saleStartDate: null,
-    saleEndDate: null,
-    dateList: [],
+    supportPay: "",
+    wechatQRcode: "",
+    alipayQRcode: "",
+    bank: "",
+    payee: "",
+    openingBank: "",
   };
-  // addForm.value = {
-  //   buyMax: "3",
-  //   buyMin: "3",
-  //   coin: "USDT",
-  //   desc: "3",
-  //   legalCurrency: "CNY",
-  //   mark: "3",
-  //   saleEndDate: "2024-09-23",
-  //   saleStartDate: "2024-08-22",
-  //   supportPay: [2],
-  //   total: "33",
-  // };
-
   isAddDialogVisible.value = true;
 };
 
@@ -470,7 +467,7 @@ onMounted(() => {
 .header {
   padding: 10px;
   background-color: #f0f2f5;
-  min-height: 120px;
+  min-height: 80px;
 }
 
 .demo-form-inline .el-form-item {
