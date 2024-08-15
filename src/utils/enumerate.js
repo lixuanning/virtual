@@ -18,10 +18,8 @@ export const getPlay = (key) => {
   ];
   if (key) {
     const item = list.find((item) => item.key === key);
-    console.log(item, "item");
     return item;
   } else {
-    console.log(list, "???");
     return list;
   }
 };

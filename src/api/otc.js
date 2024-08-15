@@ -57,3 +57,13 @@ export const updateInOrderStatus = (params) => {
 export const getPaymentConfigForOtc = () => {
   return http.post(`/getPaymentConfigForOtc`);
 };
+
+// OTC 配置新增
+export const addPaymentConfig = (params) => {
+  return http.post(`/addPaymentConfig`, { ...params });
+};
+
+// OTC 配置删除
+export const delPaymentConfig = (params) => {
+  return http.post(`/delPaymentConfig`, { ...params });
+};

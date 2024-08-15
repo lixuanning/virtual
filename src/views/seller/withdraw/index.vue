@@ -129,7 +129,7 @@
             </span>
             <span v-else>
               <el-image
-                style="width: 100px; height: 100px"
+                style="width: 60px; height: 60px"
                 :src="`data:image/jpeg;base64,${scope.row.qrCodePicture}`"
                 :zoom-rate="1.2"
                 :max-scale="7"
@@ -192,19 +192,6 @@
         ref="addFormRef"
         label-width="100px"
       >
-        <el-form-item :label="$t('form.coin')" prop="coin">
-          <el-select v-model="addForm.coin" placeholder="Select Coin">
-            <el-option
-              v-for="item in coinOptions"
-              :key="item"
-              :label="item"
-              :value="item"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="$t('form.total')" prop="total">
-          <el-input type="number" v-model="addForm.total"></el-input>
-        </el-form-item>
         <el-form-item :label="$t('form.legalCurrency')" prop="legalCurrency">
           <el-select
             v-model="addForm.legalCurrency"
@@ -233,7 +220,7 @@
         <el-form-item :label="$t('form.supportPay')" prop="supportPay">
           <el-checkbox-group v-model="addForm.supportPay">
             <el-checkbox
-              v-for="item in playList"
+              v-for="item in getPlay"
               :key="item.key"
               :label="item.key"
               >{{ item.name }}</el-checkbox
