@@ -137,7 +137,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column :label="$t('form.actions')" width="100" fixed="right">
+        <!-- <el-table-column :label="$t('form.actions')" width="100" fixed="right">
           <template #default="scope">
             <el-popconfirm
               :title="$t('form.confirmTheAccoun')"
@@ -153,7 +153,7 @@
               </template>
             </el-popconfirm>
           </template>
-        </el-table-column>
+        </el-table-column> -->
       </el-table>
       <div class="rigth">
         <el-pagination

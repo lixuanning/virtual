@@ -107,7 +107,7 @@
         ></el-table-column>
 
         <el-table-column
-          prop="transferName"
+          prop="payee"
           :label="$t('form.transferName')"
           width="100"
         ></el-table-column>
@@ -154,7 +154,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column :label="$t('form.actions')" width="100" fixed="right">
+        <!-- <el-table-column :label="$t('form.actions')" width="100" fixed="right">
           <template #default="scope">
             <el-popconfirm
               :title="$t('form.confirmTheOk')"
@@ -170,7 +170,7 @@
               </template>
             </el-popconfirm>
           </template>
-        </el-table-column>
+        </el-table-column> -->
       </el-table>
       <div class="rigth">
         <el-pagination

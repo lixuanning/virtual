@@ -44,6 +44,17 @@ const routes = [
     meta: { role: "seller" },
     children: [...seller],
   },
+  {
+    path: "/buyer/rectransactionManagementharge/transfers",
+    name: "buyerTransfers",
+    component: () => import("@/views/buyer/transfers/index.vue"),
+    meta: {
+      pathName: "routerName.transfers",
+      noMenu: true,
+      whiteList: true,
+      role: "buyer",
+    },
+  },
 ];
 
 const router = createRouter({
@@ -55,6 +66,7 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const role = store.getRole();
   if (to.meta.whiteList) {
+    console.log("白名单");
     // 如果页面不需要身份验证，直接放行
     next();
   } else if (!role) {

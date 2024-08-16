@@ -47,7 +47,9 @@
               :key="item.path"
               :index="item.path"
             >
-              {{ $t(item.meta.pathName) }}
+              <span v-if="!item.meta.noMenu">
+                {{ $t(item.meta.pathName) }}
+              </span>
             </el-menu-item>
           </el-sub-menu>
         </el-menu>

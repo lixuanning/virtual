@@ -48,6 +48,7 @@ export default {
     personalSetting: "个人设置",
     setting: "设置",
     withdrawalManagement: "提币管理",
+    transfers: "转账",
   },
   router: {
     userList: "用户列表",
@@ -58,7 +59,11 @@ export default {
     coin: "币类型",
     total: "总量",
     select: "请选择",
+    selectType: "请选择支付方式",
     quantity: "购买数量",
+    quantity2: "提币数量",
+    walletUrl: "钱包地址",
+    withdrawalServiceChargePrice: "手续费",
     unitPrice: "单价",
     legalCurrency: "法币",
     transferName: "转账人",
@@ -117,9 +122,36 @@ export default {
     payee: "收款人",
     openingBank: "开户行",
     bank: "卡号",
+    instructions: "交易说明：请认真阅读以下文字",
+    realTransferPrice: "应付金额",
+    realName: "收款人姓名",
+    realPayee: "实际转账人姓名",
+    instructionsText:
+      "禁止将非法资金用于交易，一经发现将永久禁封账户，上报平台从重处理！",
+    instructionsText2:
+      "转账后请点击“确认已转账”按钮，否则会影响放币进度；若您未进行转账请不要点击该按钮，否则可能影响您平台的部分功能。",
     validation: {
       required: "此项为必填项",
       dateRange: "请选择有效的时间范围",
     },
+  },
+  steps: {
+    transfer: "转账",
+    waitForConfirmation: "等待广告发布者确认",
+    confirmed: "交易已确认",
+  },
+  warning: {
+    title: "⚠️ 交易须知与风险提醒",
+    text1:
+      "转账完成后请务必点击“确认已转账”，否则会影响放币进度；若您未完成转账，请不要点击此按钮，否则可能会影响您账户的部分功能。",
+    text2:
+      "订单创建成功后，您需根据卖家支持的付款方式，按订单页面的金额在规定的时间内完成付款。",
+    text3: "大额转账（≥50000 CNY）请分批支付，以确保到账的及时性。",
+    text4:
+      "禁止将任何非法资金（如赌博、跑分、资金盘、诈骗等）用于交易的流程，一经发现将永久冻结账户，并配合司法机关关进行调查。",
+    text5:
+      "付款后务必点击“确认已转账”。未付款前请不要点击“确认已转账”，该行为属于恶意卡单，出现此类情况有可能会造成您的账户部分功能被限制。",
+    text6:
+      "付款时，请用与实际付款人姓名相同的银行卡进行转账，且不得备注 BTC、数字货币、买币等敏感字眼，否则钱款可能无法追回。",
   },
 };
