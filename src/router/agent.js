@@ -1,36 +1,66 @@
 const routes = [
   {
     path: "/agent/user",
-    name: "UserManagement",
+    name: "agentManagement",
     redirect: "/agent/user/userList",
     meta: { pathName: "用户管理", icon: "User" },
     children: [
       {
         path: "/agent/user/userList",
-        name: "UserList",
-        meta: { pathName: "用户列表" },
+        name: "agentUserList",
+        meta: { pathName: "routerName.userManagement2" },
         component: () => import("@/views/agent/userList/index.vue"),
       },
       {
-        path: "/agent/user/transactionRecord",
-        name: "TransactionRecord",
-        meta: { pathName: "充币和扣币记录" },
-        component: () => import("@/views/agent/transactionRecord/index.vue"),
+        path: "/agent/user/otcUserList",
+        name: "agentOtcUserList",
+        meta: { pathName: "routerName.OTCManagement" },
+        component: () => import("@/views/agent/otcUserList/index.vue"),
+      },
+  
+    ],
+  },
+  {
+    path: "/agent/transactionManagement",
+    name: "agentTransactionManagement",
+    meta: {
+      pathName: "routerName.transactionManagement",
+      icon: "Management",
+    },
+    children: [
+
+      {
+        path: "/agent/transactionManagement/withdraw",
+        name: "agentWithdraw",
+        component: () => import("@/views/agent/withdraw/index.vue"),
+        meta: { pathName: "routerName.withdraw" },
+      },
+      {
+        path: "/agent/transactionManagement/recharge",
+        name: "agentRecharge",
+        component: () => import("@/views/agent/recharge/index.vue"),
+        meta: { pathName: "routerName.recharge" },
+      },
+      {
+        path: "/agent/rectransactionManagementharge/withdrawalManagement",
+        name: "agentWithdrawalManagement",
+        component: () => import("@/views/agent/withdrawalManagement/index.vue"),
+        meta: { pathName: "routerName.withdrawalManagement" },
       },
     ],
   },
   {
-    path: "/agent/order",
-    name: "UseOrder",
-    redirect: "/agent/order/orderList",
-    meta: { pathName: "订单",icon:'Memo' },
+    path: "/agent/setting",
+    name: "agentSetting",
+    meta: { pathName: "routerName.setting", icon: "CreditCard" },
     children: [
       {
-        path: "/agent/order/orderList",
-        name: "OrderList",
-        meta: { pathName: "买单" },
-        component: () => import("@/views/agent/orderList/index.vue"),
+        path: "/agent/setting/personalSetting",
+        name: "agentPersonalSetting",
+        component: () => import("@/views/agent/personalSetting/index.vue"),
+        meta: { pathName: "routerName.personalSetting" },
       },
+  
     ],
   },
 ];

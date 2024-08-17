@@ -1,64 +1,78 @@
 <template>
   <div class="login-container">
     <div class="form-container">
-      <el-button class="language" size="small" type="text" @click="switchLanguage">
-        <span v-if="language === 'en'">CN</span>
+      <!-- 切换语言按钮 -->
+      <el-button
+        class="language"
+        size="small"
+        type="text"
+        @click="switchLanguage"
+      >
+        <span v-if="locale === 'en'">CN</span>
         <span v-else>EN</span>
       </el-button>
 
-      <p class="title">{{ $t("login.title") }}</p>
+      <!-- 表单标题 -->
+      <p class="title">
+        {{ $t("login.title") }}
+      </p>
+
+      <!-- 登录表单 -->
       <el-form
-        :model="form"
-        :rules="rules"
-        ref="formRef"
-        @submit.prevent="submitForm"
-        label-width="80px"
+        :model="loginForm"
+        :rules="loginRules"
+        ref="loginFormRef"
+        @submit.prevent="loginSubmitForm"
+        label-width="100px"
       >
         <el-form-item :label="$t('login.email')" prop="email">
           <el-input
-            v-model="form.email"
+            v-model="loginForm.email"
             :placeholder="$t('login.email')"
           ></el-input>
         </el-form-item>
         <el-form-item :label="$t('login.password')" prop="password">
           <el-input
             type="password"
-            v-model="form.password"
+            v-model="loginForm.password"
             :placeholder="$t('login.password')"
           ></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="submitForm">{{
+          <el-button type="primary" @click="loginSubmitForm">{{
             $t("login.submit")
           }}</el-button>
-          <el-button type="text" @click="forgotPassword">{{
-            $t("login.forgot_password")
-          }}</el-button>
+ 
         </el-form-item>
       </el-form>
+
+ 
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref,onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 import { useI18n } from "vue-i18n";
-
-const { locale, t } = useI18n();
 import store from "@/store/index";
 
+import { login } from "@/api/auth";
+const { locale, t } = useI18n();
+const router = useRouter();
+const loginFormRef = ref(null);
 onMounted(() => {
   store.setUserinfo({});
 });
 
-const form = ref({
+const loginForm = ref({
   email: "",
   password: "",
 });
 
-const rules = ref({
+
+const loginRules = ref({
   email: [
     { required: true, message: t("login.email_placeholder"), trigger: "blur" },
     {
@@ -76,31 +90,33 @@ const rules = ref({
   ],
 });
 
-const formRef = ref(null);
-const router = useRouter();
-
-const language = ref("zh");
 
 const switchLanguage = () => {
-  language.value = language.value === "zh" ? "en" : "zh";
-  locale.value = language.value === "zh" ? "en" : "zh";
+  locale.value = locale.value === "zh" ? "en" : "zh";
 };
 
-const submitForm = () => {
-  formRef.value.validate((valid) => {
+
+const loginSubmitForm = async () => {
+  loginFormRef.value.validate(async (valid) => {
     if (valid) {
-      store.setUserinfo({ role: "agent" });
-      router.push("/agent");
-    } else {
-      ElMessage.error("表单验证失败");
+      const res = await login({
+        ...loginForm.value,
+      });
+      console.log(res, "res");
+      if (res.data.type === 1) {
+        if (res.data.token) {
+          store.setUserinfo({ role: "agent", token: res.data.token });
+          router.push("/agent/user/userList");
+        }
+      } else {
+        ElMessage.error("用户名或密码错误");
+      }
     }
   });
 };
 
-const forgotPassword = () => {
-  // 模拟发送邮件
-  ElMessage.success("重置密码邮件已发送，请检查您的邮箱");
-};
+
+
 </script>
 
 <style scoped>
@@ -150,9 +166,10 @@ const forgotPassword = () => {
   top: 10px;
   right: 10px;
 }
-.title{
-  text-align:center;
-  font-size:18px;
-  font-weight:500
+
+.title {
+  text-align: center;
+  font-size: 18px;
+  font-weight: 500;
 }
 </style>

@@ -27,13 +27,13 @@ const routes = [
         meta: { pathName: "routerName.withdraw" },
       },
       {
-        path: "/buyer/rectransactionManagementharge/recharge",
-        name: "rbuyerRcharge",
+        path: "/buyer/transactionManagement/recharge",
+        name: "buyerRecharge",
         component: () => import("@/views/buyer/recharge/index.vue"),
         meta: { pathName: "routerName.recharge" },
       },
       {
-        path: "/buyer/rectransactionManagementharge/withdrawalManagement",
+        path: "/buyer/transactionManagement/withdrawalManagement",
         name: "buyerWithdrawalManagement",
         component: () => import("@/views/buyer/withdrawalManagement/index.vue"),
         meta: { pathName: "routerName.withdrawalManagement" },

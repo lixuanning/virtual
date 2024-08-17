@@ -45,7 +45,7 @@ const routes = [
     children: [...seller],
   },
   {
-    path: "/buyer/rectransactionManagementharge/transfers",
+    path: "/buyer/transactionManagement/transfers",
     name: "buyerTransfers",
     component: () => import("@/views/buyer/transfers/index.vue"),
     meta: {

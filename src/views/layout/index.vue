@@ -47,9 +47,7 @@
               :key="item.path"
               :index="item.path"
             >
-              <span v-if="!item.meta.noMenu">
                 {{ $t(item.meta.pathName) }}
-              </span>
             </el-menu-item>
           </el-sub-menu>
         </el-menu>
@@ -86,12 +84,27 @@ const { t, locale } = useI18n();
 const router = useRouter();
 const route = useRoute();
 
-// 获取当前角色的菜单路由
 const menuRoutes = computed(() => {
   const role = store.getRole();
-  const roleRoutes = router.getRoutes().find((r) => r.meta.role === role);
-  return roleRoutes ? roleRoutes.children : [];
+  
+  // 筛选出所有符合角色的路由
+  const roleRoutes = router.getRoutes().filter((r) => {
+    // 先检查 meta 和 meta.role 是否存在，再使用 includes
+    return r.meta && r.meta.role && r.meta.role.includes(role);
+  });
+  
+  // 合并这些路由的 children
+  const mergedChildren = roleRoutes.reduce((acc, route) => {
+    if (route.children && route.children.length > 0) {
+      acc.push(...route.children);
+    }
+    return acc;
+  }, []);
+  
+  console.log(mergedChildren, 'mergedChildren');
+  return mergedChildren;
 });
+
 // 计算当前路径对应的面包屑项
 const breadcrumbItems = computed(() => {
   const currentPath = router.currentRoute.value.path;
