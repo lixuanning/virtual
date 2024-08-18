@@ -55,3 +55,36 @@ export const getStatus = (key) => {
     return list;
   }
 };
+
+// 1:待审核 2:审核通过 3:审核未通过 4:封禁
+export const getAuditStatus = (key) => {
+  const list = [
+    {
+      key: 1,
+      name: "待审核",
+      type: "default",
+    },
+    {
+      key: 2,
+      name: "审核通过",
+      type: "success",
+    },
+    {
+      key: 3,
+      name: "审核未通过",
+      type: "info",
+    },
+    {
+      key: 4,
+      name: "封禁",
+      type: "warning",
+    },
+  ];
+
+  if (key) {
+    const item = list.find((item) => item.key === key);
+    return item;
+  } else {
+    return list;
+  }
+};

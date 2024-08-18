@@ -36,10 +36,11 @@
               v-model="searchForm.status"
               :placeholder="$t('form.select')"
             >
-              <el-option :label="$t('form.newBuilt')" :value="1"></el-option>
               <el-option
-                :label="$t('form.confirmTheOkBtn')"
-                :value="2"
+                v-for="item in getStatus()"
+                :key="item.key"
+                :value="item.key"
+                :label="item.name"
               ></el-option>
             </el-select>
           </el-form-item>

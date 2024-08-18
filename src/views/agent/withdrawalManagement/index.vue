@@ -21,28 +21,17 @@
           <el-form-item :label="$t('form.outOrderId')">
             <el-input v-model="searchForm.outOrderId"></el-input>
           </el-form-item>
-          <!-- <el-form-item :label="$t('form.legalCurrency')">
-            <el-select
-              v-model="searchForm.legalCurrency"
-              :placeholder="$t('form.select')"
-            >
-              <el-option
-                v-for="item in legalCurrencyOptions"
-                :key="item.id"
-                :label="item.value"
-                :value="item.id"
-              ></el-option>
-            </el-select>
-          </el-form-item> -->
+
           <el-form-item :label="$t('form.status')">
             <el-select
               v-model="searchForm.status"
               :placeholder="$t('form.select')"
             >
-              <el-option :label="$t('form.newBuilt')" :value="1"></el-option>
               <el-option
-                :label="$t('form.confirmTheOkBtn')"
-                :value="2"
+                v-for="item in getStatus()"
+                :key="item.key"
+                :value="item.key"
+                :label="item.name"
               ></el-option>
             </el-select>
           </el-form-item>

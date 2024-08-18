@@ -30,3 +30,31 @@ export const updateWithdrawalOrderStatus = (params) => {
     ...params,
   });
 };
+
+// OTC列表
+export const queryOtcUserList = (params) => {
+  return http.post(`/queryOtcUserList`, {
+    ...params,
+  });
+};
+
+// 修改用户状态
+export const updateUserStatus = (params) => {
+  return http.post(`/updateUserStatus`, {
+    ...params,
+  });
+};
+
+// 商家列表
+export const queryMerchantUserList = (params) => {
+  return http.post(`/queryMerchantUserList`, {
+    ...params,
+  });
+};
+
+// 商家列表
+export const updateMerchantApiStatus = (params) => {
+  return http.post(`updateMerchantApiStatus`, {
+    ...params,
+  });
+};
