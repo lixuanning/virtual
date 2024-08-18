@@ -54,7 +54,14 @@ export const queryMerchantUserList = (params) => {
 
 // 商家列表
 export const updateMerchantApiStatus = (params) => {
-  return http.post(`updateMerchantApiStatus`, {
+  return http.post(`/updateMerchantApiStatus`, {
+    ...params,
+  });
+};
+
+// 绑定
+export const merchantBindOtc = (params) => {
+  return http.post(`/merchantBindOtc`, {
     ...params,
   });
 };

@@ -163,6 +163,12 @@
             <el-button type="text" @click="showEditDialog(scope.row, 2)">
               {{ $t("form.updateApiStatus") }}
             </el-button>
+            <el-button type="text" @click="showEditDialog(scope.row, 3)">
+              {{ $t("form.bind") }}
+            </el-button>
+            <!-- <el-button type="text" @click="showEditDialog(scope.row, 2)">
+              {{ $t("form.exchangeRate") }}
+            </el-button> -->
             <el-button type="text" @click="showAddDialog(scope.row)">{{
               $t("form.edit")
             }}</el-button>
@@ -220,9 +226,24 @@
             <el-option label="禁用" :value="2"></el-option>
           </el-select>
         </el-form-item>
+        <template v-if="thisFromKey === 3">
+          <el-form-item :label="$t('form.OTCemail')" prop="OTCemail">
+            <el-input v-model="updateStatusData.OTCemail"></el-input>
+          </el-form-item>
+          <el-form-item :label="$t('form.type')" prop="type">
+            <el-select
+              width="100%"
+              v-model="updateStatusData.type"
+              :placeholder="$t('form.select')"
+            >
+              <el-option label="入金" :value="1"></el-option>
+              <el-option label="出金" :value="2"></el-option>
+            </el-select>
+          </el-form-item>
+        </template>
       </el-form>
       <template #footer>
-        <el-button @click="isAddDialogVisible = false">
+        <el-button @click="isAddDialogVisible2 = false">
           {{ $t("form.cancel") }}
         </el-button>
         <el-button
@@ -321,6 +342,7 @@ import {
   queryMerchantUserList,
   updateUserStatus,
   updateMerchantApiStatus,
+  merchantBindOtc,
 } from "@/api/agent.js";
 import { ElMessage } from "element-plus";
 import moment from "moment";
@@ -350,6 +372,8 @@ const addForm = ref({
 const updateStatusData = ref({
   status: "",
   apiFlag: "",
+  otcEmail: "",
+  type: "",
 });
 const rules2 = ref({
   status: [
@@ -358,6 +382,15 @@ const rules2 = ref({
   apiFlag: [
     { required: true, message: t("form.requiredText"), trigger: "blur" },
   ],
+  OTCemail: [
+    { required: true, message: t("login.email_placeholder"), trigger: "blur" },
+    {
+      type: "email",
+      message: t("login.email_format_error"),
+      trigger: ["blur", "change"],
+    },
+  ],
+  type: [{ required: true, message: t("form.requiredText"), trigger: "blur" }],
 });
 const rules = ref({
   coin: [{ required: true, message: t("form.requiredText"), trigger: "blur" }],
@@ -506,7 +539,14 @@ const showAddDialog = (row) => {
 };
 const thisItem = ref({});
 const thisFromKey = ref();
+// 操作
 const showEditDialog = (row, key) => {
+  updateStatusData.value = {
+    status: "",
+    apiFlag: "",
+    otcEmail: "",
+    type: "",
+  };
   thisItem.value = row;
   thisFromKey.value = key;
   isAddDialogVisible2.value = true;
@@ -541,6 +581,23 @@ const updateApiStatusFn = async () => {
     dialogLoading.value = false;
   }
 };
+
+// 绑定
+const bindFn = async () => {
+  try {
+    await merchantBindOtc({
+      merchantId: thisItem.value.merchantId,
+      type: updateStatusData.value.type,
+      otcEmail: updateStatusData.value.OTCemail,
+    });
+    dialogLoading.value = false;
+    ElMessage.success(t("form.successText"));
+    isAddDialogVisible2.value = false;
+    loadData(); // 重新加载数据
+  } catch (error) {
+    dialogLoading.value = false;
+  }
+};
 const updateStatusFn = async () => {
   dialogLoading.value = true;
   addFormRef2.value.validate(async (valid) => {
@@ -549,6 +606,8 @@ const updateStatusFn = async () => {
         updateUserStatusFn();
       } else if (thisFromKey.value === 2) {
         updateApiStatusFn();
+      } else if (thisFromKey.value === 3) {
+        bindFn();
       }
     } else {
       dialogLoading.value = false;

@@ -220,7 +220,7 @@
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="isAddDialogVisible = false">
+        <el-button @click="isAddDialogVisible2 = false">
           {{ $t("form.cancel") }}
         </el-button>
         <el-button
