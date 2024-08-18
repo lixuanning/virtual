@@ -150,7 +150,9 @@
               </template>
             </el-popconfirm>
 
-            <el-button type="text">{{ $t("form.edit") }}</el-button>
+            <el-button type="text" @click="showAddDialog(scope.row)">{{
+              $t("form.edit")
+            }}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -167,7 +169,7 @@
     </el-main>
 
     <!-- 新增对话框 -->
-    <el-dialog :title="$t('form.add')" v-model="isAddDialogVisible">
+    <el-dialog :title="$t('form.edit')" v-model="isAddDialogVisible">
       <el-form
         :model="addForm"
         :rules="rules"
@@ -242,7 +244,7 @@
           :loading="dialogLoading"
           @click="handleAddSubmit"
         >
-          {{ $t("form.add") }}
+          {{ $t("form.confirm") }}
         </el-button>
       </template>
     </el-dialog>
@@ -255,10 +257,10 @@ import { useI18n } from "vue-i18n";
 import {
   addProduct,
   queryInOrderList,
-  updateInOrderStatus,
   getCoinDict,
   getLegalCurrencyDict,
 } from "@/api/otc.js";
+import { updateInOrderStatus } from "@/api/agent.js";
 import { ElMessage } from "element-plus";
 import moment from "moment";
 import { getPlay, getStatus } from "@/utils/enumerate.js";
@@ -404,7 +406,7 @@ const handleSearch = () => {
 const handleDelete = async (row) => {
   const res = await updateInOrderStatus({
     inOrderId: row.inOrderId,
-    status: 3,
+    status: 4,
   });
   console.log(res);
   ElMessage.success(t("form.success"));
@@ -423,32 +425,10 @@ const handlePageChange = (page) => {
 };
 
 // 显示新增对话框
-const showAddDialog = () => {
+const showAddDialog = (row) => {
   addForm.value = {
-    coin: "",
-    total: "",
-    legalCurrency: "",
-    buyMin: "",
-    buyMax: "",
-    desc: "",
-    mark: "",
-    supportPay: [],
-    saleStartDate: null,
-    saleEndDate: null,
-    dateList: [],
+    ...row,
   };
-  // addForm.value = {
-  //   buyMax: "3",
-  //   buyMin: "3",
-  //   coin: "USDT",
-  //   desc: "3",
-  //   legalCurrency: "CNY",
-  //   mark: "3",
-  //   saleEndDate: "2024-09-23",
-  //   saleStartDate: "2024-08-22",
-  //   supportPay: [2],
-  //   total: "33",
-  // };
 
   isAddDialogVisible.value = true;
 };

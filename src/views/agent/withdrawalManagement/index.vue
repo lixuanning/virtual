@@ -55,11 +55,11 @@
         </el-form>
       </div>
 
-      <div class="rigth">
+      <!-- <div class="rigth">
         <el-button type="primary" @click="showAddDialog">
           {{ $t("form.add") }}
         </el-button>
-      </div>
+      </div> -->
     </el-header>
 
     <!-- 表格和分页 -->
@@ -112,23 +112,22 @@
           </template>
         </el-table-column>
 
-        <!-- <el-table-column :label="$t('form.actions')" width="100" fixed="right">
+        <el-table-column :label="$t('form.actions')" width="100" fixed="right">
           <template #default="scope">
             <el-popconfirm
-              :title="$t('form.confirmTheOk')"
+              :title="$t('form.transferCompletedText')"
               confirm-button-text="是"
               cancel-button-text="否"
               @confirm="() => handleDelete(scope.row)"
-              v-if="scope.row.status === 1"
             >
               <template #reference>
                 <el-button type="text">{{
-                  $t("form.confirmTheOkBtn")
+                  $t("form.transferCompleted")
                 }}</el-button>
               </template>
             </el-popconfirm>
           </template>
-        </el-table-column> -->
+        </el-table-column>
       </el-table>
       <div class="rigth">
         <el-pagination
@@ -187,12 +186,11 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import { useI18n } from "vue-i18n";
-import { addProduct, updateOutOrderStatus } from "@/api/otc.js";
+import { updateWithdrawalOrderStatus, queryWithdrawalList } from "@/api/agent";
 import {
   getLegalCurrencyDict,
   getCoinDict,
   createWithdrawalOrder,
-  queryWithdrawalList,
 } from "@/api/buyer.js";
 import { ElMessage } from "element-plus";
 import moment from "moment";
@@ -318,12 +316,12 @@ const handleSearch = () => {
 };
 //上架和下载
 const handleDelete = async (row) => {
-  const res = await updateOutOrderStatus({
-    outOrderId: row.outOrderId,
+  const res = await updateWithdrawalOrderStatus({
+    withdrawalOrderId: row.withdrawalId,
     status: 2,
   });
   console.log(res);
-  ElMessage.success(t("form.success"));
+  ElMessage.success(t("form.successText"));
   loadData();
 };
 // 重置搜索表单

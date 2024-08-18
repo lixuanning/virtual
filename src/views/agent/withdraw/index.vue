@@ -52,11 +52,11 @@
         </el-form>
       </div>
 
-      <div class="rigth">
+      <!-- <div class="rigth">
         <el-button type="primary" @click="showAddDialog">
           {{ $t("form.add") }}
         </el-button>
-      </div>
+      </div> -->
     </el-header>
 
     <!-- 表格和分页 -->
@@ -79,6 +79,24 @@
             >
           </template>
         </el-table-column>
+        <el-table-column
+          prop="status"
+          :label="$t('form.distribution')"
+          width="100"
+        >
+          <template #default="scope">
+            <el-tag type="success" v-if="scope.row.otcId">
+              {{ $t("form.yes") }}</el-tag
+            >
+            <el-tag type="default" v-else> {{ $t("form.no") }}</el-tag>
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          prop="otcName"
+          :label="$t('form.otcName')"
+          width="150"
+        ></el-table-column>
         <el-table-column
           prop="unitPrice"
           :label="$t('form.unitPrice')"
@@ -154,23 +172,27 @@
           </template>
         </el-table-column>
 
-        <!-- <el-table-column :label="$t('form.actions')" width="100" fixed="right">
+        <el-table-column :label="$t('form.actions')" width="180" fixed="right">
           <template #default="scope">
             <el-popconfirm
-              :title="$t('form.confirmTheOk')"
+              :title="$t('form.cancelText')"
               confirm-button-text="是"
               cancel-button-text="否"
               @confirm="() => handleDelete(scope.row)"
-              v-if="scope.row.status === 1"
             >
               <template #reference>
-                <el-button type="text">{{
-                  $t("form.confirmTheOkBtn")
-                }}</el-button>
+                <el-button type="text">{{ $t("form.cancel") }}</el-button>
               </template>
             </el-popconfirm>
+
+            <el-button type="text" @click="showAddDialog(scope.row)">{{
+              $t("form.edit")
+            }}</el-button>
+            <el-button type="text" @click="showAddDialog2(scope.row)">{{
+              $t("form.allocateOrder")
+            }}</el-button>
           </template>
-        </el-table-column> -->
+        </el-table-column>
       </el-table>
       <div class="rigth">
         <el-pagination
@@ -184,7 +206,31 @@
       </div>
     </el-main>
 
-    <!-- 新增对话框 -->
+    <!-- 分配对话框 -->
+    <el-dialog :title="$t('form.add')" v-model="isAddDialogVisible2">
+      <el-form
+        :model="addForm2"
+        :rules="rules2"
+        ref="addFormRef2"
+        label-width="120px"
+      >
+        <el-form-item :label="$t('form.OTCemail')" prop="email">
+          <el-input v-model="addForm2.email"></el-input>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="isAddDialogVisible = false">
+          {{ $t("form.cancel") }}
+        </el-button>
+        <el-button
+          type="primary"
+          :loading="dialogLoading"
+          @click="allocateSubmit"
+        >
+          {{ $t("form.confirm") }}
+        </el-button>
+      </template>
+    </el-dialog>
     <!-- 新增对话框 -->
     <el-dialog :title="$t('form.add')" v-model="isAddDialogVisible">
       <el-form
@@ -305,6 +351,7 @@ import {
   getCoinDict,
   createOutOrder,
 } from "@/api/buyer.js";
+import { updateInOrderStatus, shareOutOrderToOtc } from "@/api/agent.js";
 import { ElMessage } from "element-plus";
 import moment from "moment";
 import { getPlay, getStatus } from "@/utils/enumerate.js";
@@ -316,6 +363,7 @@ const { t } = useI18n();
 // 初始化数据
 const coinOptions = ref([]);
 const legalCurrencyOptions = ref([]);
+const isAddDialogVisible2 = ref(false);
 
 // 表单相关状态
 const searchForm = ref({ coin: "", legalCurrency: "", status: "" });
@@ -328,6 +376,10 @@ const addForm = ref({
   openingBank: "",
   quantity: "",
 });
+const addForm2 = ref({
+  email: "",
+});
+const addFormRef2 = ref(null);
 const imgUrl = ref({
   alipayQRcode: "",
   wechatQRcode: "",
@@ -357,6 +409,16 @@ const customUpload = async ({ file, onSuccess, onError }, field) => {
     onError(error);
   }
 };
+const rules2 = ref({
+  email: [
+    { required: true, message: t("login.email_placeholder"), trigger: "blur" },
+    {
+      type: "email",
+      message: t("login.email_format_error"),
+      trigger: ["blur", "change"],
+    },
+  ],
+});
 const rules = ref({
   supportPay: [
     { required: true, message: t("form.requiredText"), trigger: "blur" },
@@ -451,6 +513,30 @@ const handleAddSubmit = () => {
     }
   });
 };
+// 分配
+const allocateSubmit = () => {
+  dialogLoading.value = true;
+  addFormRef2.value.validate(async (valid) => {
+    if (valid) {
+      console.log(addForm2.value, allocateRow.value);
+      try {
+        await shareOutOrderToOtc({
+          otcEmail: addForm2.value.email,
+          outOrderId: allocateRow.value.outOrderId,
+        });
+        ElMessage.success(t("form.successText"));
+        isAddDialogVisible2.value = false;
+        loadData(); // 重新加载数据
+      } catch (error) {
+        dialogLoading.value = false;
+      } finally {
+        dialogLoading.value = false;
+      }
+    } else {
+      dialogLoading.value = false;
+    }
+  });
+};
 
 // 搜索功能
 const handleSearch = () => {
@@ -461,7 +547,7 @@ const handleSearch = () => {
 const handleDelete = async (row) => {
   const res = await updateOutOrderStatus({
     outOrderId: row.outOrderId,
-    status: 2,
+    status: 4,
   });
   console.log(res);
   ElMessage.success(t("form.success"));
@@ -478,17 +564,17 @@ const handlePageChange = (page) => {
   currentPage.value = page;
   loadData();
 };
+const allocateRow = ref({});
+//分配
+const showAddDialog2 = (row) => {
+  allocateRow.value = row;
+  isAddDialogVisible2.value = true;
+};
 
 // 显示新增对话框
-const showAddDialog = () => {
+const showAddDialog = (row) => {
   addForm.value = {
-    supportPay: "",
-    wechatQRcode: "",
-    alipayQRcode: "",
-    bank: "",
-    payee: "",
-    openingBank: "",
-    quantity: "",
+    ...row,
   };
 
   isAddDialogVisible.value = true;
