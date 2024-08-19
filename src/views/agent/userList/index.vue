@@ -67,6 +67,13 @@
             <el-tag type="default" v-else> {{ $t("form.no") }}</el-tag>
           </template>
         </el-table-column>
+        <el-table-column
+          prop="higherMerchantEmail"
+          :label="$t('form.higherMerchantEmail')"
+        >
+        </el-table-column>
+        <el-table-column prop="proxyRate" :label="$t('form.proxyRate')">
+        </el-table-column>
         <el-table-column prop="merchantBalance" :label="$t('form.residue')">
         </el-table-column>
         <el-table-column
@@ -166,6 +173,9 @@
             <el-button type="text" @click="showEditDialog(scope.row, 3)">
               {{ $t("form.bind") }}
             </el-button>
+            <el-button type="text" @click="showEditDialog(scope.row, 4)">
+              {{ $t("form.rating") }}
+            </el-button>
             <!-- <el-button type="text" @click="showEditDialog(scope.row, 2)">
               {{ $t("form.exchangeRate") }}
             </el-button> -->
@@ -187,7 +197,7 @@
       </div>
     </el-main>
     <!-- 修改状态对话框 -->
-    <el-dialog :title="$t('form.modifyStatus')" v-model="isAddDialogVisible2">
+    <el-dialog :title="$t('form.setting')" v-model="isAddDialogVisible2">
       <el-form
         :model="updateStatusData"
         :rules="rules2"
@@ -227,6 +237,21 @@
           </el-select>
         </el-form-item>
         <template v-if="thisFromKey === 3">
+          <p class="bindingTitle">
+            {{ $t("form.binding") }}
+          </p>
+          <div v-for="(item, index) in thisItem.bindOtcs" :key="index">
+            <p>
+              {{
+                item.type === 1
+                  ? $t("routerName.withdraw")
+                  : $t("routerName.recharge")
+              }}：{{ item.otcEmail }}
+            </p>
+          </div>
+          <p class="bindingTitle">
+            {{ $t("form.AddBinding") }}
+          </p>
           <el-form-item :label="$t('form.OTCemail')" prop="OTCemail">
             <el-input v-model="updateStatusData.OTCemail"></el-input>
           </el-form-item>
@@ -239,6 +264,24 @@
               <el-option label="入金" :value="1"></el-option>
               <el-option label="出金" :value="2"></el-option>
             </el-select>
+          </el-form-item>
+        </template>
+
+        <template v-if="thisFromKey === 4">
+          <el-form-item
+            :label="$t('form.higherMerchantEmail')"
+            prop="higherMerchantEmail"
+          >
+            <el-input v-model="updateStatusData.higherMerchantEmail"></el-input>
+          </el-form-item>
+          <el-form-item :label="$t('form.proxyRate')" prop="proxyRate">
+            <!-- <el-input v-model="updateStatusData.proxyRate"></el-input> -->
+            <el-input-number
+              v-model="updateStatusData.proxyRate"
+              :precision="2"
+              :step="0.1"
+              :max="10000"
+            />
           </el-form-item>
         </template>
       </el-form>
@@ -343,6 +386,7 @@ import {
   updateUserStatus,
   updateMerchantApiStatus,
   merchantBindOtc,
+  setProxyRate,
 } from "@/api/agent.js";
 import { ElMessage } from "element-plus";
 import moment from "moment";
@@ -374,6 +418,8 @@ const updateStatusData = ref({
   apiFlag: "",
   otcEmail: "",
   type: "",
+  higherMerchantEmail: "",
+  proxyRate: "",
 });
 const rules2 = ref({
   status: [
@@ -382,7 +428,18 @@ const rules2 = ref({
   apiFlag: [
     { required: true, message: t("form.requiredText"), trigger: "blur" },
   ],
+  proxyRate: [
+    { required: true, message: t("form.requiredText"), trigger: "blur" },
+  ],
   OTCemail: [
+    { required: true, message: t("login.email_placeholder"), trigger: "blur" },
+    {
+      type: "email",
+      message: t("login.email_format_error"),
+      trigger: ["blur", "change"],
+    },
+  ],
+  higherMerchantEmail: [
     { required: true, message: t("login.email_placeholder"), trigger: "blur" },
     {
       type: "email",
@@ -546,6 +603,8 @@ const showEditDialog = (row, key) => {
     apiFlag: "",
     otcEmail: "",
     type: "",
+    higherMerchantEmail: "",
+    proxyRate: "",
   };
   thisItem.value = row;
   thisFromKey.value = key;
@@ -598,6 +657,22 @@ const bindFn = async () => {
     dialogLoading.value = false;
   }
 };
+//设置费率
+const setProxyRateFn = async () => {
+  try {
+    await setProxyRate({
+      merchantId: thisItem.value.merchantId,
+      proxyRate: updateStatusData.value.proxyRate,
+      higherMerchantEmail: updateStatusData.value.higherMerchantEmail,
+    });
+    dialogLoading.value = false;
+    ElMessage.success(t("form.successText"));
+    isAddDialogVisible2.value = false;
+    loadData(); // 重新加载数据
+  } catch (error) {
+    dialogLoading.value = false;
+  }
+};
 const updateStatusFn = async () => {
   dialogLoading.value = true;
   addFormRef2.value.validate(async (valid) => {
@@ -608,6 +683,8 @@ const updateStatusFn = async () => {
         updateApiStatusFn();
       } else if (thisFromKey.value === 3) {
         bindFn();
+      } else if (thisFromKey.value === 4) {
+        setProxyRateFn();
       }
     } else {
       dialogLoading.value = false;
@@ -638,7 +715,10 @@ onMounted(() => {
 .demo-form-inline .el-select {
   --el-select-width: 220px;
 }
-
+.bindingTitle {
+  font-size: 16px;
+  font-weight: 500;
+}
 .el-main {
   padding: 20px;
   background-color: #fff;

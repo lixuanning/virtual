@@ -145,8 +145,11 @@
         </el-table-column>
         <el-table-column :label="$t('form.actions')" width="150" fixed="right">
           <template #default="scope">
-            <el-button type="text" @click="showEditDialog(scope.row)">
+            <el-button type="text" @click="showEditDialog(scope.row, 1)">
               {{ $t("form.userAudit") }}
+            </el-button>
+            <el-button type="text" @click="showEditDialog(scope.row, 2)">
+              {{ $t("form.topUp") }}
             </el-button>
             <el-button type="text" @click="showAddDialog(scope.row)">{{
               $t("form.edit")
@@ -173,7 +176,11 @@
         ref="addFormRef2"
         label-width="120px"
       >
-        <el-form-item :label="$t('form.status')" prop="status">
+        <el-form-item
+          :label="$t('form.status')"
+          prop="status"
+          v-if="thisKey === 1"
+        >
           <el-select
             width="100%"
             v-model="updateStatusData.status"
@@ -186,6 +193,13 @@
               :value="item.key"
             ></el-option>
           </el-select>
+        </el-form-item>
+        <el-form-item
+          :label="$t('form.quantity3')"
+          prop="quantity"
+          v-if="thisKey === 2"
+        >
+          <el-input v-model="updateStatusData.quantity" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -284,7 +298,11 @@ import {
   getLegalCurrencyDict,
   getCoinDict,
 } from "@/api/otc.js";
-import { queryOtcUserList, updateUserStatus } from "@/api/agent.js";
+import {
+  queryOtcUserList,
+  updateUserStatus,
+  otcRecharge,
+} from "@/api/agent.js";
 import { ElMessage } from "element-plus";
 import moment from "moment";
 import { getAuditStatus } from "@/utils/enumerate.js";
@@ -312,9 +330,13 @@ const addForm = ref({
 });
 const updateStatusData = ref({
   status: "",
+  quantity: "",
 });
 const rules2 = ref({
   status: [
+    { required: true, message: t("form.requiredText"), trigger: "blur" },
+  ],
+  quantity: [
     { required: true, message: t("form.requiredText"), trigger: "blur" },
   ],
 });
@@ -464,26 +486,52 @@ const showAddDialog = (row) => {
   isAddDialogVisible.value = true;
 };
 const thisItem = ref({});
-const showEditDialog = (row) => {
+const thisKey = ref(null);
+const showEditDialog = (row, key) => {
+  updateStatusData.value = {
+    status: "",
+    quantity: "",
+  };
   thisItem.value = row;
+  thisKey.value = key;
   isAddDialogVisible2.value = true;
+};
+const updateUserStatusFn = async () => {
+  try {
+    await updateUserStatus({
+      status: updateStatusData.value.status,
+      userId: thisItem.value.userId,
+    });
+    ElMessage.success(t("form.successText"));
+    isAddDialogVisible2.value = false;
+    dialogLoading.value = false;
+    loadData(); // 重新加载数据
+  } catch (error) {
+    dialogLoading.value = false;
+  }
+};
+const otcRechargeFn = async () => {
+  try {
+    await otcRecharge({
+      quantity: updateStatusData.value.quantity,
+      otcId: thisItem.value.otcId,
+    });
+    ElMessage.success(t("form.successText"));
+    isAddDialogVisible2.value = false;
+    dialogLoading.value = false;
+    loadData(); // 重新加载数据
+  } catch (error) {
+    dialogLoading.value = false;
+  }
 };
 const updateStatusFn = async () => {
   dialogLoading.value = true;
   addFormRef2.value.validate(async (valid) => {
     if (valid) {
-      try {
-        await updateUserStatus({
-          status: updateStatusData.value.status,
-          userId: thisItem.value.userId,
-        });
-        ElMessage.success(t("form.successText"));
-        isAddDialogVisible2.value = false;
-        loadData(); // 重新加载数据
-      } catch (error) {
-        dialogLoading.value = false;
-      } finally {
-        dialogLoading.value = false;
+      if (thisKey.value === 1) {
+        updateUserStatusFn();
+      } else if (thisKey.value === 2) {
+        otcRechargeFn();
       }
     } else {
       dialogLoading.value = false;

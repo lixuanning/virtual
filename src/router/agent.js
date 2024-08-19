@@ -17,7 +17,6 @@ const routes = [
         meta: { pathName: "routerName.OTCManagement" },
         component: () => import("@/views/agent/otcUserList/index.vue"),
       },
-  
     ],
   },
   {
@@ -28,7 +27,6 @@ const routes = [
       icon: "Management",
     },
     children: [
-
       {
         path: "/agent/transactionManagement/withdraw",
         name: "agentWithdraw",
@@ -47,6 +45,12 @@ const routes = [
         component: () => import("@/views/agent/withdrawalManagement/index.vue"),
         meta: { pathName: "routerName.withdrawalManagement" },
       },
+      {
+        path: "/agent/rectransactionManagementharge/rateConfig",
+        name: "agentRateConfigt",
+        component: () => import("@/views/agent/rateConfig/index.vue"),
+        meta: { pathName: "routerName.rateConfig" },
+      },
     ],
   },
   {
@@ -60,7 +64,6 @@ const routes = [
         component: () => import("@/views/agent/personalSetting/index.vue"),
         meta: { pathName: "routerName.personalSetting" },
       },
-  
     ],
   },
 ];

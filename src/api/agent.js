@@ -65,3 +65,38 @@ export const merchantBindOtc = (params) => {
     ...params,
   });
 };
+
+// 设置费率
+export const setProxyRate = (params) => {
+  return http.post(`/setProxyRate`, {
+    ...params,
+  });
+};
+
+// 充值
+export const otcRecharge = (params) => {
+  return http.post(`/otcRecharge`, {
+    ...params,
+  });
+};
+
+// 利率列表
+export const queryPriceRateConfigData = (params) => {
+  return http.post(`/queryPriceRateConfigData`, {
+    ...params,
+  });
+};
+
+// 新增
+export const addPriceRateConfig = (params) => {
+  return http.post(`/addPriceRateConfig`, {
+    ...params,
+  });
+};
+
+// 编辑
+export const updatePriceRateConfig = (params) => {
+  return http.post(`/updatePriceRateConfig`, {
+    ...params,
+  });
+};
