@@ -13,9 +13,18 @@
 // }
 </script>
 
-<style >
-  html,body{
-    padding: 0;
-    margin: 0;
-  }
+<style>
+html,
+body {
+  padding: 0;
+  margin: 0;
+}
+/* .img {
+  border: 1px solid #ccc;
+  margin-left: 5px;
+} */
+.el-image {
+  border: 1px solid #ccc;
+  margin-left: 5px;
+}
 </style>

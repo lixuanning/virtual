@@ -42,6 +42,7 @@ export default {
     userManagement: "用户管理",
     userManagement2: "商家管理",
     OTCManagement: "OTC管理",
+    userSetting: "用户设置",
     dashboard: "数据看板",
     advertisingManagement: "广告管理",
     withdraw: "出金",

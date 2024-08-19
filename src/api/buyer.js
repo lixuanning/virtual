@@ -12,6 +12,10 @@ export const createOutOrder = (params) => {
     ...params,
   });
 };
+// 查询用户信息
+export const getUserInfoForMerchant = () => {
+  return http.post(`/getUserInfoForMerchant`);
+};
 
 // 法币
 export const getLegalCurrencyDict = () => {
@@ -48,6 +52,12 @@ export const queryInOrderDetail = (params) => {
 //确认转账
 export const merchantConfirmInOrder = (params) => {
   return http.post(`/merchantConfirmInOrder`, {
+    ...params,
+  });
+};
+
+export const updateMerchantInfo = (params) => {
+  return http.post(`/updateMerchantInfo`, {
     ...params,
   });
 };

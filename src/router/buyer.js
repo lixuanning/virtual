@@ -40,19 +40,19 @@ const routes = [
       },
     ],
   },
-  // {
-  //   path: "/buyer/setting",
-  //   name: "buyerSetting",
-  //   meta: { pathName: "routerName.setting", icon: "CreditCard" },
-  //   children: [
-  //     {
-  //       path: "/buyer/setting/withdrawalManagement",
-  //       name: "buyerWithdrawalManagement",
-  //       component: () => import("@/views/buyer/withdrawalManagement/index.vue"),
-  //       meta: { pathName: "routerName.withdrawalManagement" },
-  //     },
-  //   ],
-  // },
+  {
+    path: "/buyer/setting",
+    name: "buyerSetting",
+    meta: { pathName: "routerName.setting", icon: "CreditCard" },
+    children: [
+      {
+        path: "/buyer/setting/userSetting",
+        name: "buyerUserSetting",
+        component: () => import("@/views/buyer/userSetting/index.vue"),
+        meta: { pathName: "routerName.userSetting" },
+      },
+    ],
+  },
 ];
 
 export default routes;
