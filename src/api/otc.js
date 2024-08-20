@@ -76,3 +76,8 @@ export const getLegalCurrencyDict = () => {
 export const getCoinDict = () => {
   return http.post(`/getCoinDict`);
 };
+
+// OTC首页
+export const queryOtcDashboard = () => {
+  return http.post(`/queryOtcDashboard`);
+};

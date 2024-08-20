@@ -101,7 +101,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column :label="$t('form.actions')" width="100" fixed="right">
+        <el-table-column :label="$t('form.actions')" width="150" fixed="right">
           <template #default="scope">
             <el-popconfirm
               :title="$t('form.transferCompletedText')"
@@ -115,6 +115,9 @@
                 }}</el-button>
               </template>
             </el-popconfirm>
+            <el-button type="text" @click="showAddDialog(scope.row)">{{
+              $t("form.edit")
+            }}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -132,14 +135,14 @@
 
     <!-- 新增对话框 -->
     <!-- 新增对话框 -->
-    <el-dialog :title="$t('form.add')" v-model="isAddDialogVisible">
+    <el-dialog :title="$t('form.edit')" v-model="isAddDialogVisible">
       <el-form
         :model="addForm"
         :rules="rules"
         ref="addFormRef"
         label-width="100px"
       >
-        <el-form-item :label="$t('form.coin')">
+        <el-form-item :label="$t('form.coin')" prop="coin">
           <el-select v-model="addForm.coin" :placeholder="$t('form.select')">
             <el-option
               v-for="item in coinOptions"
@@ -150,7 +153,7 @@
           </el-select>
         </el-form-item>
         <el-form-item :label="$t('form.quantity2')" prop="quantity">
-          <el-input v-model="addForm.quantity"></el-input>
+          <el-input type="number" v-model="addForm.quantity"></el-input>
         </el-form-item>
         <el-form-item :label="$t('form.walletUrl')" prop="walletUrl">
           <el-input v-model="addForm.walletUrl"></el-input>
@@ -165,7 +168,7 @@
           :loading="dialogLoading"
           @click="handleAddSubmit"
         >
-          {{ $t("form.add") }}
+          {{ $t("form.confirm") }}
         </el-button>
       </template>
     </el-dialog>
@@ -175,16 +178,17 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import { useI18n } from "vue-i18n";
-import { updateWithdrawalOrderStatus, queryWithdrawalList } from "@/api/agent";
 import {
-  getLegalCurrencyDict,
-  getCoinDict,
-  createWithdrawalOrder,
-} from "@/api/buyer.js";
+  updateWithdrawalOrderStatus,
+  queryWithdrawalList,
+  updateWithdrawalOrder,
+} from "@/api/agent";
+import { getLegalCurrencyDict, getCoinDict } from "@/api/buyer.js";
 import { ElMessage } from "element-plus";
 import moment from "moment";
 import { getPlay, getStatus } from "@/utils/enumerate.js";
 import { uploadPicture, previewPicture } from "@/api/file";
+import { assignSelectedData, clearFormFields } from "@/utils/tool.js";
 const paymentOptions = computed(() => getPlay());
 
 const { t } = useI18n();
@@ -196,46 +200,25 @@ const legalCurrencyOptions = ref([]);
 // 表单相关状态
 const searchForm = ref({ coin: "", legalCurrency: "", status: "" });
 const addForm = ref({
+  withdrawalId: "",
   coin: "",
-  quantity: "",
   walletUrl: "",
+  quantity: "",
+  withdrawalServiceChargePrice: "",
 });
 const imgUrl = ref({
   alipayQRcode: "",
   wechatQRcode: "",
 });
-// 自定义上传配置
-const beforeUpload = (file) => {
-  const isJPG = file.type === "image/jpeg" || file.type === "image/png";
-  const isLt2M = file.size / 1024 / 1024 < 2;
-
-  if (!isJPG) {
-    ElMessage.error("上传图片只能是 JPG/PNG 格式!");
-  }
-  if (!isLt2M) {
-    ElMessage.error("上传图片大小不能超过 2MB!");
-  }
-  return isJPG && isLt2M;
-};
-const customUpload = async ({ file, onSuccess, onError }, field) => {
-  try {
-    const response = await uploadPicture({ file: file });
-    addForm.value[field] = response.data.pictureId;
-    const url = await previewPicture({ pictureId: response.data.pictureId });
-    const base64Url = `data:image/jpeg;base64,${url.data.picture}`;
-    imgUrl.value[field] = base64Url;
-    ElMessage.success("图片上传成功");
-  } catch (error) {
-    onError(error);
-  }
-};
-
 const rules = ref({
   coin: [{ required: true, message: t("form.requiredText"), trigger: "blur" }],
   quantity: [
     { required: true, message: t("form.requiredText"), trigger: "blur" },
   ],
   walletUrl: [
+    { required: true, message: t("form.requiredText"), trigger: "blur" },
+  ],
+  withdrawalServiceChargePrice: [
     { required: true, message: t("form.requiredText"), trigger: "blur" },
   ],
 });
@@ -283,8 +266,8 @@ const handleAddSubmit = () => {
   addFormRef.value.validate(async (valid) => {
     if (valid) {
       try {
-        await createWithdrawalOrder({ ...addForm.value });
-        ElMessage.success(t("form.addSuccess"));
+        await updateWithdrawalOrder({ ...addForm.value });
+        ElMessage.success(t("form.success"));
         isAddDialogVisible.value = false;
         loadData(); // 重新加载数据
       } catch (error) {
@@ -331,13 +314,8 @@ const handlePageChange = (page) => {
 };
 
 // 显示新增对话框
-const showAddDialog = () => {
-  addForm.value = {
-    coin: "",
-    quantity: "",
-    walletUrl: "",
-  };
-
+const showAddDialog = (row) => {
+  addForm.value = assignSelectedData(addForm.value, row);
   isAddDialogVisible.value = true;
 };
 

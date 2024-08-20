@@ -186,9 +186,7 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item :label="$t('form.total')" prop="total">
-          <el-input type="number" v-model="addForm.total"></el-input>
-        </el-form-item>
+
         <el-form-item :label="$t('form.legalCurrency')" prop="legalCurrency">
           <el-select
             v-model="addForm.legalCurrency"
@@ -202,37 +200,42 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item :label="$t('form.buyMin')" prop="buyMin">
-          <el-input type="number" v-model="addForm.buyMin"></el-input>
+
+        <el-form-item :label="$t('form.unitPrice')" prop="unitPrice">
+          <el-input type="number" v-model="addForm.unitPrice"></el-input>
         </el-form-item>
-        <el-form-item :label="$t('form.buyMax')" prop="buyMax">
-          <el-input type="number" v-model="addForm.buyMax"></el-input>
+        <el-form-item :label="$t('form.totalPrice')" prop="totalPrice">
+          <el-input type="number" v-model="addForm.totalPrice"></el-input>
         </el-form-item>
-        <el-form-item :label="$t('form.desc')" prop="desc">
-          <el-input type="textarea" v-model="addForm.desc"></el-input>
+        <el-form-item
+          :label="$t('form.realTransferPrice')"
+          prop="realTransferPrice"
+        >
+          <el-input
+            type="number"
+            v-model="addForm.realTransferPrice"
+          ></el-input>
         </el-form-item>
-        <el-form-item :label="$t('form.mark')" prop="mark">
-          <el-input type="textarea" v-model="addForm.mark"></el-input>
+        <el-form-item
+          :label="$t('form.inServiceChargePrice')"
+          prop="inServiceChargePrice"
+        >
+          <el-input
+            type="number"
+            v-model="addForm.inServiceChargePrice"
+          ></el-input>
         </el-form-item>
-        <el-form-item :label="$t('form.supportPay')" prop="supportPay">
-          <el-checkbox-group v-model="addForm.supportPay">
-            <el-checkbox
-              v-for="item in playList"
-              :key="item.key"
-              :label="item.key"
-              >{{ item.name }}</el-checkbox
-            >
-          </el-checkbox-group>
+        <el-form-item :label="$t('form.proxyPrice')" prop="proxyPrice">
+          <el-input type="number" v-model="addForm.proxyPrice"></el-input>
         </el-form-item>
-        <el-form-item :label="$t('form.saleStartDate')" prop="dateList">
-          <el-date-picker
-            v-model="addForm.dateList"
-            type="daterange"
-            start-placeholder="Start Date"
-            end-placeholder="End Date"
-            align="right"
-            format="YYYY/MM/DD"
-          ></el-date-picker>
+        <el-form-item :label="$t('form.quantity')" prop="quantity">
+          <el-input type="number" v-model="addForm.quantity"></el-input>
+        </el-form-item>
+        <el-form-item :label="$t('form.realQuantity')" prop="realQuantity">
+          <el-input type="number" v-model="addForm.realQuantity"></el-input>
+        </el-form-item>
+        <el-form-item :label="$t('form.transferName')" prop="transferName">
+          <el-input type="text" v-model="addForm.transferName"></el-input>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -255,15 +258,15 @@
 import { ref, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import {
-  addProduct,
   queryInOrderList,
   getCoinDict,
   getLegalCurrencyDict,
 } from "@/api/otc.js";
-import { updateInOrderStatus } from "@/api/agent.js";
+import { updateInOrderStatus, updateInOrder } from "@/api/agent.js";
 import { ElMessage } from "element-plus";
 import moment from "moment";
 import { getPlay, getStatus } from "@/utils/enumerate.js";
+import { assignSelectedData, clearFormFields } from "@/utils/tool.js";
 
 const { t } = useI18n();
 
@@ -275,16 +278,16 @@ const legalCurrencyOptions = ref([]);
 const searchForm = ref({ coin: "", legalCurrency: "", status: "" });
 const addForm = ref({
   coin: "",
-  total: "",
   legalCurrency: "",
-  buyMin: "",
-  buyMax: "",
-  desc: "",
-  mark: "",
-  supportPay: [],
-  saleStartDate: null,
-  saleEndDate: null,
-  dateList: [],
+  unitPrice: "",
+  totalPrice: "",
+  realTransferPrice: "",
+  inServiceChargePrice: "",
+  proxyPrice: "",
+  quantity: "",
+  realQuantity: "",
+  transferName: "",
+  inOrderId: "",
 });
 
 const rules = ref({
@@ -292,7 +295,9 @@ const rules = ref({
   supportPay: [
     { required: true, message: t("form.requiredText"), trigger: "blur" },
   ],
-  total: [{ required: true, message: t("form.requiredText"), trigger: "blur" }],
+  unitPrice: [
+    { required: true, message: t("form.requiredText"), trigger: "blur" },
+  ],
   legalCurrency: [
     {
       required: true,
@@ -300,18 +305,26 @@ const rules = ref({
       trigger: "blur",
     },
   ],
-  buyMin: [
+  totalPrice: [
     { required: true, message: t("form.requiredText"), trigger: "blur" },
   ],
-  buyMax: [
+  realTransferPrice: [
     { required: true, message: t("form.requiredText"), trigger: "blur" },
   ],
-  dateList: [
-    {
-      required: true,
-      message: t("form.requiredText"),
-      trigger: "blur",
-    },
+  inServiceChargePrice: [
+    { required: true, message: t("form.requiredText"), trigger: "blur" },
+  ],
+  proxyPrice: [
+    { required: true, message: t("form.requiredText"), trigger: "blur" },
+  ],
+  quantity: [
+    { required: true, message: t("form.requiredText"), trigger: "blur" },
+  ],
+  transferName: [
+    { required: true, message: t("form.requiredText"), trigger: "blur" },
+  ],
+  realQuantity: [
+    { required: true, message: t("form.requiredText"), trigger: "blur" },
   ],
 });
 
@@ -356,38 +369,16 @@ const loadData = async () => {
 const handleAddSubmit = () => {
   dialogLoading.value = true;
   addFormRef.value.validate(async (valid) => {
-    const {
-      coin,
-      total,
-      legalCurrency,
-      buyMin,
-      buyMax,
-      desc,
-      mark,
-      supportPay,
-      dateList,
-    } = addForm.value;
     if (valid) {
       try {
-        await addProduct({
-          coin,
-          total,
-          legalCurrency,
-          buyMin,
-          buyMax,
-          desc,
-          mark,
-          supportPay,
-          saleStartDate: moment(dateList[0]).format("YYYY-MM-DD"),
-          saleEndDate: moment(dateList[1]).format("YYYY-MM-DD"),
+        await updateInOrder({
+          ...addForm.value,
         });
-        ElMessage.success(t("form.addSuccess"));
+        ElMessage.success(t("form.success"));
         isAddDialogVisible.value = false;
         loadData(); // 重新加载数据
       } catch (error) {
         dialogLoading.value = false;
-        // console.log(error,'error');
-        // ElMessage.error(error.data.msg || 'errpr');
       } finally {
         dialogLoading.value = false;
       }
@@ -426,9 +417,8 @@ const handlePageChange = (page) => {
 
 // 显示新增对话框
 const showAddDialog = (row) => {
-  addForm.value = {
-    ...row,
-  };
+  console.log(row);
+  addForm.value = assignSelectedData(addForm.value, row);
 
   isAddDialogVisible.value = true;
 };

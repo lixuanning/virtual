@@ -208,7 +208,7 @@
     </el-main>
 
     <!-- 分配对话框 -->
-    <el-dialog :title="$t('form.add')" v-model="isAddDialogVisible2">
+    <el-dialog :title="$t('form.edit')" v-model="isAddDialogVisible2">
       <el-form
         :model="addForm2"
         :rules="rules2"
@@ -232,96 +232,88 @@
         </el-button>
       </template>
     </el-dialog>
-    <!-- 新增对话框 -->
-    <el-dialog :title="$t('form.add')" v-model="isAddDialogVisible">
+
+    <!-- 编辑订单对话框 -->
+    <el-dialog :title="$t('form.edit')" v-model="isAddDialogVisible">
       <el-form
         :model="addForm"
         :rules="rules"
         ref="addFormRef"
         label-width="100px"
       >
-        <el-form-item :label="$t('form.supportPay')" prop="supportPay">
-          <el-select v-model="addForm.supportPay" @change="changeSupportPay">
+        <el-form-item :label="$t('form.coin')" prop="coin">
+          <el-select v-model="addForm.coin" placeholder="Select Coin">
             <el-option
-              v-for="item in paymentOptions"
-              :key="item.key"
-              :label="item.name"
-              :value="item.key"
+              v-for="item in coinOptions"
+              :key="item.id"
+              :label="item.value"
+              :value="item.id"
             ></el-option>
           </el-select>
         </el-form-item>
+
+        <el-form-item :label="$t('form.legalCurrency')" prop="legalCurrency">
+          <el-select
+            v-model="addForm.legalCurrency"
+            placeholder="Select Currency"
+          >
+            <el-option
+              v-for="item in legalCurrencyOptions"
+              :key="item.id"
+              :label="item.value"
+              :value="item.id"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item :label="$t('form.unitPrice')" prop="unitPrice">
+          <el-input type="number" v-model="addForm.unitPrice"></el-input>
+        </el-form-item>
+        <el-form-item :label="$t('form.totalPrice')" prop="totalPrice">
+          <el-input type="number" v-model="addForm.totalPrice"></el-input>
+        </el-form-item>
+        <el-form-item
+          :label="$t('form.realTransferPrice')"
+          prop="realTransferPrice"
+        >
+          <el-input
+            type="number"
+            v-model="addForm.realTransferPrice"
+          ></el-input>
+        </el-form-item>
+        <el-form-item
+          :label="$t('form.inServiceChargePrice')"
+          prop="inServiceChargePrice"
+        >
+          <el-input
+            type="number"
+            v-model="addForm.inServiceChargePrice"
+          ></el-input>
+        </el-form-item>
+        <el-form-item :label="$t('form.proxyPrice')" prop="proxyPrice">
+          <el-input type="number" v-model="addForm.proxyPrice"></el-input>
+        </el-form-item>
         <el-form-item :label="$t('form.quantity')" prop="quantity">
-          <el-input v-model="addForm.quantity"></el-input>
+          <el-input type="number" v-model="addForm.quantity"></el-input>
+        </el-form-item>
+        <el-form-item :label="$t('form.realQuantity')" prop="realQuantity">
+          <el-input type="number" v-model="addForm.realQuantity"></el-input>
+        </el-form-item>
+        <el-form-item :label="$t('form.transferName')" prop="transferName">
+          <el-input type="text" v-model="addForm.transferName"></el-input>
         </el-form-item>
         <el-form-item :label="$t('form.payee')" prop="payee">
-          <el-input v-model="addForm.payee"></el-input>
+          <el-input type="text" v-model="addForm.payee"></el-input>
         </el-form-item>
-        <template v-if="addForm.supportPay === 1">
-          <el-form-item :label="$t('form.openingBank')" prop="openingBank">
-            <el-input v-model="addForm.openingBank"></el-input>
-          </el-form-item>
-          <el-form-item :label="$t('form.bank')" prop="bank">
-            <el-input v-model="addForm.bank"></el-input>
-          </el-form-item>
-        </template>
-        <template v-if="addForm.supportPay === 2">
-          <el-form-item
-            :label="$t('form.uploadWechatQRcode')"
-            prop="wechatQRcode"
-          >
-            <el-upload
-              class="upload-demo"
-              :before-upload="beforeUpload"
-              :show-file-list="false"
-              :http-request="(file) => customUpload(file, 'wechatQRcode')"
-              :limit="2"
-            >
-              <el-button type="text">{{
-                $t("register.uploadInHand")
-              }}</el-button>
-            </el-upload>
-            <span v-if="addForm.wechatQRcode">
-              <el-image
-                style="width: 100px; height: 100px"
-                :src="imgUrl.wechatQRcode"
-                :zoom-rate="1.2"
-                :max-scale="7"
-                :min-scale="0.2"
-                :preview-src-list="[imgUrl.wechatQRcode]"
-                :initial-index="1"
-                fit="cover"
-            /></span>
-          </el-form-item>
-        </template>
-        <template v-if="addForm.supportPay === 3">
-          <el-form-item
-            :label="$t('form.uploadAlipayQRcode')"
-            prop="alipayQRcode"
-          >
-            <el-upload
-              class="upload-demo"
-              :before-upload="beforeUpload"
-              :show-file-list="false"
-              :http-request="(file) => customUpload(file, 'alipayQRcode')"
-              :limit="2"
-            >
-              <el-button type="text">{{
-                $t("register.uploadInHand")
-              }}</el-button>
-            </el-upload>
-            <span v-if="addForm.alipayQRcode">
-              <el-image
-                style="width: 100px; height: 100px"
-                :src="imgUrl.alipayQRcode"
-                :zoom-rate="1.2"
-                :max-scale="7"
-                :min-scale="0.2"
-                :preview-src-list="[imgUrl.alipayQRcode]"
-                :initial-index="1"
-                fit="cover"
-            /></span>
-          </el-form-item>
-        </template>
+        <el-form-item
+          :label="$t('form.outServiceChargePrice')"
+          prop="outServiceChargePrice"
+        >
+          <el-input
+            type="number"
+            v-model="addForm.outServiceChargePrice"
+          ></el-input>
+        </el-form-item>
       </el-form>
       <template #footer>
         <el-button @click="isAddDialogVisible = false">
@@ -332,7 +324,7 @@
           :loading="dialogLoading"
           @click="handleAddSubmit"
         >
-          {{ $t("form.add") }}
+          {{ $t("form.confirm") }}
         </el-button>
       </template>
     </el-dialog>
@@ -342,21 +334,15 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import { useI18n } from "vue-i18n";
-import {
-  addProduct,
-  queryOutOrderList,
-  updateOutOrderStatus,
-} from "@/api/otc.js";
-import {
-  getLegalCurrencyDict,
-  getCoinDict,
-  createOutOrder,
-} from "@/api/buyer.js";
-import { updateInOrderStatus, shareOutOrderToOtc } from "@/api/agent.js";
+import { queryOutOrderList, updateOutOrderStatus } from "@/api/otc.js";
+import { getLegalCurrencyDict, getCoinDict } from "@/api/buyer.js";
+import { shareOutOrderToOtc, updateOutOrder } from "@/api/agent.js";
 import { ElMessage } from "element-plus";
 import moment from "moment";
 import { getPlay, getStatus } from "@/utils/enumerate.js";
 import { uploadPicture, previewPicture } from "@/api/file";
+import { assignSelectedData, clearFormFields } from "@/utils/tool.js";
+
 const paymentOptions = computed(() => getPlay());
 
 const { t } = useI18n();
@@ -369,47 +355,67 @@ const isAddDialogVisible2 = ref(false);
 // 表单相关状态
 const searchForm = ref({ coin: "", legalCurrency: "", status: "" });
 const addForm = ref({
-  supportPay: "",
-  wechatQRcode: "",
-  alipayQRcode: "",
-  bank: "",
-  payee: "",
-  openingBank: "",
+  coin: "",
+  legalCurrency: "",
+  unitPrice: "",
+  totalPrice: "",
+  realTransferPrice: "",
+  proxyPrice: "",
   quantity: "",
+  realQuantity: "",
+  transferName: "",
+  outOrderId: "",
+  //
+  outServiceChargePrice: "",
+  payee: "",
 });
 const addForm2 = ref({
   email: "",
 });
 const addFormRef2 = ref(null);
-const imgUrl = ref({
-  alipayQRcode: "",
-  wechatQRcode: "",
-});
-// 自定义上传配置
-const beforeUpload = (file) => {
-  const isJPG = file.type === "image/jpeg" || file.type === "image/png";
-  const isLt2M = file.size / 1024 / 1024 < 2;
 
-  if (!isJPG) {
-    ElMessage.error("上传图片只能是 JPG/PNG 格式!");
-  }
-  if (!isLt2M) {
-    ElMessage.error("上传图片大小不能超过 2MB!");
-  }
-  return isJPG && isLt2M;
-};
-const customUpload = async ({ file, onSuccess, onError }, field) => {
-  try {
-    const response = await uploadPicture({ file: file });
-    addForm.value[field] = response.data.pictureId;
-    const url = await previewPicture({ pictureId: response.data.pictureId });
-    const base64Url = `data:image/jpeg;base64,${url.data.picture}`;
-    imgUrl.value[field] = base64Url;
-    ElMessage.success("图片上传成功");
-  } catch (error) {
-    onError(error);
-  }
-};
+const rules = ref({
+  coin: [{ required: true, message: t("form.requiredText"), trigger: "blur" }],
+  supportPay: [
+    { required: true, message: t("form.requiredText"), trigger: "blur" },
+  ],
+  unitPrice: [
+    { required: true, message: t("form.requiredText"), trigger: "blur" },
+  ],
+  legalCurrency: [
+    {
+      required: true,
+      message: t("form.requiredText"),
+      trigger: "blur",
+    },
+  ],
+  totalPrice: [
+    { required: true, message: t("form.requiredText"), trigger: "blur" },
+  ],
+  realTransferPrice: [
+    { required: true, message: t("form.requiredText"), trigger: "blur" },
+  ],
+  inServiceChargePrice: [
+    { required: true, message: t("form.requiredText"), trigger: "blur" },
+  ],
+  proxyPrice: [
+    { required: true, message: t("form.requiredText"), trigger: "blur" },
+  ],
+  quantity: [
+    { required: true, message: t("form.requiredText"), trigger: "blur" },
+  ],
+  transferName: [
+    { required: true, message: t("form.requiredText"), trigger: "blur" },
+  ],
+  realQuantity: [
+    { required: true, message: t("form.requiredText"), trigger: "blur" },
+  ],
+  outServiceChargePrice: [
+    { required: true, message: t("form.requiredText"), trigger: "blur" },
+  ],
+  payee: [{ required: true, message: t("form.requiredText"), trigger: "blur" }],
+});
+
 const rules2 = ref({
   email: [
     { required: true, message: t("login.email_placeholder"), trigger: "blur" },
@@ -418,26 +424,6 @@ const rules2 = ref({
       message: t("login.email_format_error"),
       trigger: ["blur", "change"],
     },
-  ],
-});
-const rules = ref({
-  supportPay: [
-    { required: true, message: t("form.requiredText"), trigger: "blur" },
-  ],
-  wechatQRcode: [
-    { required: true, message: t("form.requiredText"), trigger: "blur" },
-  ],
-  alipayQRcode: [
-    { required: true, message: t("form.requiredText"), trigger: "blur" },
-  ],
-  quantity: [
-    { required: true, message: t("form.requiredText"), trigger: "blur" },
-  ],
-  bank: [{ required: true, message: t("form.requiredText"), trigger: "blur" }],
-
-  payee: [{ required: true, message: t("form.requiredText"), trigger: "blur" }],
-  openingBank: [
-    { required: true, message: t("form.requiredText"), trigger: "blur" },
   ],
 });
 
@@ -478,30 +464,14 @@ const loadData = async () => {
   }
 };
 
-// 根据类型设置入参
-const setData = (value) => {
-  if (value.supportPay === 1) {
-    return {
-      payee: value.payee,
-      payType: value.supportPay,
-      cardId: value.bank,
-      openingBank: value.openingBank,
-      quantity: value.quantity,
-      qrCodeId: "",
-    };
-  }
-};
-
 // 新增产品
 const handleAddSubmit = () => {
   dialogLoading.value = true;
   addFormRef.value.validate(async (valid) => {
     if (valid) {
-      let newData = setData({ ...addForm.value });
-      console.log(newData, "newData", addForm.value);
       try {
-        await createOutOrder({ ...newData });
-        ElMessage.success(t("form.addSuccess"));
+        await updateOutOrder({ ...addForm.value });
+        ElMessage.success(t("form.success"));
         isAddDialogVisible.value = false;
         loadData(); // 重新加载数据
       } catch (error) {
@@ -574,9 +544,7 @@ const showAddDialog2 = (row) => {
 
 // 显示新增对话框
 const showAddDialog = (row) => {
-  addForm.value = {
-    ...row,
-  };
+  addForm.value = assignSelectedData(addForm.value, row);
 
   isAddDialogVisible.value = true;
 };

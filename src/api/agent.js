@@ -100,3 +100,24 @@ export const updatePriceRateConfig = (params) => {
     ...params,
   });
 };
+
+// 编辑入金订单
+export const updateInOrder = (params) => {
+  return http.post(`/updateInOrder`, {
+    ...params,
+  });
+};
+
+// 编辑出金订单
+export const updateOutOrder = (params) => {
+  return http.post(`/updateOutOrder`, {
+    ...params,
+  });
+};
+
+// 编辑提币订单
+export const updateWithdrawalOrder = (params) => {
+  return http.post(`/updateWithdrawalOrder`, {
+    ...params,
+  });
+};
