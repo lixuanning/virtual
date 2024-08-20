@@ -186,6 +186,16 @@ export default {
     waitForConfirmation: "等待广告发布者确认",
     confirmed: "交易已确认",
   },
+  dashboard: {
+    totalBalance: "总余额 (USDT)",
+    availableBalance: "可用余额 (USDT)",
+    frozenBalance: "冻结余额 (USDT)",
+    today: "今天",
+    last7Days: "最近7天",
+    completedOrders: "已完成订单",
+    purchaseAmount: "购买量",
+    salesAmount: "销售量",
+  },
   warning: {
     title: "⚠️ 交易须知与风险提醒",
     text1:
