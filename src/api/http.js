@@ -46,10 +46,11 @@ instance.interceptors.request.use(
     const role = store.getRole();
     config.headers["type"] = roleMap[role];
     let env = process.env.NODE_ENV;
-    if (env === "development") {
-      //开发环境添加api 开启跨域代理
-      config.url = `/api${config.url}`;
-    }
+    // if (env === "development") {
+    //   //开发环境添加api 开启跨域代理
+    //   config.url = `/api${config.url}`;
+    // }
+    config.url = `/api${config.url}`;
     if (config.data && config.data.file) {
       if (
         Object.prototype.toString.call(config.data.file) === "[object File]"
