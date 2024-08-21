@@ -51,6 +51,7 @@ instance.interceptors.request.use(
     //   config.url = `/api${config.url}`;
     // }
     config.url = `/api${config.url}`;
+
     if (config.data && config.data.file) {
       if (
         Object.prototype.toString.call(config.data.file) === "[object File]"
