@@ -61,3 +61,7 @@ export const updateMerchantInfo = (params) => {
     ...params,
   });
 };
+// 首页查询
+export const queryMerchantDashboard = () => {
+  return http.post(`/queryMerchantDashboard`);
+};

@@ -35,7 +35,7 @@
     </el-row>
 
     <el-row :gutter="20" class="order-summary">
-      <el-col :span="12">
+      <el-col :span="12" v-show="false">
         <el-card>
           <div class="card-header">
             <span>{{ $t("dashboard.completedOrders") }}</span>
@@ -51,13 +51,13 @@
           <div id="pie-chart" class="chart"></div>
         </el-card>
       </el-col>
-      <el-col :span="12">
+      <el-col :span="24">
         <el-card>
           <div class="card-header">
             <span>{{ $t("dashboard.revenueDetails") }}</span>
-            <el-link href="#" class="detail-link">{{
+            <!-- <el-link href="#" class="detail-link">{{
               $t("dashboard.details")
-            }}</el-link>
+            }}</el-link> -->
           </div>
           <div id="line-chart" class="chart"></div>
         </el-card>
@@ -71,10 +71,11 @@ import { ref, onMounted } from "vue";
 import { ElMessage } from "element-plus";
 import { useI18n } from "vue-i18n";
 import { queryOtcDashboard } from "@/api/otc";
+import { assignSelectedData, clearFormFields } from "@/utils/tool.js";
 
 import * as echarts from "echarts";
 
-const data = ref({});
+const data = ref({ otcAvailableBalance: "" });
 const timeFrame = ref("today");
 const { t } = useI18n();
 
@@ -85,7 +86,7 @@ const initCharts = () => {
 
   pieChart.setOption({
     title: {
-      text: t("completedOrders"),
+      //   text: t("completedOrders"),
       left: "center",
     },
     tooltip: {
@@ -108,14 +109,15 @@ const initCharts = () => {
 
   lineChart.setOption({
     title: {
-      text: t("revenueDetails"),
+      //   text: t("revenueDetails"),
       left: "center",
     },
     tooltip: {
       trigger: "axis",
     },
     legend: {
-      data: [t("purchaseAmount"), t("salesAmount")],
+      data: [t("dashboard.inOrder"), t("dashboard.outOrder")],
+      //   data: ["出金", "入金"],
     },
     xAxis: {
       type: "category",
@@ -126,12 +128,12 @@ const initCharts = () => {
     },
     series: [
       {
-        name: t("purchaseAmount"),
+        name: t("dashboard.inOrder"),
         type: "line",
         data: data.value.yforInOrder,
       },
       {
-        name: t("salesAmount"),
+        name: t("dashboard.outOrder"),
         type: "line",
         data: data.value.yforOutOrder,
       },
@@ -139,9 +141,10 @@ const initCharts = () => {
   });
 };
 const getData = async () => {
-  const { data } = await queryOtcDashboard();
-  console.log(data);
-  data.value = { ...data };
+  const response = await queryOtcDashboard();
+  const newData = response.data;
+  Object.assign(data.value, newData);
+  console.log(data.value.otcAvailableBalance);
   initCharts();
 };
 onMounted(() => {

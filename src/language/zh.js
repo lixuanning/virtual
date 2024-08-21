@@ -195,6 +195,9 @@ export default {
     completedOrders: "已完成订单",
     purchaseAmount: "购买量",
     salesAmount: "销售量",
+    revenueDetails: "明细",
+    outOrder: "出金",
+    inOrder: "入金",
   },
   warning: {
     title: "⚠️ 交易须知与风险提醒",
