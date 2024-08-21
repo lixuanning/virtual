@@ -179,9 +179,10 @@
             <!-- <el-button type="text" @click="showEditDialog(scope.row, 2)">
               {{ $t("form.exchangeRate") }}
             </el-button> -->
-            <el-button type="text" @click="showAddDialog(scope.row)">{{
+
+            <!-- <el-button type="text" @click="showAddDialog(scope.row)">{{
               $t("form.edit")
-            }}</el-button>
+            }}</el-button> -->
           </template>
         </el-table-column>
       </el-table>

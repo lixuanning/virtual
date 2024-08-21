@@ -151,9 +151,9 @@
             <el-button type="text" @click="showEditDialog(scope.row, 2)">
               {{ $t("form.topUp") }}
             </el-button>
-            <el-button type="text" @click="showAddDialog(scope.row)">{{
+            <!-- <el-button type="text" @click="showAddDialog(scope.row)">{{
               $t("form.edit")
-            }}</el-button>
+            }}</el-button> -->
           </template>
         </el-table-column>
       </el-table>
@@ -169,7 +169,7 @@
       </div>
     </el-main>
     <!-- 修改状态对话框 -->
-    <el-dialog :title="$t('form.modifyStatus')" v-model="isAddDialogVisible2">
+    <el-dialog :title="$t('form.setting')" v-model="isAddDialogVisible2">
       <el-form
         :model="updateStatusData"
         :rules="rules2"
