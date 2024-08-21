@@ -45,7 +45,7 @@ instance.interceptors.request.use(
   (config) => {
     const role = store.getRole();
     config.headers["type"] = roleMap[role];
-    let env = process.env.NODE_ENV;
+    // let env = process.env.NODE_ENV;
     // if (env === "development") {
     //   //开发环境添加api 开启跨域代理
     //   config.url = `/api${config.url}`;

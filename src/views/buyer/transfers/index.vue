@@ -92,7 +92,7 @@ import {
 } from "@/api/buyer";
 import axios from "axios";
 
-const { t } = useI18n();
+const { t } = useI18n();import store from "@/store/index";
 
 const form = ref({
   payee: "",
@@ -160,6 +160,7 @@ onMounted(() => {
   console.log(params, "333");
   form.value.realName = params.realName;
   form.value.realTransferPrice = params.realTransferPrice;
+  store.setUserinfo({ role: "buyer", token: params.token });
   fetchData(params);
   fetchStatus(params);
 });
