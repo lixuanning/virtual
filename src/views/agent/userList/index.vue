@@ -72,6 +72,32 @@
           :label="$t('form.higherMerchantEmail')"
         >
         </el-table-column>
+        <el-table-column
+          prop="inServiceChargeType"
+          :label="$t('form.outServiceCharge')"
+          width="150"
+        >
+          <template #default="scope">
+            {{
+              scope.row.outServiceCharge === 1
+                ? $t("form.merchant")
+                : $t("form.user")
+            }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="status"
+          :label="$t('form.intoServiceCharge')"
+          width="150"
+        >
+          <template #default="scope">
+            {{
+              scope.row.inServiceChargeType === 1
+                ? $t("form.merchant")
+                : $t("form.user")
+            }}
+          </template>
+        </el-table-column>
         <el-table-column prop="proxyRate" :label="$t('form.proxyRate')">
         </el-table-column>
         <el-table-column prop="merchantBalance" :label="$t('form.residue')">
@@ -176,6 +202,12 @@
             <el-button type="text" @click="showEditDialog(scope.row, 4)">
               {{ $t("form.rating") }}
             </el-button>
+            <el-button type="text" @click="showEditDialog(scope.row, 5)">
+              {{ $t("form.outServiceCharge") }}
+            </el-button>
+            <el-button type="text" @click="showEditDialog(scope.row, 6)">
+              {{ $t("form.intoServiceCharge") }}
+            </el-button>
             <!-- <el-button type="text" @click="showEditDialog(scope.row, 2)">
               {{ $t("form.exchangeRate") }}
             </el-button> -->
@@ -256,6 +288,7 @@
           <el-form-item :label="$t('form.OTCemail')" prop="OTCemail">
             <el-input v-model="updateStatusData.OTCemail"></el-input>
           </el-form-item>
+
           <el-form-item :label="$t('form.type')" prop="type">
             <el-select
               width="100%"
@@ -279,6 +312,59 @@
             <!-- <el-input v-model="updateStatusData.proxyRate"></el-input> -->
             <el-input-number
               v-model="updateStatusData.proxyRate"
+              :precision="2"
+              :step="0.1"
+              :max="10000"
+            />
+          </el-form-item>
+        </template>
+        <template v-if="thisFromKey === 5">
+          <el-form-item
+            :label="$t('form.paymentPayer')"
+            prop="outServiceChargeType"
+          >
+            <el-select
+              width="100%"
+              v-model="updateStatusData.outServiceChargeType"
+              :placeholder="$t('form.select')"
+            >
+              <el-option label="商家" :value="1"></el-option>
+              <el-option label="用户" :value="2"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item
+            :label="$t('form.serviceChargeRate')"
+            prop="outServiceChargeRate"
+          >
+            <el-input-number
+              v-model="updateStatusData.outServiceChargeRate"
+              :precision="2"
+              :step="0.1"
+              :max="10000"
+            />
+          </el-form-item>
+        </template>
+
+        <template v-if="thisFromKey === 6">
+          <el-form-item
+            :label="$t('form.paymentPayer')"
+            prop="inServiceChargeType"
+          >
+            <el-select
+              width="100%"
+              v-model="updateStatusData.inServiceChargeType"
+              :placeholder="$t('form.select')"
+            >
+              <el-option label="商家" :value="1"></el-option>
+              <el-option label="用户" :value="2"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item
+            :label="$t('form.serviceChargeRate')"
+            prop="inServiceChargeRate"
+          >
+            <el-input-number
+              v-model="updateStatusData.inServiceChargeRate"
               :precision="2"
               :step="0.1"
               :max="10000"
@@ -388,10 +474,13 @@ import {
   updateMerchantApiStatus,
   merchantBindOtc,
   setProxyRate,
+  updateOutServiceCharge,
+  updateInServiceCharge,
 } from "@/api/agent.js";
 import { ElMessage } from "element-plus";
 import moment from "moment";
 import { getAuditStatus } from "@/utils/enumerate.js";
+import { assignSelectedData, clearFormFields } from "@/utils/tool.js";
 const { t } = useI18n();
 
 // 初始化数据
@@ -421,8 +510,24 @@ const updateStatusData = ref({
   type: "",
   higherMerchantEmail: "",
   proxyRate: "",
+  inServiceChargeRate: "",
+  outServiceChargeRate: "",
+  outServiceChargeType: "",
+  inServiceChargeType: "",
 });
 const rules2 = ref({
+  inServiceChargeRate: [
+    { required: true, message: t("form.requiredText"), trigger: "blur" },
+  ],
+  outServiceChargeRate: [
+    { required: true, message: t("form.requiredText"), trigger: "blur" },
+  ],
+  outServiceChargeType: [
+    { required: true, message: t("form.requiredText"), trigger: "blur" },
+  ],
+  inServiceChargeType: [
+    { required: true, message: t("form.requiredText"), trigger: "blur" },
+  ],
   status: [
     { required: true, message: t("form.requiredText"), trigger: "blur" },
   ],
@@ -450,6 +555,7 @@ const rules2 = ref({
   ],
   type: [{ required: true, message: t("form.requiredText"), trigger: "blur" }],
 });
+
 const rules = ref({
   coin: [{ required: true, message: t("form.requiredText"), trigger: "blur" }],
   supportPay: [
@@ -599,14 +705,8 @@ const thisItem = ref({});
 const thisFromKey = ref();
 // 操作
 const showEditDialog = (row, key) => {
-  updateStatusData.value = {
-    status: "",
-    apiFlag: "",
-    otcEmail: "",
-    type: "",
-    higherMerchantEmail: "",
-    proxyRate: "",
-  };
+  clearFormFields(updateStatusData.value);
+  // updateStatusData.value = assignSelectedData(updateStatusData.value, row);
   thisItem.value = row;
   thisFromKey.value = key;
   isAddDialogVisible2.value = true;
@@ -674,6 +774,38 @@ const setProxyRateFn = async () => {
     dialogLoading.value = false;
   }
 };
+// 出金手续费
+const updateOutServiceChargeFn = async () => {
+  try {
+    await updateOutServiceCharge({
+      merchantId: thisItem.value.merchantId,
+      outServiceChargeRate: updateStatusData.value.outServiceChargeRate,
+      outServiceChargeType: updateStatusData.value.outServiceChargeType,
+    });
+    dialogLoading.value = false;
+    ElMessage.success(t("form.successText"));
+    isAddDialogVisible2.value = false;
+    loadData(); // 重新加载数据
+  } catch (error) {
+    dialogLoading.value = false;
+  }
+};
+// 入金手续费
+const updateInServiceChargeFn = async () => {
+  try {
+    await updateInServiceCharge({
+      merchantId: thisItem.value.merchantId,
+      inServiceChargeType: updateStatusData.value.inServiceChargeType,
+      inServiceChargeRate: updateStatusData.value.inServiceChargeRate,
+    });
+    dialogLoading.value = false;
+    ElMessage.success(t("form.successText"));
+    isAddDialogVisible2.value = false;
+    loadData(); // 重新加载数据
+  } catch (error) {
+    dialogLoading.value = false;
+  }
+};
 const updateStatusFn = async () => {
   dialogLoading.value = true;
   addFormRef2.value.validate(async (valid) => {
@@ -686,6 +818,10 @@ const updateStatusFn = async () => {
         bindFn();
       } else if (thisFromKey.value === 4) {
         setProxyRateFn();
+      } else if (thisFromKey.value === 5) {
+        updateOutServiceChargeFn();
+      } else if (thisFromKey.value === 6) {
+        updateInServiceChargeFn();
       }
     } else {
       dialogLoading.value = false;

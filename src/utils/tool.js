@@ -15,7 +15,7 @@ export const clearFormFields = (formObject) => {
     if (typeof formObject[key] === "string") {
       formObject[key] = ""; // 如果是字符串，重置为空字符串
     } else if (typeof formObject[key] === "number") {
-      formObject[key] = 0; // 如果是数字，重置为 0
+      formObject[key] = ""; // 如果是数字，重置为 0
     } else if (typeof formObject[key] === "boolean") {
       formObject[key] = false; // 如果是布尔值，重置为 false
     } else if (Array.isArray(formObject[key])) {

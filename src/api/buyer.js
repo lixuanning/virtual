@@ -65,3 +65,10 @@ export const updateMerchantInfo = (params) => {
 export const queryMerchantDashboard = () => {
   return http.post(`/queryMerchantDashboard`);
 };
+
+//设置API
+export const updateApiInfo = (params) => {
+  return http.post(`/updateApiInfo`, {
+    ...params,
+  });
+};

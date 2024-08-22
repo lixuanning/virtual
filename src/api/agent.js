@@ -121,3 +121,17 @@ export const updateWithdrawalOrder = (params) => {
     ...params,
   });
 };
+
+// 出金手续费
+export const updateOutServiceCharge = (params) => {
+  return http.post(`/updateOutServiceCharge`, {
+    ...params,
+  });
+};
+
+// 入金手续费
+export const updateInServiceCharge = (params) => {
+  return http.post(`/updateInServiceCharge`, {
+    ...params,
+  });
+};

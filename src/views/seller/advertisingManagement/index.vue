@@ -198,7 +198,7 @@
         <el-form-item :label="$t('form.supportPay')" prop="supportPay">
           <el-checkbox-group v-model="addForm.supportPay">
             <el-checkbox
-              v-for="item in playList"
+              v-for="item in getPlay()"
               :key="item.key"
               :label="item.key"
               >{{ item.name }}</el-checkbox
@@ -241,6 +241,7 @@ import {
   updateProductStatus,
 } from "@/api/otc.js";
 import { ElMessage } from "element-plus";
+import { getPlay } from "@/utils/enumerate";
 import moment from "moment";
 const { t } = useI18n();
 
@@ -300,21 +301,6 @@ const tableLoading = ref(false);
 const dialogLoading = ref(false);
 const isAddDialogVisible = ref(false);
 const addFormRef = ref(null);
-// 1:银行卡 2:微信 3:支付宝
-const playList = ref([
-  {
-    key: 2,
-    name: "银行卡",
-  },
-  {
-    key: 1,
-    name: "微信",
-  },
-  {
-    key: 1,
-    name: "支付宝",
-  },
-]);
 
 // 模拟获取 coin 和 legalCurrency 列表
 const fetchOptions = () => {

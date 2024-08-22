@@ -1,126 +1,136 @@
 <template>
   <div class="userSetting">
-    <el-form
-      :model="form"
-      :rules="registerRules"
-      ref="formRef"
-      @submit.prevent="submitForm"
-      label-width="150px"
-    >
-      <!-- <el-form-item :label="$t('login.email')" prop="email">
-        <el-input
-          v-model="form.email"
-          :placeholder="$t('login.email')"
-        ></el-input>
-      </el-form-item>
-
-      <el-form-item :label="$t('register.name')" prop="name">
-        <el-input
-          v-model="form.name"
-          :placeholder="$t('register.name')"
-        ></el-input>
-      </el-form-item>
-
-      <el-form-item :label="$t('register.mobile')" prop="mobile">
-        <el-input
-          v-model="form.mobile"
-          :placeholder="$t('register.mobile')"
-        ></el-input>
-      </el-form-item>
-
-      <el-form-item :label="$t('login.password')" prop="password">
-        <el-input
-          type="password"
-          v-model="form.password"
-          :placeholder="$t('login.password')"
-        ></el-input>
-      </el-form-item> -->
-
-      <!-- 注册表单部分 -->
-      <el-form-item :label="$t('register.idCardFrontId')" prop="idCardFrontId">
-        <el-upload
-          class="upload-demo"
-          :before-upload="beforeUpload"
-          :show-file-list="false"
-          :http-request="(file) => customUpload(file, 'idCardFrontId')"
-          :limit="1"
+    <el-row>
+      <el-col :span="12">
+        <h3>用户设置</h3>
+        <el-form
+          :model="form"
+          :rules="registerRules"
+          ref="formRef"
+          @submit.prevent="submitForm"
+          label-width="150px"
         >
-          <el-button type="text">{{ $t("register.uploadFront") }}</el-button>
-        </el-upload>
-        <span v-if="imgUrl.idCardFrontId">
-          <el-image
-            style="width: 100px; height: 100px"
-            :src="`data:image/jpeg;base64,${imgUrl.idCardFrontId}`"
-            :zoom-rate="1.2"
-            :max-scale="7"
-            :min-scale="0.2"
-            :preview-src-list="[
-              `data:image/jpeg;base64,${imgUrl.idCardFrontId}`,
-            ]"
-            :initial-index="1"
-            fit="cover"
-        /></span>
-      </el-form-item>
+          <!-- 注册表单部分 -->
+          <el-form-item
+            :label="$t('register.idCardFrontId')"
+            prop="idCardFrontId"
+          >
+            <el-upload
+              class="upload-demo"
+              :before-upload="beforeUpload"
+              :show-file-list="false"
+              :http-request="(file) => customUpload(file, 'idCardFrontId')"
+              :limit="1"
+            >
+              <el-button type="text">{{
+                $t("register.uploadFront")
+              }}</el-button>
+            </el-upload>
+            <span v-if="imgUrl.idCardFrontId">
+              <el-image
+                style="width: 100px; height: 100px"
+                :src="`data:image/jpeg;base64,${imgUrl.idCardFrontId}`"
+                :zoom-rate="1.2"
+                :max-scale="7"
+                :min-scale="0.2"
+                :preview-src-list="[
+                  `data:image/jpeg;base64,${imgUrl.idCardFrontId}`,
+                ]"
+                :initial-index="1"
+                fit="cover"
+            /></span>
+          </el-form-item>
 
-      <el-form-item :label="$t('register.idCardBackId')" prop="idCardBackId">
-        <el-upload
-          class="upload-demo"
-          :before-upload="beforeUpload"
-          :show-file-list="false"
-          :http-request="(file) => customUpload(file, 'idCardBackId')"
-          :limit="2"
+          <el-form-item
+            :label="$t('register.idCardBackId')"
+            prop="idCardBackId"
+          >
+            <el-upload
+              class="upload-demo"
+              :before-upload="beforeUpload"
+              :show-file-list="false"
+              :http-request="(file) => customUpload(file, 'idCardBackId')"
+              :limit="2"
+            >
+              <el-button type="text">{{ $t("register.uploadBack") }}</el-button>
+            </el-upload>
+            <span v-if="imgUrl.idCardBackId" class="img">
+              <el-image
+                style="width: 100px; height: 100px"
+                :src="`data:image/jpeg;base64,${imgUrl.idCardBackId}`"
+                :zoom-rate="1.2"
+                :max-scale="7"
+                :min-scale="0.2"
+                :preview-src-list="[
+                  `data:image/jpeg;base64,${imgUrl.idCardBackId}`,
+                ]"
+                :initial-index="1"
+                fit="cover"
+            /></span>
+          </el-form-item>
+
+          <el-form-item
+            :label="$t('register.idCardInHandId')"
+            prop="idCardInHandId"
+          >
+            <el-upload
+              class="upload-demo"
+              :before-upload="beforeUpload"
+              :show-file-list="false"
+              :http-request="(file) => customUpload(file, 'idCardInHandId')"
+              :limit="2"
+            >
+              <el-button type="text">{{
+                $t("register.uploadInHand")
+              }}</el-button>
+            </el-upload>
+            <span v-if="imgUrl.idCardInHandId">
+              <el-image
+                style="width: 100px; height: 100px"
+                :src="`data:image/jpeg;base64,${imgUrl.idCardInHandId}`"
+                :zoom-rate="1.2"
+                :max-scale="7"
+                :min-scale="0.2"
+                :preview-src-list="[
+                  `data:image/jpeg;base64,${imgUrl.idCardInHandId}`,
+                ]"
+                :initial-index="1"
+                fit="cover"
+            /></span>
+          </el-form-item>
+
+          <el-form-item>
+            <div class="rigth">
+              <el-button type="primary" @click="submitForm">{{
+                $t("form.confirm")
+              }}</el-button>
+            </div>
+          </el-form-item>
+        </el-form>
+      </el-col>
+      <el-col :span="9">
+        <h3>API设置</h3>
+        <el-form
+          :model="apiInfo"
+          :rules="apiInfoRules"
+          ref="apiFormRef"
+          @submit.prevent="submitForm2"
+          label-width="150px"
         >
-          <el-button type="text">{{ $t("register.uploadBack") }}</el-button>
-        </el-upload>
-        <span v-if="imgUrl.idCardBackId" class="img">
-          <el-image
-            style="width: 100px; height: 100px"
-            :src="`data:image/jpeg;base64,${imgUrl.idCardBackId}`"
-            :zoom-rate="1.2"
-            :max-scale="7"
-            :min-scale="0.2"
-            :preview-src-list="[
-              `data:image/jpeg;base64,${imgUrl.idCardBackId}`,
-            ]"
-            :initial-index="1"
-            fit="cover"
-        /></span>
-      </el-form-item>
-
-      <el-form-item
-        :label="$t('register.idCardInHandId')"
-        prop="idCardInHandId"
-      >
-        <el-upload
-          class="upload-demo"
-          :before-upload="beforeUpload"
-          :show-file-list="false"
-          :http-request="(file) => customUpload(file, 'idCardInHandId')"
-          :limit="2"
-        >
-          <el-button type="text">{{ $t("register.uploadInHand") }}</el-button>
-        </el-upload>
-        <span v-if="imgUrl.idCardInHandId">
-          <el-image
-            style="width: 100px; height: 100px"
-            :src="`data:image/jpeg;base64,${imgUrl.idCardInHandId}`"
-            :zoom-rate="1.2"
-            :max-scale="7"
-            :min-scale="0.2"
-            :preview-src-list="[
-              `data:image/jpeg;base64,${imgUrl.idCardInHandId}`,
-            ]"
-            :initial-index="1"
-            fit="cover"
-        /></span>
-      </el-form-item>
-
-      <el-form-item>
-        <el-button type="primary" @click="submitForm">{{
-          $t("form.confirm")
-        }}</el-button>
-      </el-form-item>
-    </el-form>
+          <el-form-item :label="$t('form.accessKey')" prop="accessKey">
+            <el-input v-model="apiInfo.accessKey"></el-input>
+          </el-form-item>
+          <el-form-item :label="$t('form.callbackUrl')" prop="callbackUrl">
+            <el-input v-model="apiInfo.callbackUrl"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="submitForm2">{{
+              $t("form.confirm")
+            }}</el-button>
+          </el-form-item>
+        </el-form>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
@@ -133,7 +143,11 @@ import store from "@/store/index";
 import { uploadPicture, previewPicture } from "@/api/file";
 import { registerForOtc } from "@/api/otc";
 import { login } from "@/api/auth";
-import { getUserInfoForMerchant, updateMerchantInfo } from "@/api/buyer";
+import {
+  getUserInfoForMerchant,
+  updateMerchantInfo,
+  updateApiInfo,
+} from "@/api/buyer";
 const { locale, t } = useI18n();
 const router = useRouter();
 const formRef = ref(null);
@@ -144,11 +158,12 @@ const loginForm = ref({
   email: "",
   password: "",
 });
+const apiInfo = ref({
+  accessKey: "",
+  callbackUrl: "",
+});
+const apiFormRef = ref(null);
 const form = ref({
-  //   email: "",
-  //   name: "",
-  //   mobile: "",
-  //   password: "",
   idCardFrontId: "",
   idCardBackId: "",
   idCardInHandId: "",
@@ -170,23 +185,18 @@ const getUserData = async () => {
   form.value.idCardFrontId = res.data.idCardFrontId;
   form.value.idCardBackId = res.data.idCardBackId;
   form.value.idCardInHandId = res.data.idCardInHandId;
+
+  apiInfo.value.accessKey = res.data.accessKey;
+  apiInfo.value.callbackUrl = res.data.callbackUrl;
+
   console.log(imgUrl, "imgUrl");
 };
-const loginRules = ref({
-  email: [
-    { required: true, message: t("login.email_placeholder"), trigger: "blur" },
-    {
-      type: "email",
-      message: t("login.email_format_error"),
-      trigger: ["blur", "change"],
-    },
+const apiInfoRules = ref({
+  accessKey: [
+    { required: true, message: t("form.requiredText"), trigger: "blur" },
   ],
-  password: [
-    {
-      required: true,
-      message: t("login.password_placeholder"),
-      trigger: "blur",
-    },
+  callbackUrl: [
+    { required: true, message: t("form.requiredText"), trigger: "blur" },
   ],
 });
 
@@ -264,6 +274,17 @@ const submitForm = async () => {
   });
 };
 
+const submitForm2 = async () => {
+  apiFormRef.value.validate(async (valid) => {
+    if (valid) {
+      const res = await updateApiInfo({
+        ...apiInfo.value,
+      });
+      ElMessage.success(t("form.success"));
+      isLogin.value = true;
+    }
+  });
+};
 const forgotPassword = () => {
   // 模拟发送邮件
   ElMessage.success("重置密码邮件已发送，请检查您的邮箱");
