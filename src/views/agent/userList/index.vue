@@ -277,8 +277,8 @@
             <p>
               {{
                 item.type === 1
-                  ? $t("routerName.withdraw")
-                  : $t("routerName.recharge")
+                  ? $t("routerName.recharge")
+                  : $t("routerName.withdraw")
               }}：{{ item.otcEmail }}
             </p>
           </div>
@@ -312,8 +312,8 @@
             <!-- <el-input v-model="updateStatusData.proxyRate"></el-input> -->
             <el-input-number
               v-model="updateStatusData.proxyRate"
-              :precision="2"
-              :step="0.1"
+              :precision="4"
+              :step="0.0001"
               :max="10000"
             />
           </el-form-item>
