@@ -118,6 +118,24 @@
         <el-table-column :label="$t('form.actions')" width="100" fixed="right">
           <template #default="scope">
             <el-popconfirm
+              :title="
+                scope.row.status === 1
+                  ? $t('form.disableText')
+                  : $t('form.enableText')
+              "
+              confirm-button-text="是"
+              cancel-button-text="否"
+              @confirm="() => updateStatus(scope.row)"
+            >
+              <template #reference>
+                <el-button type="text">{{
+                  scope.row.status === 1
+                    ? $t("form.disable")
+                    : $t("form.enable")
+                }}</el-button>
+              </template>
+            </el-popconfirm>
+            <el-popconfirm
               :title="$t('form.confirmDelete')"
               confirm-button-text="是"
               cancel-button-text="否"
@@ -253,6 +271,7 @@ import {
   addPaymentConfig,
   getPaymentConfigForOtc,
   delPaymentConfig,
+  updatePaymentConfigStatus,
 } from "@/api/otc.js";
 import { ElMessage } from "element-plus";
 import moment from "moment";
@@ -411,6 +430,16 @@ const handleAddSubmit = () => {
 // 搜索功能
 const handleSearch = () => {
   currentPage.value = 1;
+  loadData();
+};
+// 启用禁用
+const updateStatus = async (row) => {
+  const res = await updatePaymentConfigStatus({
+    id: row.id,
+    status: row.status === 1 ? 2 : 1,
+  });
+  console.log(res);
+  ElMessage.success(t("form.success"));
   loadData();
 };
 //删除

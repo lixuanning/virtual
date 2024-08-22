@@ -67,6 +67,10 @@ export const addPaymentConfig = (params) => {
 export const delPaymentConfig = (params) => {
   return http.post(`/delPaymentConfig`, { ...params });
 };
+// OTC 配置修改状态
+export const updatePaymentConfigStatus = (params) => {
+  return http.post(`/updatePaymentConfigStatus`, { ...params });
+};
 
 // 法币
 export const getLegalCurrencyDict = () => {
