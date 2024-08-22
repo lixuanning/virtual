@@ -1,6 +1,8 @@
 .DS_Store
 node_modules
 /dist
+# 忽略 dist.zip 文件
+dist.zip
 
 
 # local env files
