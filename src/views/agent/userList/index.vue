@@ -706,7 +706,10 @@ const thisFromKey = ref();
 // 操作
 const showEditDialog = (row, key) => {
   clearFormFields(updateStatusData.value);
-  // updateStatusData.value = assignSelectedData(updateStatusData.value, row);
+  updateStatusData.value = assignSelectedData(updateStatusData.value, row);
+  updateStatusData.value.type = "";
+  updateStatusData.value.OTCemail = "";
+  console.log(updateStatusData.value, "updateStatusData.value");
   thisItem.value = row;
   thisFromKey.value = key;
   isAddDialogVisible2.value = true;
