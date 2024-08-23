@@ -196,12 +196,13 @@
       >
         <el-form-item :label="$t('form.supportPay')" prop="supportPay">
           <el-select v-model="addForm.supportPay" @change="changeSupportPay">
-            <el-option
+            <!-- <el-option
               v-for="item in paymentOptions"
               :key="item.key"
               :label="item.name"
               :value="item.key"
-            ></el-option>
+            ></el-option> -->
+            <el-option label="银行卡" :value="1"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item :label="$t('form.quantity')" prop="quantity">

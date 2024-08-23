@@ -210,7 +210,7 @@ const legalCurrencyOptions = ref([]);
 // 表单相关状态
 const searchForm = ref({ coin: "", legalCurrency: "", status: "" });
 const addForm = ref({
-  coin: "",
+  coin: "USDT",
   quantity: "",
   walletUrl: "",
 });
@@ -347,7 +347,7 @@ const handlePageChange = (page) => {
 // 显示新增对话框
 const showAddDialog = () => {
   addForm.value = {
-    coin: "",
+    coin: "USDT",
     quantity: "",
     walletUrl: "",
   };

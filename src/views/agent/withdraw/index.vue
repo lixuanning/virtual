@@ -177,8 +177,8 @@
           <template #default="scope">
             <el-popconfirm
               :title="$t('form.cancelText')"
-              confirm-button-text="是"
-              cancel-button-text="否"
+              :confirm-button-text="$t('form.yes')"
+              :cancel-button-text="$t('form.no')"
               @confirm="() => handleDelete(scope.row)"
             >
               <template #reference>
@@ -281,7 +281,7 @@
             v-model="addForm.realTransferPrice"
           ></el-input>
         </el-form-item>
-        <el-form-item
+        <!-- <el-form-item
           :label="$t('form.inServiceChargePrice')"
           prop="inServiceChargePrice"
         >
@@ -289,10 +289,10 @@
             type="number"
             v-model="addForm.inServiceChargePrice"
           ></el-input>
-        </el-form-item>
-        <el-form-item :label="$t('form.proxyPrice')" prop="proxyPrice">
+        </el-form-item> -->
+        <!-- <el-form-item :label="$t('form.proxyPrice')" prop="proxyPrice">
           <el-input type="number" v-model="addForm.proxyPrice"></el-input>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item :label="$t('form.quantity')" prop="quantity">
           <el-input type="number" v-model="addForm.quantity"></el-input>
         </el-form-item>

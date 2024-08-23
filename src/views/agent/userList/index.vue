@@ -46,8 +46,14 @@
         <el-table-column
           prop="email"
           :label="$t('form.email')"
-          width="180"
+          width="120"
         ></el-table-column>
+        <el-table-column
+          prop="merchantId"
+          width="120"
+          :label="$t('form.merchantId')"
+        >
+        </el-table-column>
         <el-table-column prop="status" :label="$t('form.status')" width="120">
           <template #default="scope">
             <el-tag :type="getAuditStatus(scope.row.status).type">
@@ -55,10 +61,11 @@
             >
           </template>
         </el-table-column>
+
         <el-table-column
           prop="status"
           :label="$t('form.ApiDistribution')"
-          width="150"
+          width="120"
         >
           <template #default="scope">
             <el-tag type="success" v-if="scope.row.apiFlag === 1">
@@ -69,37 +76,42 @@
         </el-table-column>
         <el-table-column
           prop="higherMerchantEmail"
-          :label="$t('form.higherMerchantEmail')"
+          :label="$t('form.higherMerchantEmailProxyRate')"
+          width="150"
         >
+          <template #default="{ row }">
+            {{ row.higherMerchantEmail }}/{{ row.proxyRate }}
+          </template>
         </el-table-column>
+        <!-- <el-table-column prop="proxyRate" :label="$t('form.proxyRate')">
+        </el-table-column> -->
         <el-table-column
           prop="inServiceChargeType"
           :label="$t('form.outServiceCharge')"
-          width="150"
+          width="120"
         >
           <template #default="scope">
             {{
               scope.row.outServiceCharge === 1
                 ? $t("form.merchant")
                 : $t("form.user")
-            }}
+            }}/{{ scope.row.outServiceChargeRate }}
           </template>
         </el-table-column>
         <el-table-column
           prop="status"
           :label="$t('form.intoServiceCharge')"
-          width="150"
+          width="120"
         >
           <template #default="scope">
             {{
               scope.row.inServiceChargeType === 1
                 ? $t("form.merchant")
                 : $t("form.user")
-            }}
+            }}{{ scope.row.inServiceChargeRate }}
           </template>
         </el-table-column>
-        <el-table-column prop="proxyRate" :label="$t('form.proxyRate')">
-        </el-table-column>
+
         <el-table-column prop="merchantBalance" :label="$t('form.residue')">
         </el-table-column>
         <el-table-column
@@ -122,7 +134,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column
+        <!-- <el-table-column
           prop="idCardFrontPicture"
           :label="$t('register.idCardFrontId')"
           width="200"
@@ -187,7 +199,7 @@
               :preview-teleported="true"
             />
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column :label="$t('form.actions')" width="240" fixed="right">
           <template #default="scope">
             <el-button type="text" @click="showEditDialog(scope.row, 1)">

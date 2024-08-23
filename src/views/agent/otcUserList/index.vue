@@ -199,7 +199,7 @@
           prop="quantity"
           v-if="thisKey === 2"
         >
-          <el-input v-model="updateStatusData.quantity" />
+          <el-input type="number" v-model="updateStatusData.quantity" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -210,9 +210,23 @@
           type="primary"
           :loading="dialogLoading"
           @click="updateStatusFn"
+          v-if="thisKey === 1"
         >
           {{ $t("form.confirm") }}
         </el-button>
+        <el-popconfirm
+          :title="$t('form.confirmRecharge')"
+          :confirm-button-text="$t('form.yes')"
+          :cancel-button-text="$t('form.no')"
+          @confirm="() => updateStatusFn()"
+          v-else
+        >
+          <template #reference>
+            <el-button type="primary" :loading="dialogLoading">
+              {{ $t("form.confirm") }}
+            </el-button>
+          </template>
+        </el-popconfirm>
       </template>
     </el-dialog>
     <!-- 新增对话框 -->
@@ -277,6 +291,7 @@
         <el-button @click="isAddDialogVisible = false">
           {{ $t("form.cancel") }}
         </el-button>
+
         <el-button
           type="primary"
           :loading="dialogLoading"
