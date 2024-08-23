@@ -28,8 +28,14 @@
       </div>
 
       <div class="rigth">
-        <el-button type="primary" @click="showAddDialog">
-          {{ $t("form.add") }}
+        <el-button type="primary" @click="showAddDialog(1)">
+          {{ $t("form.addCoin") }}
+        </el-button>
+        <el-button type="primary" @click="showAddDialog(2)">
+          {{ $t("form.addLegalCurrency") }}
+        </el-button>
+        <el-button type="primary" @click="showAddDialog(3)">
+          {{ $t("form.addRecharge") }}
         </el-button>
       </div>
     </el-header>
@@ -111,37 +117,48 @@
         ref="addFormRef"
         label-width="100px"
       >
-        <el-form-item :label="$t('form.coin')" prop="coin">
-          <el-select
-            width="100%"
-            v-model="addForm.coin"
-            :placeholder="$t('form.select')"
-          >
-            <el-option
-              v-for="item in coinOptions"
-              :key="item.id"
-              :label="item.value"
-              :value="item.id"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="$t('form.legalCurrency')" prop="legalCurrency">
-          <el-select
-            v-model="addForm.legalCurrency"
-            :placeholder="$t('form.select')"
-          >
-            <el-option
-              v-for="item in legalCurrencyOptions"
-              :key="item.id"
-              :label="item.value"
-              :value="item.id"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="$t('form.unitPrice')" prop="unitPrice">
-          <!-- <el-input v-model="addForm.unitPrice"></el-input> -->
-          <el-input-number v-model="addForm.unitPrice" :min="1" />
-        </el-form-item>
+        <template v-if="thisKey === 1">
+          <el-form-item :label="$t('form.coin')" prop="coin">
+            <el-input v-model="addForm.coin"> </el-input>
+          </el-form-item>
+        </template>
+        <template v-if="thisKey === 2">
+          <el-form-item :label="$t('form.legalCurrency')" prop="legalCurrency">
+            <el-input v-model="addForm.legalCurrency"> </el-input>
+          </el-form-item>
+        </template>
+        <template v-if="thisKey === 3">
+          <el-form-item :label="$t('form.coin')" prop="coin">
+            <el-select
+              width="100%"
+              v-model="addForm.coin"
+              :placeholder="$t('form.select')"
+            >
+              <el-option
+                v-for="item in coinOptions"
+                :key="item.id"
+                :label="item.value"
+                :value="item.id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item :label="$t('form.legalCurrency')" prop="legalCurrency">
+            <el-select
+              v-model="addForm.legalCurrency"
+              :placeholder="$t('form.select')"
+            >
+              <el-option
+                v-for="item in legalCurrencyOptions"
+                :key="item.id"
+                :label="item.value"
+                :value="item.id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item :label="$t('form.unitPrice')" prop="unitPrice">
+            <el-input-number v-model="addForm.unitPrice" :min="1" />
+          </el-form-item>
+        </template>
       </el-form>
       <template #footer>
         <el-button @click="isAddDialogVisible = false">
@@ -166,11 +183,13 @@ import { updateOutOrderStatus } from "@/api/otc.js";
 
 import { getLegalCurrencyDict, getCoinDict } from "@/api/buyer.js";
 import {
-  shareOutOrderToOtc,
   queryPriceRateConfigData,
   addPriceRateConfig,
   updatePriceRateConfig,
+  addCoinDict,
+  addLegalCurrencyDit,
 } from "@/api/agent.js";
+
 import { ElMessage } from "element-plus";
 import moment from "moment";
 import { getPlay, getStatus } from "@/utils/enumerate.js";
@@ -195,11 +214,7 @@ const addForm2 = ref({
   email: "",
 });
 const editFormRef = ref(null);
-const addFormRef2 = ref(null);
-const imgUrl = ref({
-  alipayQRcode: "",
-  wechatQRcode: "",
-});
+
 const editData = ref({
   unitPrice: "",
 });
@@ -261,22 +276,26 @@ const showEditDialog = (row) => {
   };
   editDialogVisible.value = true;
 };
+const editRechargeFn = async () => {
+  try {
+    await updatePriceRateConfig({
+      ...editData.value,
+      id: thisRow.value.id,
+    });
+    ElMessage.success(t("form.success"));
+    editDialogVisible.value = false;
+    loadData(); // 重新加载数据
+  } catch (error) {
+    dialogLoading.value = false;
+  } finally {
+    dialogLoading.value = false;
+  }
+};
+
 const handleEditSubmit = async () => {
   editFormRef.value.validate(async (valid) => {
     if (valid) {
-      try {
-        await updatePriceRateConfig({
-          ...editData.value,
-          id: thisRow.value.id,
-        });
-        ElMessage.success(t("form.success"));
-        editDialogVisible.value = false;
-        loadData(); // 重新加载数据
-      } catch (error) {
-        dialogLoading.value = false;
-      } finally {
-        dialogLoading.value = false;
-      }
+      editRechargeFn();
     } else {
       dialogLoading.value = false;
     }
@@ -309,27 +328,65 @@ const loadData = async () => {
   }
 };
 
+const addRechargeFn = async () => {
+  try {
+    await addPriceRateConfig({ ...addForm.value });
+    ElMessage.success(t("form.addSuccess"));
+    isAddDialogVisible.value = false;
+    loadData(); // 重新加载数据
+  } catch (error) {
+    dialogLoading.value = false;
+  } finally {
+    dialogLoading.value = false;
+  }
+};
 // 新增产品
 const handleAddSubmit = () => {
   dialogLoading.value = true;
   addFormRef.value.validate(async (valid) => {
     if (valid) {
-      try {
-        await addPriceRateConfig({ ...addForm.value });
-        ElMessage.success(t("form.addSuccess"));
-        isAddDialogVisible.value = false;
-        loadData(); // 重新加载数据
-      } catch (error) {
-        dialogLoading.value = false;
-      } finally {
-        dialogLoading.value = false;
+      if (thisKey.value === 1) {
+        addCoinFn();
+      } else if (thisKey.value === 2) {
+        addLegalCurrencyFn();
+      } else if (thisKey.value === 3) {
+        addRechargeFn();
       }
     } else {
       dialogLoading.value = false;
     }
   });
 };
-
+const addCoinFn = async () => {
+  try {
+    await addCoinDict({
+      coin: addForm.value.coin,
+    });
+    ElMessage.success(t("form.success"));
+    isAddDialogVisible.value = false;
+    loadData(); // 重新加载数据
+    fetchOptions();
+  } catch (error) {
+    dialogLoading.value = false;
+  } finally {
+    dialogLoading.value = false;
+  }
+};
+const addLegalCurrencyFn = async () => {
+  try {
+    await addLegalCurrencyDit({
+      legalCurrency: addForm.value.legalCurrency,
+    });
+    ElMessage.success(t("form.success"));
+    isAddDialogVisible.value = false;
+    loadData(); // 重新加载数据
+    fetchOptions();
+  } catch (error) {
+    dialogLoading.value = false;
+  } finally {
+    dialogLoading.value = false;
+  }
+};
 // 搜索功能
 const handleSearch = () => {
   currentPage.value = 1;
@@ -358,13 +415,11 @@ const handlePageChange = (page) => {
 };
 const allocateRow = ref({});
 //分配
-const showAddDialog2 = (row) => {
-  allocateRow.value = row;
-  isAddDialogVisible.value = true;
-};
 
+const thisKey = ref("");
 // 显示新增对话框
-const showAddDialog = (row) => {
+const showAddDialog = (key) => {
+  thisKey.value = key;
   addForm.value = {
     coin: "",
     legalCurrency: "",

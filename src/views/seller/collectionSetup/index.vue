@@ -80,7 +80,11 @@
             >
           </template>
         </el-table-column>
-
+        <el-table-column prop="legalCurrency" :label="$t('form.legalCurrency')">
+          <template #default="scope">
+            {{ scope.row.legalCurrency }}
+          </template>
+        </el-table-column>
         <el-table-column prop="cardId" :label="$t('form.payAccount')">
           <template #default="scope">
             <span v-if="scope.row.type === 1">
@@ -188,6 +192,19 @@
           <el-form-item :label="$t('form.bank')" prop="bank">
             <el-input v-model="addForm.bank"></el-input>
           </el-form-item>
+          <el-form-item :label="$t('form.legalCurrency')" prop="legalCurrency">
+            <el-select
+              v-model="addForm.legalCurrency"
+              :placeholder="$t('form.select')"
+            >
+              <el-option
+                v-for="item in legalCurrencyOptions"
+                :key="item.id"
+                :label="item.value"
+                :value="item.id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
         </template>
         <template v-if="addForm.supportPay === 2">
           <el-form-item
@@ -272,6 +289,8 @@ import {
   getPaymentConfigForOtc,
   delPaymentConfig,
   updatePaymentConfigStatus,
+  getLegalCurrencyDict,
+  getCoinDict,
 } from "@/api/otc.js";
 import { ElMessage } from "element-plus";
 import moment from "moment";
@@ -296,6 +315,7 @@ const addForm = ref({
   bank: "",
   payee: "",
   openingBank: "",
+  legalCurrency: "",
 });
 const imgUrl = ref({
   alipayQRcode: "",
@@ -331,6 +351,9 @@ const rules = ref({
   supportPay: [
     { required: true, message: t("form.requiredText"), trigger: "blur" },
   ],
+  legalCurrency: [
+    { required: true, message: t("form.requiredText"), trigger: "blur" },
+  ],
   wechatQRcode: [
     { required: true, message: t("form.requiredText"), trigger: "blur" },
   ],
@@ -355,9 +378,11 @@ const isAddDialogVisible = ref(false);
 const addFormRef = ref(null);
 
 // 模拟获取 coin 和 legalCurrency 列表
-const fetchOptions = () => {
-  coinOptions.value = ["USDT"];
-  legalCurrencyOptions.value = ["CNY"];
+const fetchOptions = async () => {
+  const res = await getCoinDict();
+  const res2 = await getLegalCurrencyDict();
+  coinOptions.value = res.data;
+  legalCurrencyOptions.value = res2.data;
 };
 
 // 查询列表数据
@@ -382,6 +407,7 @@ const setData = (value) => {
         collection: value.bank,
         payee: value.payee,
         openingBank: value.openingBank,
+        legalCurrency: value.legalCurrency,
       },
     },
     2: {
@@ -470,6 +496,7 @@ const changeSupportPay = () => {
     alipayQRcode: "",
     bank: "",
     openingBank: "",
+    legalCurrency: "",
   };
 };
 // 显示新增对话框

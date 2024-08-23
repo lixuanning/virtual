@@ -99,6 +99,16 @@
           width="150"
         ></el-table-column>
         <el-table-column
+          prop="realTransferPrice"
+          :label="$t('form.realTransferPrice')"
+          width="120"
+        ></el-table-column>
+        <el-table-column
+          prop="realQuantity"
+          :label="$t('form.realQuantity')"
+          width="100"
+        ></el-table-column>
+        <el-table-column
           prop="unitPrice"
           :label="$t('form.unitPrice')"
           width="70"
@@ -163,6 +173,7 @@
             </span>
           </template>
         </el-table-column>
+
         <el-table-column
           prop="createDate"
           :label="$t('form.createDate')"

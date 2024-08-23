@@ -135,3 +135,22 @@ export const updateInServiceCharge = (params) => {
     ...params,
   });
 };
+
+// 首页
+export const queryMediumDashboard = () => {
+  return http.post(`/queryMediumDashboard`);
+};
+
+// 新增法币
+export const addLegalCurrencyDit = (params) => {
+  return http.post(`/addLegalCurrencyDit`, {
+    ...params,
+  });
+};
+
+// 新增币类型
+export const addCoinDict = (params) => {
+  return http.post(`/addCoinDict`, {
+    ...params,
+  });
+};

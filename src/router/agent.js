@@ -1,5 +1,18 @@
 const routes = [
   {
+    path: "/agent/home",
+    name: "agentHome",
+    meta: { pathName: "routerName.home", icon: "HomeFilled" },
+    children: [
+      {
+        path: "/agent/home/dashboard",
+        name: "agentDashboard",
+        component: () => import("@/views/agent/agentDashboard/index.vue"),
+        meta: { pathName: "routerName.dashboard" },
+      },
+    ],
+  },
+  {
     path: "/agent/user",
     name: "agentManagement",
     redirect: "/agent/user/userList",

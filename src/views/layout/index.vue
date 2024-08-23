@@ -5,7 +5,7 @@
         <div class="header-title">{{ roleText }}</div>
         <el-dropdown @command="handleCommand">
           <span class="el-dropdown-link">
-            <el-avatar icon="el-icon-user-solid" class="avatar"></el-avatar>
+            <el-avatar :icon="UserFilled" class="avatar"> </el-avatar>
           </span>
           <template #dropdown>
             <el-dropdown-menu>
@@ -79,6 +79,7 @@ import { computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 import store from "@/store/index";
+import { UserFilled } from "@element-plus/icons-vue";
 const { t, locale } = useI18n();
 
 const router = useRouter();
