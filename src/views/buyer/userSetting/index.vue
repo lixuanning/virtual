@@ -227,18 +227,17 @@ onMounted(() => {
 const userData = ref({});
 const getUserData = async () => {
   const res = await getUserInfoForMerchant();
-  userData.value = res.data;
-  console.log(res.data);
+
   imgUrl.value.idCardFrontId = res.data.idCardFrontPicture;
   imgUrl.value.idCardBackId = res.data.idCardBackPicture;
   imgUrl.value.idCardInHandId = res.data.idCardInHandPicture;
   form.value.idCardFrontId = res.data.idCardFrontId;
   form.value.idCardBackId = res.data.idCardBackId;
   form.value.idCardInHandId = res.data.idCardInHandId;
-
   apiInfo.value.accessKey = res.data.accessKey;
   apiInfo.value.callbackUrl = res.data.callbackUrl;
 
+  userData.value = res.data;
   console.log(imgUrl, "imgUrl");
 };
 const apiInfoRules = ref({

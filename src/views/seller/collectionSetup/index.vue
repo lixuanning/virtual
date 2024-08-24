@@ -115,7 +115,7 @@
     </el-main>
 
     <!-- 新增对话框 -->
-    <el-dialog :title="$t('form.add')" v-model="isAddDialogVisible">
+    <el-dialog :title="$t('form.add')" v-model="isAddDialogVisible" width="60%">
       <el-form
         :model="addForm"
         :rules="rules"
@@ -132,87 +132,147 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item :label="$t('form.payee')" prop="payee">
-          <el-input v-model="addForm.payee"></el-input>
-        </el-form-item>
+
         <template v-if="addForm.supportPay === 1">
-          <el-form-item :label="$t('form.openingBank')" prop="openingBank">
-            <el-input v-model="addForm.openingBank"></el-input>
-          </el-form-item>
-          <el-form-item :label="$t('form.bank')" prop="bank">
-            <el-input v-model="addForm.bank"></el-input>
-          </el-form-item>
-          <el-form-item :label="$t('form.legalCurrency')" prop="legalCurrency">
-            <el-select
-              v-model="addForm.legalCurrency"
-              :placeholder="$t('form.select')"
-            >
-              <el-option
-                v-for="item in legalCurrencyOptions"
-                :key="item.id"
-                :label="item.value"
-                :value="item.id"
-              ></el-option>
-            </el-select>
-          </el-form-item>
+          <div class="rigth-btn">
+            <el-button type="primary" :icon="Plus" circle @click="addItem(1)" />
+          </div>
+          <el-row gutter="20">
+            <el-col span="12" v-for="(item, i) in addForm.bankLsit" :key="item">
+              <el-card>
+                <div class="rigth-btn">
+                  <el-button
+                    type="danger"
+                    :icon="Delete"
+                    circle
+                    @click="deleteItem(i)"
+                  />
+                </div>
+
+                <el-form-item :label="$t('form.payee')">
+                  <el-input v-model="addForm.bankLsit[i].payee"></el-input>
+                </el-form-item>
+                <el-form-item :label="$t('form.legalCurrency')">
+                  <el-select
+                    v-model="addForm.bankLsit[i].legalCurrency"
+                    :placeholder="$t('form.select')"
+                  >
+                    <el-option
+                      v-for="item in legalCurrencyOptions"
+                      :key="item.id"
+                      :label="item.value"
+                      :value="item.id"
+                    ></el-option>
+                  </el-select>
+                </el-form-item>
+                <el-form-item :label="$t('form.openingBank')">
+                  <el-input
+                    v-model="addForm.bankLsit[i].openingBank"
+                  ></el-input>
+                </el-form-item>
+                <el-form-item :label="$t('form.bank')">
+                  <el-input v-model="addForm.bankLsit[i].collection"></el-input>
+                </el-form-item>
+              </el-card>
+            </el-col>
+          </el-row>
         </template>
         <template v-if="addForm.supportPay === 2">
-          <el-form-item
-            :label="$t('form.uploadWechatQRcode')"
-            prop="wechatQRcode"
-          >
-            <el-upload
-              class="upload-demo"
-              :before-upload="beforeUpload"
-              :show-file-list="false"
-              :http-request="(file) => customUpload(file, 'wechatQRcode')"
-              :limit="2"
-            >
-              <el-button type="text">{{
-                $t("register.uploadInHand")
-              }}</el-button>
-            </el-upload>
-            <span v-if="addForm.wechatQRcode">
-              <el-image
-                style="width: 100px; height: 100px"
-                :src="imgUrl.wechatQRcode"
-                :zoom-rate="1.2"
-                :max-scale="7"
-                :min-scale="0.2"
-                :preview-src-list="[imgUrl.wechatQRcode]"
-                :initial-index="1"
-                fit="cover"
-            /></span>
-          </el-form-item>
+          <div class="rigth-btn">
+            <el-button type="primary" :icon="Plus" circle @click="addItem(2)" />
+          </div>
+          <el-row gutter="20">
+            <el-col span="12" v-for="(item, i) in addForm.bankLsit" :key="item">
+              <el-card>
+                <div class="rigth-btn">
+                  <el-button
+                    type="danger"
+                    :icon="Delete"
+                    circle
+                    @click="deleteItem(i)"
+                  />
+                </div>
+
+                <el-form-item :label="$t('form.payee')">
+                  <el-input v-model="addForm.bankLsit[i].payee"></el-input>
+                </el-form-item>
+                <el-form-item :label="$t('form.uploadWechatQRcode')">
+                  <el-upload
+                    class="upload-demo"
+                    :before-upload="beforeUpload"
+                    :show-file-list="false"
+                    :http-request="
+                      (file) => customUpload(file, 'collection', i)
+                    "
+                    :limit="2"
+                  >
+                    <el-button type="text">{{
+                      $t("register.uploadInHand")
+                    }}</el-button>
+                  </el-upload>
+                  <span v-if="addForm.bankLsit[i].collection">
+                    <el-image
+                      style="width: 100px; height: 100px"
+                      :src="imgUrl[i]"
+                      :zoom-rate="1.2"
+                      :max-scale="7"
+                      :min-scale="0.2"
+                      :preview-src-list="[imgUrl[i]]"
+                      :initial-index="1"
+                      fit="cover"
+                  /></span>
+                </el-form-item>
+              </el-card>
+            </el-col>
+          </el-row>
         </template>
         <template v-if="addForm.supportPay === 3">
-          <el-form-item
-            :label="$t('form.uploadAlipayQRcode')"
-            prop="alipayQRcode"
-          >
-            <el-upload
-              class="upload-demo"
-              :before-upload="beforeUpload"
-              :show-file-list="false"
-              :http-request="(file) => customUpload(file, 'alipayQRcode')"
-              :limit="2"
-            >
-              <el-button type="text">{{
-                $t("register.uploadInHand")
-              }}</el-button>
-            </el-upload>
-            <span v-if="addForm.alipayQRcode">
-              <el-image
-                style="width: 100px; height: 100px"
-                :src="imgUrl.alipayQRcode"
-                :zoom-rate="1.2"
-                :max-scale="7"
-                :min-scale="0.2"
-                :preview-src-list="[imgUrl.alipayQRcode]"
-                :initial-index="1"
-                fit="cover"
-            /></span>
-          </el-form-item>
+          <div class="rigth-btn">
+            <el-button type="primary" :icon="Plus" circle @click="addItem(3)" />
+          </div>
+          <el-row gutter="20">
+            <el-col span="12" v-for="(item, i) in addForm.bankLsit" :key="item">
+              <el-card>
+                <div class="rigth-btn">
+                  <el-button
+                    type="danger"
+                    :icon="Delete"
+                    circle
+                    @click="deleteItem(i)"
+                  />
+                </div>
+                <el-form-item :label="$t('form.payee')">
+                  <el-input v-model="addForm.bankLsit[i].payee"></el-input>
+                </el-form-item>
+                <el-form-item :label="$t('form.uploadAlipayQRcode')">
+                  <el-upload
+                    class="upload-demo"
+                    :before-upload="beforeUpload"
+                    :show-file-list="false"
+                    :http-request="
+                      (file) => customUpload(file, 'collection', i)
+                    "
+                    :limit="2"
+                  >
+                    <el-button type="text">{{
+                      $t("register.uploadInHand")
+                    }}</el-button>
+                  </el-upload>
+                  <span v-if="addForm.bankLsit[i].collection">
+                    <el-image
+                      style="width: 100px; height: 100px"
+                      :src="imgUrl[i]"
+                      :zoom-rate="1.2"
+                      :max-scale="7"
+                      :min-scale="0.2"
+                      :preview-src-list="[imgUrl[i]]"
+                      :initial-index="1"
+                      fit="cover"
+                  /></span>
+                </el-form-item>
+              </el-card>
+            </el-col>
+          </el-row>
         </template>
       </el-form>
       <template #footer>
@@ -243,6 +303,15 @@ import {
   getCoinDict,
 } from "@/api/otc.js";
 import { ElMessage } from "element-plus";
+import {
+  Check,
+  Delete,
+  Edit,
+  Message,
+  Search,
+  Star,
+  Plus,
+} from "@element-plus/icons-vue";
 import moment from "moment";
 import { getPlay, getStatus } from "@/utils/enumerate.js";
 import { uploadPicture, previewPicture } from "@/api/file";
@@ -266,11 +335,9 @@ const addForm = ref({
   payee: "",
   openingBank: "",
   legalCurrency: "",
+  bankLsit: [],
 });
-const imgUrl = ref({
-  alipayQRcode: "",
-  wechatQRcode: "",
-});
+const imgUrl = ref([]);
 // 自定义上传配置
 const beforeUpload = (file) => {
   const isJPG = file.type === "image/jpeg" || file.type === "image/png";
@@ -284,13 +351,16 @@ const beforeUpload = (file) => {
   }
   return isJPG && isLt2M;
 };
-const customUpload = async ({ file, onSuccess, onError }, field) => {
+const customUpload = async ({ file, onSuccess, onError }, field, i) => {
   try {
     const response = await uploadPicture({ file: file });
-    addForm.value[field] = response.data.pictureId;
+    addForm.value.bankLsit[i][field] = response.data.pictureId;
     const url = await previewPicture({ pictureId: response.data.pictureId });
     const base64Url = `data:image/jpeg;base64,${url.data.picture}`;
-    imgUrl.value[field] = base64Url;
+    if (!imgUrl.value[i]) {
+      imgUrl.value[i] = ""; // 初始化索引 i 处的值
+    }
+    imgUrl.value[i] = base64Url;
     ElMessage.success("图片上传成功");
   } catch (error) {
     onError(error);
@@ -326,7 +396,26 @@ const tableLoading = ref(false);
 const dialogLoading = ref(false);
 const isAddDialogVisible = ref(false);
 const addFormRef = ref(null);
-
+const addItem = (value) => {
+  if (value === 1) {
+    let item = {
+      collection: "",
+      payee: "",
+      openingBank: "",
+      legalCurrency: "",
+    };
+    addForm.value.bankLsit.push(item);
+  } else {
+    let item = {
+      collection: "",
+      payee: "",
+    };
+    addForm.value.bankLsit.push(item);
+  }
+};
+const deleteItem = (index) => {
+  addForm.value.bankLsit.splice(index, 1);
+};
 // 模拟获取 coin 和 legalCurrency 列表
 const fetchOptions = async () => {
   const res = await getCoinDict();
@@ -348,36 +437,36 @@ const loadData = async () => {
     tableLoading.value = false;
   }
 };
+// 验证 bankList 数组内的每一个对象是否有空值
+const validateBankList = () => {
+  let bankList = addForm.value.bankLsit;
+  console.log(bankList, "bankList");
+  for (let i = 0; i < bankList.length; i++) {
+    const item = bankList[i];
+    for (const key in item) {
+      if (item[key] === "" || item[key] === null || item[key] === undefined) {
+        ElMessage.error(t("form.formErrorText"));
+        return false;
+      }
+    }
+  }
+  return true;
+};
 // 根据类型设置入参
 const setData = (value) => {
-  const mapping = {
-    1: {
-      key: "bank",
-      data: {
-        collection: value.bank,
-        payee: value.payee,
-        openingBank: value.openingBank,
-        legalCurrency: value.legalCurrency,
-      },
-    },
-    2: {
-      key: "wechat",
-      data: {
-        collection: value.wechatQRcode,
-        payee: value.payee,
-      },
-    },
-    3: {
-      key: "alipay",
-      data: {
-        collection: value.alipayQRcode,
-        payee: value.payee,
-      },
-    },
-  };
-
-  const result = mapping[value.supportPay];
-  return result ? { [result.key]: [result.data] } : null;
+  if (value.supportPay === 1) {
+    return {
+      bank: value.bankLsit,
+    };
+  } else if (value.supportPay === 2) {
+    return {
+      wechat: value.bankLsit,
+    };
+  } else if (value.supportPay === 3) {
+    return {
+      alipay: value.bankLsit,
+    };
+  }
 };
 
 // 新增产品
@@ -385,6 +474,10 @@ const handleAddSubmit = () => {
   dialogLoading.value = true;
   addFormRef.value.validate(async (valid) => {
     if (valid) {
+      if (!validateBankList()) {
+        dialogLoading.value = false;
+        return;
+      }
       let newData = setData({ ...addForm.value });
       console.log(newData, "newData", addForm.value);
       try {
@@ -439,7 +532,7 @@ const handlePageChange = (page) => {
   loadData();
 };
 
-const changeSupportPay = () => {
+const changeSupportPay = (key) => {
   addForm.value = {
     ...addForm.value,
     wechatQRcode: "",
@@ -447,7 +540,10 @@ const changeSupportPay = () => {
     bank: "",
     openingBank: "",
     legalCurrency: "",
+    bankLsit: [],
   };
+  imgUrl.value = [];
+  addItem(key);
 };
 // 显示新增对话框
 const showAddDialog = () => {
@@ -495,5 +591,10 @@ onMounted(() => {
   display: flex;
   justify-content: flex-end;
   padding-top: 20px;
+}
+.rigth-btn {
+  display: flex;
+  justify-content: flex-end;
+  padding-bottom: 20px;
 }
 </style>

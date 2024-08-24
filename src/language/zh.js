@@ -93,6 +93,7 @@ export default {
     legalCurrency: "法币",
     transferName: "转账人",
     buyMin: "最低购买量",
+    formErrorText: "请完整填写表单",
     buyMax: "最高购买量",
     payType: "支付方式",
     saleStartDate: "售卖时间",

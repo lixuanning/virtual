@@ -107,6 +107,7 @@ export default {
     status: "Status",
     actions: "Actions",
     add: "Add",
+    formErrorText: "Please fill in all fields",
     edit: "Edit",
     outServiceChargePrice: "Withdrawal Fee",
     proxyPrice: "Proxy Fee",

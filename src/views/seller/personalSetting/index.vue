@@ -22,6 +22,51 @@
             <el-descriptions-item :label="$t('userProfile.status')">{{
               userStatus === 1 ? $t("form.enable") : $t("form.disable")
             }}</el-descriptions-item>
+            <el-descriptions-item :label="$t('register.idCardFrontId')">
+              <el-image
+                style="width: 30px; height: 30px"
+                :src="`data:image/jpeg;base64,${userData.idCardFrontPicture}`"
+                :zoom-rate="1.2"
+                :max-scale="7"
+                :min-scale="0.2"
+                :preview-src-list="[
+                  `data:image/jpeg;base64,${userData.idCardFrontPicture}`,
+                ]"
+                :initial-index="1"
+                fit="cover"
+                :preview-teleported="true"
+              />
+            </el-descriptions-item>
+            <el-descriptions-item :label="$t('register.idCardBackId')">
+              <el-image
+                style="width: 30px; height: 30px"
+                :src="`data:image/jpeg;base64,${userData.idCardBackPicture}`"
+                :zoom-rate="1.2"
+                :max-scale="7"
+                :min-scale="0.2"
+                :preview-src-list="[
+                  `data:image/jpeg;base64,${userData.idCardBackPicture}`,
+                ]"
+                :initial-index="1"
+                fit="cover"
+                :preview-teleported="true"
+              />
+            </el-descriptions-item>
+            <el-descriptions-item :label="$t('register.idCardInHandId')">
+              <el-image
+                style="width: 30px; height: 30px"
+                :src="`data:image/jpeg;base64,${userData.idCardInHandPicture}`"
+                :zoom-rate="1.2"
+                :max-scale="7"
+                :min-scale="0.2"
+                :preview-src-list="[
+                  `data:image/jpeg;base64,${userData.idCardInHandPicture}`,
+                ]"
+                :initial-index="1"
+                fit="cover"
+                :preview-teleported="true"
+              />
+            </el-descriptions-item>
           </el-descriptions>
         </el-col>
         <el-col :span="12">
