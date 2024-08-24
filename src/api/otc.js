@@ -85,3 +85,8 @@ export const getCoinDict = () => {
 export const queryOtcDashboard = () => {
   return http.post(`/queryOtcDashboard`);
 };
+
+// OTC用户信息
+export const getUserInfoForOtc = () => {
+  return http.post(`/getUserInfoForOtc`);
+};

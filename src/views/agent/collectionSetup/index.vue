@@ -106,7 +106,9 @@
 
         <el-table-column prop="status" :label="$t('form.status')" width="100">
           <template #default="scope">
-            {{ scope.row.status === 1 ? "启用" : "停用" }}
+            {{
+              scope.row.status === 1 ? $t("form.enable") : $t("form.disable")
+            }}
           </template>
         </el-table-column>
         <el-table-column prop="createDate" :label="$t('form.created')">

@@ -1,8 +1,56 @@
 <template>
   <div class="userSetting">
+    <el-card class="box-card">
+      <div class="clearfix">
+        <h3>{{ $t("userProfile.title") }}</h3>
+      </div>
+      <div class="text item">
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-descriptions :border="true" :column="1">
+              <el-descriptions-item :label="$t('userProfile.userId')">{{
+                userData.userId
+              }}</el-descriptions-item>
+              <el-descriptions-item :label="$t('userProfile.email')">{{
+                userData.email
+              }}</el-descriptions-item>
+              <el-descriptions-item :label="$t('userProfile.name')">{{
+                userData.name
+              }}</el-descriptions-item>
+              <el-descriptions-item :label="$t('userProfile.mobile')">{{
+                userData.mobile
+              }}</el-descriptions-item>
+              <!-- <el-descriptions-item :label="$t('userProfile.status')">{{
+                userStatus === 1 ? $t("form.enable") : $t("form.disable")
+              }}</el-descriptions-item> -->
+            </el-descriptions>
+          </el-col>
+          <!-- <el-col :span="12">
+            <el-descriptions :border="true" :column="1">
+              <el-descriptions-item :label="$t('userProfile.rechargeTotal')">{{
+                userData.rechargeTotal
+              }}</el-descriptions-item>
+              <el-descriptions-item :label="$t('userProfile.tradeTotal')">{{
+                userData.tradeTotal
+              }}</el-descriptions-item>
+              <el-descriptions-item :label="$t('userProfile.otcBalance')">{{
+                userData.otcBalance
+              }}</el-descriptions-item>
+              <el-descriptions-item
+                :label="$t('userProfile.otcAvailableBalance')"
+                >{{ userData.otcAvailableBalance }}</el-descriptions-item
+              >
+              <el-descriptions-item :label="$t('userProfile.freezeAmount')">{{
+                userData.freezeAmount
+              }}</el-descriptions-item>
+            </el-descriptions>
+          </el-col> -->
+        </el-row>
+      </div>
+    </el-card>
     <el-row>
       <el-col :span="12">
-        <h3>用户设置</h3>
+        <h3>{{ $t("routerName.userSetting") }}</h3>
         <el-form
           :model="form"
           :rules="registerRules"
@@ -109,7 +157,7 @@
         </el-form>
       </el-col>
       <el-col :span="9">
-        <h3>API设置</h3>
+        <h3>{{ $t("form.apaSetting") }}</h3>
         <el-form
           :model="apiInfo"
           :rules="apiInfoRules"
@@ -176,8 +224,10 @@ const imgUrl = ref({
 onMounted(() => {
   getUserData();
 });
+const userData = ref({});
 const getUserData = async () => {
   const res = await getUserInfoForMerchant();
+  userData.value = res.data;
   console.log(res.data);
   imgUrl.value.idCardFrontId = res.data.idCardFrontPicture;
   imgUrl.value.idCardBackId = res.data.idCardBackPicture;

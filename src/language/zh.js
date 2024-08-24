@@ -122,6 +122,7 @@ export default {
     putaway: "上架",
     takeaway: "下架",
     success: "成功！",
+    apaSetting: "API 设置",
     putaway_success: "上架成功",
     takeaway_success: "下架成功",
     isPutaway: "确定上架？",
@@ -233,5 +234,25 @@ export default {
       "付款后务必点击“确认已转账”。未付款前请不要点击“确认已转账”，该行为属于恶意卡单，出现此类情况有可能会造成您的账户部分功能被限制。",
     text6:
       "付款时，请用与实际付款人姓名相同的银行卡进行转账，且不得备注 BTC、数字货币、买币等敏感字眼，否则钱款可能无法追回。",
+  },
+  common: {
+    errorFetchingData: "获取数据失败",
+  },
+  userProfile: {
+    title: "用户详情",
+    userId: "用户 ID",
+    email: "邮箱",
+    name: "姓名",
+    mobile: "手机号码",
+    status: "状态",
+    type: "类型",
+    createDate: "创建日期",
+    updateDate: "更新日期",
+    walletInfo: "钱包信息",
+    rechargeTotal: "历史充值总额",
+    tradeTotal: "总交易额",
+    otcBalance: "钱包余额",
+    otcAvailableBalance: "可用余额",
+    freezeAmount: "冻结余额",
   },
 };

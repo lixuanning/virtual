@@ -277,8 +277,8 @@
             v-model="updateStatusData.apiFlag"
             :placeholder="$t('form.select')"
           >
-            <el-option label="启用" :value="1"></el-option>
-            <el-option label="禁用" :value="2"></el-option>
+            <el-option :label="$t('form.enable')" :value="1"></el-option>
+            <el-option :label="$t('form.disable')" :value="2"></el-option>
           </el-select>
         </el-form-item>
         <template v-if="thisFromKey === 3">
