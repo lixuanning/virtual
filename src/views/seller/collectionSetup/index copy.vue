@@ -1,6 +1,58 @@
 <template>
   <el-container>
+    <!-- 筛选表单 -->
     <el-header class="header">
+      <!-- <div>
+        <el-form :inline="true" :model="searchForm" class="demo-form-inline">
+          <el-form-item :label="$t('form.coin')">
+            <el-select
+              width="100%"
+              v-model="searchForm.coin"
+              :placeholder="$t('form.select')"
+            >
+              <el-option
+                v-for="item in coinOptions"
+                :key="item"
+                :label="item"
+                :value="item"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item :label="$t('form.legalCurrency')">
+            <el-select
+              v-model="searchForm.legalCurrency"
+              :placeholder="$t('form.select')"
+            >
+              <el-option
+                v-for="item in legalCurrencyOptions"
+                :key="item"
+                :label="item"
+                :value="item"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item :label="$t('form.status')">
+            <el-select
+              v-model="searchForm.status"
+              :placeholder="$t('form.select')"
+            >
+              <el-option
+                v-for="item in getStatus()"
+                :key="item.key"
+                :value="item.key"
+                :label="item.name"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="handleSearch">
+              {{ $t("form.search") }}
+            </el-button>
+            <el-button @click="handleReset">{{ $t("form.reset") }}</el-button>
+          </el-form-item>
+        </el-form>
+      </div> -->
+
       <div class="rigth">
         <el-button type="primary" @click="showAddDialog">
           {{ $t("form.add") }}
