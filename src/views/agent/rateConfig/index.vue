@@ -44,8 +44,7 @@
     <el-main>
       <el-table
         :data="tableData"
-        style="width: 100%"
-        max-height="520"
+        style="width: 100%; min-height: calc(100vh - 330px)"
         border
         v-loading="tableLoading"
         :span-method="spanMethod"

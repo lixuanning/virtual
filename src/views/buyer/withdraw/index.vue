@@ -64,8 +64,7 @@
     <el-main>
       <el-table
         :data="tableData"
-        max-height="520"
-        style="width: 100%"
+        style="width: 100%; min-height: calc(100vh - 330px)"
         v-loading="tableLoading"
       >
         <el-table-column
@@ -119,7 +118,7 @@
 
         <el-table-column
           prop="payee"
-          :label="$t('form.transferName')"
+          :label="$t('form.withdrawPayee')"
           width="100"
         ></el-table-column>
         <el-table-column prop="payType" :label="$t('form.payType')" width="100">

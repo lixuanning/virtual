@@ -24,7 +24,11 @@
 
     <!-- 表格和分页 -->
     <el-main>
-      <el-table :data="tableData" style="width: 100%" v-loading="tableLoading">
+      <el-table
+        :data="tableData"
+        style="width: 100%; min-height: calc(100vh - 330px)"
+        v-loading="tableLoading"
+      >
         <el-table-column
           prop="date"
           :label="$t('form.date')"
@@ -158,7 +162,7 @@
 import { ref, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import { ElMessage } from "element-plus";
-import { registerForMerchant,addProduct } from "@/api/otc.js";
+import { registerForMerchant, addProduct } from "@/api/otc.js";
 
 // 模拟获取数据的函数
 const fetchData = async (query = "", page = 1, pageSize = 10) => {

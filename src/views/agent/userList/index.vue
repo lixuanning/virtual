@@ -41,7 +41,11 @@
 
     <!-- 表格和分页 -->
     <el-main>
-      <el-table :data="tableData" style="width: 100%" v-loading="tableLoading">
+      <el-table
+        :data="tableData"
+        style="width: 100%; min-height: calc(100vh - 330px)"
+        v-loading="tableLoading"
+      >
         <el-table-column prop="name" :label="$t('form.name')"></el-table-column>
         <el-table-column
           prop="email"
@@ -80,7 +84,8 @@
           width="150"
         >
           <template #default="{ row }">
-            {{ row.higherMerchantEmail }}/{{ row.proxyRate }}
+            {{ row.higherMerchantEmail }}/
+            {{ row.proxyRate ? `${row.proxyRate * 100}%` : "" }}
           </template>
         </el-table-column>
         <!-- <el-table-column prop="proxyRate" :label="$t('form.proxyRate')">
@@ -95,7 +100,11 @@
               scope.row.outServiceCharge === 1
                 ? $t("form.merchant")
                 : $t("form.user")
-            }}/{{ scope.row.outServiceChargeRate }}
+            }}/{{
+              scope.row.outServiceChargeRate
+                ? `${scope.row.outServiceChargeRate * 100}%`
+                : ""
+            }}
           </template>
         </el-table-column>
         <el-table-column

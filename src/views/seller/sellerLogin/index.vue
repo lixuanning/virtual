@@ -100,7 +100,7 @@
             :before-upload="beforeUpload"
             :show-file-list="false"
             :http-request="(file) => customUpload(file, 'idCardFrontId')"
-            :limit="1"
+            :limit="2"
           >
             <el-button type="text">{{ $t("register.uploadFront") }}</el-button>
           </el-upload>
@@ -112,7 +112,7 @@
               :max-scale="7"
               :min-scale="0.2"
               :preview-src-list="[imgUrl.idCardFrontId]"
-              :initial-index="1"
+              :initial-index="2"
               fit="cover"
           /></span>
         </el-form-item>
@@ -135,7 +135,7 @@
               :max-scale="7"
               :min-scale="0.2"
               :preview-src-list="[imgUrl.idCardBackId]"
-              :initial-index="1"
+              :initial-index="2"
               fit="cover"
           /></span>
         </el-form-item>
@@ -161,7 +161,7 @@
               :max-scale="7"
               :min-scale="0.2"
               :preview-src-list="[imgUrl.idCardInHandId]"
-              :initial-index="1"
+              :initial-index="2"
               fit="cover"
           /></span>
         </el-form-item>
@@ -349,6 +349,7 @@ const beforeUpload = (file) => {
 // 将图片数据转换为 base64 URL
 
 const customUpload = async ({ file, onSuccess, onError }, field) => {
+  console.log(111);
   try {
     const response = await uploadPicture({ file: file });
     form.value[field] = response.data.pictureId;

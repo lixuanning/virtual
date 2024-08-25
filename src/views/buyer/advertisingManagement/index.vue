@@ -58,7 +58,11 @@
 
     <!-- 表格和分页 -->
     <el-main>
-      <el-table :data="tableData" style="width: 100%" v-loading="tableLoading">
+      <el-table
+        :data="tableData"
+        style="width: 100%; min-height: calc(100vh - 330px)"
+        v-loading="tableLoading"
+      >
         <el-table-column
           prop="coin"
           :label="$t('form.coin')"

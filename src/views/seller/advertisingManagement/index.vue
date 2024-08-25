@@ -12,9 +12,9 @@
             >
               <el-option
                 v-for="item in coinOptions"
-                :key="item"
-                :label="item"
-                :value="item"
+                :key="item.id"
+                :label="item.value"
+                :value="item.id"
               ></el-option>
             </el-select>
           </el-form-item>
@@ -25,9 +25,9 @@
             >
               <el-option
                 v-for="item in legalCurrencyOptions"
-                :key="item"
-                :label="item"
-                :value="item"
+                :key="item.id"
+                :label="item.value"
+                :value="item.id"
               ></el-option>
             </el-select>
           </el-form-item>
@@ -58,7 +58,11 @@
 
     <!-- 表格和分页 -->
     <el-main>
-      <el-table :data="tableData" style="width: 100%" v-loading="tableLoading">
+      <el-table
+        :data="tableData"
+        style="width: 100%; min-height: calc(100vh - 330px)"
+        v-loading="tableLoading"
+      >
         <el-table-column
           prop="coin"
           :label="$t('form.coin')"
@@ -177,9 +181,9 @@
           >
             <el-option
               v-for="item in legalCurrencyOptions"
-              :key="item"
-              :label="item"
-              :value="item"
+              :key="item.id"
+              :label="item.value"
+              :value="item.id"
             ></el-option>
           </el-select>
         </el-form-item>
@@ -239,6 +243,8 @@ import {
   addProduct,
   queryProductList,
   updateProductStatus,
+  getLegalCurrencyDict,
+  getCoinDict,
 } from "@/api/otc.js";
 import { ElMessage } from "element-plus";
 import { getPlay } from "@/utils/enumerate";
@@ -303,9 +309,12 @@ const isAddDialogVisible = ref(false);
 const addFormRef = ref(null);
 
 // 模拟获取 coin 和 legalCurrency 列表
-const fetchOptions = () => {
-  coinOptions.value = ["USDT"];
-  legalCurrencyOptions.value = ["CNY"];
+
+const fetchOptions = async () => {
+  const res = await getCoinDict();
+  const res2 = await getLegalCurrencyDict();
+  coinOptions.value = res.data;
+  legalCurrencyOptions.value = res2.data;
 };
 
 // 查询列表数据

@@ -86,6 +86,7 @@ export default {
     unitPrice: "单价",
     merchant: "商户",
     user: "用户",
+    withdrawPayee: "收款人",
     intoServiceCharge: "入金手续费",
     outServiceCharge: "出金手续费",
     paymentPayer: "手续费支付方",
