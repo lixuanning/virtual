@@ -134,6 +134,20 @@
         >
         </el-table-column>
         <el-table-column
+          prop="supportLegalCurrencyArr"
+          :label="$t('form.supportLegalCurrencyArr')"
+          width="200"
+        >
+          <template #default="scope">
+            <span
+              v-for="(item, index) in scope.row.supportLegalCurrencyArr"
+              :key="index"
+            >
+              {{ item }}，
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column
           prop="createDate"
           :label="$t('form.created')"
           width="200"
@@ -228,6 +242,15 @@
             </el-button>
             <el-button type="text" @click="showEditDialog(scope.row, 6)">
               {{ $t("form.intoServiceCharge") }}
+            </el-button>
+            <el-button type="text" @click="showEditDialog(scope.row, 7)">
+              {{ $t("form.topUp") }}
+            </el-button>
+            <el-button type="text" @click="showEditDialog(scope.row, 8)">
+              {{ $t("form.deduction") }}
+            </el-button>
+            <el-button type="text" @click="showEditDialog(scope.row, 9)">
+              {{ $t("form.supportLegalCurrencyArr") }}
             </el-button>
             <!-- <el-button type="text" @click="showEditDialog(scope.row, 2)">
               {{ $t("form.exchangeRate") }}
@@ -392,6 +415,39 @@
             />
           </el-form-item>
         </template>
+
+        <el-form-item
+          :label="$t('form.quantity3')"
+          prop="quantity"
+          v-if="thisFromKey === 7"
+        >
+          <el-input type="number" v-model="updateStatusData.quantity" />
+        </el-form-item>
+        <el-form-item
+          :label="$t('form.quantity4')"
+          prop="quantity"
+          v-if="thisFromKey === 8"
+        >
+          <el-input type="number" v-model="updateStatusData.quantity" />
+        </el-form-item>
+        <el-form-item
+          :label="$t('form.supportLegalCurrencyArr')"
+          prop="supportLegalCurrencyArr"
+          v-if="thisFromKey === 9"
+        >
+          <el-select
+            v-model="updateStatusData.supportLegalCurrencyArr"
+            :placeholder="$t('form.select')"
+            multiple
+          >
+            <el-option
+              v-for="item in legalCurrencyOptions"
+              :key="item.id"
+              :label="item.value"
+              :value="item.id"
+            ></el-option>
+          </el-select>
+        </el-form-item>
       </el-form>
       <template #footer>
         <el-button @click="isAddDialogVisible2 = false">
@@ -497,6 +553,9 @@ import {
   setProxyRate,
   updateOutServiceCharge,
   updateInServiceCharge,
+  merchantRecharge,
+  merchantSubtract,
+  updateSupportLegalCurrency,
 } from "@/api/agent.js";
 import { ElMessage } from "element-plus";
 import moment from "moment";
@@ -535,9 +594,17 @@ const updateStatusData = ref({
   outServiceChargeRate: "",
   outServiceChargeType: "",
   inServiceChargeType: "",
+  quantity: "",
+  supportLegalCurrencyArr: [],
 });
 const rules2 = ref({
   inServiceChargeRate: [
+    { required: true, message: t("form.requiredText"), trigger: "blur" },
+  ],
+  supportLegalCurrencyArr: [
+    { required: true, message: t("form.requiredText"), trigger: "blur" },
+  ],
+  quantity: [
     { required: true, message: t("form.requiredText"), trigger: "blur" },
   ],
   outServiceChargeRate: [
@@ -830,6 +897,50 @@ const updateInServiceChargeFn = async () => {
     dialogLoading.value = false;
   }
 };
+
+const merchantRechargeFn = async () => {
+  try {
+    await merchantRecharge({
+      merchantId: thisItem.value.merchantId,
+      quantity: updateStatusData.value.quantity,
+    });
+    dialogLoading.value = false;
+    ElMessage.success(t("form.successText"));
+    isAddDialogVisible2.value = false;
+    loadData(); // 重新加载数据
+  } catch (error) {
+    dialogLoading.value = false;
+  }
+};
+const merchantSubtractFn = async () => {
+  try {
+    await merchantSubtract({
+      merchantId: thisItem.value.merchantId,
+      quantity: updateStatusData.value.quantity,
+    });
+    dialogLoading.value = false;
+    ElMessage.success(t("form.successText"));
+    isAddDialogVisible2.value = false;
+    loadData(); // 重新加载数据
+  } catch (error) {
+    dialogLoading.value = false;
+  }
+};
+
+const updateSupportLegalCurrencyFn = async () => {
+  try {
+    await updateSupportLegalCurrency({
+      merchantId: thisItem.value.merchantId,
+      supportLegalCurrencyArr: updateStatusData.value.supportLegalCurrencyArr,
+    });
+    dialogLoading.value = false;
+    ElMessage.success(t("form.successText"));
+    isAddDialogVisible2.value = false;
+    loadData(); // 重新加载数据
+  } catch (error) {
+    dialogLoading.value = false;
+  }
+};
 const updateStatusFn = async () => {
   dialogLoading.value = true;
   addFormRef2.value.validate(async (valid) => {
@@ -846,6 +957,12 @@ const updateStatusFn = async () => {
         updateOutServiceChargeFn();
       } else if (thisFromKey.value === 6) {
         updateInServiceChargeFn();
+      } else if (thisFromKey.value === 7) {
+        merchantRechargeFn();
+      } else if (thisFromKey.value === 8) {
+        merchantSubtractFn();
+      } else if (thisFromKey.value === 9) {
+        updateSupportLegalCurrencyFn();
       }
     } else {
       dialogLoading.value = false;

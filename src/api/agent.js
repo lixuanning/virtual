@@ -154,3 +154,28 @@ export const addCoinDict = (params) => {
     ...params,
   });
 };
+// 新增扣B
+export const merchantSubtract = (params) => {
+  return http.post(`/merchantSubtract`, {
+    ...params,
+  });
+};
+
+// OTC扣B
+export const otcSubtract = (params) => {
+  return http.post(`/otcSubtract`, {
+    ...params,
+  });
+};
+
+export const merchantRecharge = (params) => {
+  return http.post(`/merchantRecharge`, {
+    ...params,
+  });
+};
+
+export const updateSupportLegalCurrency = (params) => {
+  return http.post(`/updateSupportLegalCurrency`, {
+    ...params,
+  });
+};

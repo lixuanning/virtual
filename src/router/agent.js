@@ -41,6 +41,13 @@ const routes = [
     },
     children: [
       {
+        path: "/agent/transactionManagement/advertisingManagement",
+        name: "agentAdvertisingManagement",
+        component: () =>
+          import("@/views/agent/advertisingManagement/index.vue"),
+        meta: { pathName: "routerName.advertisingManagement" },
+      },
+      {
         path: "/agent/transactionManagement/withdraw",
         name: "agentWithdraw",
         component: () => import("@/views/agent/withdraw/index.vue"),
