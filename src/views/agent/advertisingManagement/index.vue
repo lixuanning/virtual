@@ -87,7 +87,12 @@
           :label="$t('form.total')"
           sortable
         ></el-table-column>
-
+        <el-table-column
+          prop="unitPrice"
+          :label="$t('form.unitPrice')"
+          width="120"
+          sortable
+        ></el-table-column>
         <el-table-column
           prop="buyMin"
           :label="$t('form.buyMin')"

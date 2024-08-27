@@ -69,21 +69,26 @@
           width="100"
         ></el-table-column>
         <el-table-column
-          prop="total"
-          :label="$t('form.total')"
-        ></el-table-column>
-        <el-table-column
           prop="legalCurrency"
           :label="$t('form.legalCurrency')"
         ></el-table-column>
         <el-table-column
+          prop="total"
+          :label="$t('form.total')"
+          sortable
+        ></el-table-column>
+
+        <el-table-column
           prop="buyMin"
+          width="120"
+          sortable
           :label="$t('form.buyMin')"
         ></el-table-column>
         <el-table-column
           prop="buyMax"
           :label="$t('form.buyMax')"
           width="150"
+          sortable
         ></el-table-column>
         <el-table-column
           prop="saleStartDate"

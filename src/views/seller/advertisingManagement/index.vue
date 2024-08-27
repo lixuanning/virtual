@@ -69,21 +69,30 @@
           width="100"
         ></el-table-column>
         <el-table-column
-          prop="total"
-          :label="$t('form.total')"
-        ></el-table-column>
-        <el-table-column
           prop="legalCurrency"
           :label="$t('form.legalCurrency')"
         ></el-table-column>
         <el-table-column
+          prop="total"
+          :label="$t('form.total')"
+        ></el-table-column>
+        <el-table-column
+          prop="unitPrice"
+          :label="$t('form.unitPrice')"
+          width="120"
+          sortable
+        ></el-table-column>
+        <el-table-column
           prop="buyMin"
           :label="$t('form.buyMin')"
+          width="120"
+          sortable
         ></el-table-column>
         <el-table-column
           prop="buyMax"
           :label="$t('form.buyMax')"
           width="150"
+          sortable
         ></el-table-column>
         <el-table-column
           prop="expirationDate"
@@ -187,6 +196,9 @@
         <el-form-item :label="$t('form.total')" prop="total">
           <el-input type="number" v-model="addForm.total"></el-input>
         </el-form-item>
+        <el-form-item :label="$t('form.unitPrice')" prop="unitPrice">
+          <el-input type="number" v-model="addForm.unitPrice"></el-input>
+        </el-form-item>
         <el-form-item :label="$t('form.legalCurrency')" prop="legalCurrency">
           <el-select
             v-model="addForm.legalCurrency"
@@ -288,10 +300,17 @@ const addForm = ref({
   saleEndDate: null,
   dateList: [],
   expirationDate: "",
+  unitPrice: "",
 });
 
 const rules = ref({
   coin: [{ required: true, message: t("form.requiredText"), trigger: "blur" }],
+  expirationDate: [
+    { required: true, message: t("form.requiredText"), trigger: "blur" },
+  ],
+  unitPrice: [
+    { required: true, message: t("form.requiredText"), trigger: "blur" },
+  ],
   supportPay: [
     { required: true, message: t("form.requiredText"), trigger: "blur" },
   ],
@@ -371,6 +390,7 @@ const handleAddSubmit = () => {
       supportPay,
       dateList,
       expirationDate,
+      unitPrice,
     } = addForm.value;
     if (valid) {
       try {
@@ -386,6 +406,7 @@ const handleAddSubmit = () => {
           saleStartDate: moment(dateList[0]).format("YYYY-MM-DD"),
           saleEndDate: moment(dateList[1]).format("YYYY-MM-DD"),
           expirationDate,
+          unitPrice,
         });
         ElMessage.success(t("form.addSuccess"));
         isAddDialogVisible.value = false;
@@ -447,6 +468,7 @@ const showAddDialog = () => {
     saleEndDate: null,
     dateList: [],
     expirationDate: "",
+    unitPrice: "",
   };
 
   isAddDialogVisible.value = true;
