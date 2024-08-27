@@ -191,3 +191,10 @@ export const updateProduct = (params) => {
     ...params,
   });
 };
+
+// 修改商户名称
+export const updateUserName = (params) => {
+  return http.post(`/updateUserName`, {
+    ...params,
+  });
+};

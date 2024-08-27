@@ -252,6 +252,9 @@
             <el-button type="text" @click="showEditDialog(scope.row, 9)">
               {{ $t("form.supportLegalCurrencyArr") }}
             </el-button>
+            <el-button type="text" @click="showEditDialog(scope.row, 10)">
+              {{ $t("form.updateUserName") }}
+            </el-button>
             <!-- <el-button type="text" @click="showEditDialog(scope.row, 2)">
               {{ $t("form.exchangeRate") }}
             </el-button> -->
@@ -448,6 +451,13 @@
             ></el-option>
           </el-select>
         </el-form-item>
+        <el-form-item
+          :label="$t('form.name')"
+          prop="name"
+          v-if="thisFromKey === 10"
+        >
+          <el-input type="text" v-model="updateStatusData.name" />
+        </el-form-item>
       </el-form>
       <template #footer>
         <el-button @click="isAddDialogVisible2 = false">
@@ -556,6 +566,7 @@ import {
   merchantRecharge,
   merchantSubtract,
   updateSupportLegalCurrency,
+  updateUserName,
 } from "@/api/agent.js";
 import { ElMessage } from "element-plus";
 import moment from "moment";
@@ -596,11 +607,13 @@ const updateStatusData = ref({
   inServiceChargeType: "",
   quantity: "",
   supportLegalCurrencyArr: [],
+  name: "",
 });
 const rules2 = ref({
   inServiceChargeRate: [
     { required: true, message: t("form.requiredText"), trigger: "blur" },
   ],
+  name: [{ required: true, message: t("form.requiredText"), trigger: "blur" }],
   supportLegalCurrencyArr: [
     { required: true, message: t("form.requiredText"), trigger: "blur" },
   ],
@@ -941,6 +954,21 @@ const updateSupportLegalCurrencyFn = async () => {
     dialogLoading.value = false;
   }
 };
+
+const updateUserNameFn = async () => {
+  try {
+    await updateUserName({
+      userId: thisItem.value.userId,
+      name: updateStatusData.value.name,
+    });
+    dialogLoading.value = false;
+    ElMessage.success(t("form.successText"));
+    isAddDialogVisible2.value = false;
+    loadData(); // 重新加载数据
+  } catch (error) {
+    dialogLoading.value = false;
+  }
+};
 const updateStatusFn = async () => {
   dialogLoading.value = true;
   addFormRef2.value.validate(async (valid) => {
@@ -963,6 +991,8 @@ const updateStatusFn = async () => {
         merchantSubtractFn();
       } else if (thisFromKey.value === 9) {
         updateSupportLegalCurrencyFn();
+      } else if (thisFromKey.value === 10) {
+        updateUserNameFn();
       }
     } else {
       dialogLoading.value = false;
