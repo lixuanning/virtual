@@ -226,7 +226,18 @@
         label-width="120px"
       >
         <el-form-item :label="$t('form.OTCemail')" prop="email">
-          <el-input v-model="addForm2.email"></el-input>
+          <!-- <el-input v-model="addForm2.email"></el-input> -->
+          <el-select v-model="addForm2.email" filterable>
+            <el-option
+              v-for="item in otcSelectData"
+              :key="item.email"
+              :label="item.email"
+              :value="item.email"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item :label="$t('form.unitPrice')" prop="unitPrice">
+          <el-input v-model="addForm2.unitPrice"></el-input>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -346,7 +357,11 @@ import { ref, onMounted, computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { queryOutOrderList, updateOutOrderStatus } from "@/api/otc.js";
 import { getLegalCurrencyDict, getCoinDict } from "@/api/buyer.js";
-import { shareOutOrderToOtc, updateOutOrder } from "@/api/agent.js";
+import {
+  shareOutOrderToOtc,
+  updateOutOrder,
+  getOtcSelectData,
+} from "@/api/agent.js";
 import { ElMessage } from "element-plus";
 import moment from "moment";
 import { getPlay, getStatus } from "@/utils/enumerate.js";
@@ -360,6 +375,7 @@ const { t } = useI18n();
 // 初始化数据
 const coinOptions = ref([]);
 const legalCurrencyOptions = ref([]);
+const otcSelectData = ref([]);
 const isAddDialogVisible2 = ref(false);
 
 // 表单相关状态
@@ -381,6 +397,7 @@ const addForm = ref({
 });
 const addForm2 = ref({
   email: "",
+  unitPrice: "",
 });
 const addFormRef2 = ref(null);
 
@@ -435,6 +452,9 @@ const rules2 = ref({
       trigger: ["blur", "change"],
     },
   ],
+  unitPrice: [
+    { required: true, message: t("form.requiredText"), trigger: "blur" },
+  ],
 });
 
 const tableData = ref([]);
@@ -450,8 +470,10 @@ const addFormRef = ref(null);
 const fetchOptions = async () => {
   const res = await getCoinDict();
   const res2 = await getLegalCurrencyDict();
+  const res3 = await getOtcSelectData();
   coinOptions.value = res.data;
   legalCurrencyOptions.value = res2.data;
+  otcSelectData.value = res3.data;
 };
 
 // 查询列表数据
@@ -503,6 +525,7 @@ const allocateSubmit = () => {
       try {
         await shareOutOrderToOtc({
           otcEmail: addForm2.value.email,
+          unitPrice: addForm2.value.unitPrice,
           outOrderId: allocateRow.value.outOrderId,
         });
         ElMessage.success(t("form.successText"));

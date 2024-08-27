@@ -79,23 +79,40 @@
           width="100"
         ></el-table-column>
         <el-table-column
-          prop="total"
-          :label="$t('form.total')"
-        ></el-table-column>
-        <el-table-column
           prop="legalCurrency"
           :label="$t('form.legalCurrency')"
         ></el-table-column>
         <el-table-column
+          prop="total"
+          :label="$t('form.total')"
+          sortable
+        ></el-table-column>
+
+        <el-table-column
           prop="buyMin"
           :label="$t('form.buyMin')"
           width="120"
+          sortable
         ></el-table-column>
         <el-table-column
           prop="buyMax"
           :label="$t('form.buyMax')"
           width="150"
+          sortable
         ></el-table-column>
+        <el-table-column
+          prop="expirationDate"
+          :label="$t('form.expirationDate')"
+          width="150"
+        >
+          <template #default="scope">
+            {{
+              scope.row.expirationDate
+                ? `${scope.row.expirationDate} ${$t("form.minute")}`
+                : ""
+            }}
+          </template>
+        </el-table-column>
         <el-table-column
           prop="saleStartDate"
           :label="$t('form.tabSaleStartDate')"
@@ -123,10 +140,8 @@
           <template #default="scope">
             <!-- <el-button type="text" @click="showViewDialog(scope.row)">
               {{ $t("form.view") }}
-            </el-button>
-            <el-button type="text" @click="showEditDialog(scope.row)">
-              {{ $t("form.edit") }}
             </el-button> -->
+
             <el-popconfirm
               :title="$t('form.isPutaway')"
               confirm-button-text="是"
@@ -149,6 +164,10 @@
                 <el-button type="text">{{ $t("form.takeaway") }}</el-button>
               </template>
             </el-popconfirm>
+
+            <el-button type="text" @click="showAddDialog(scope.row)">
+              {{ $t("form.edit") }}
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -165,70 +184,24 @@
     </el-main>
 
     <!-- 新增对话框 -->
-    <el-dialog :title="$t('form.add')" v-model="isAddDialogVisible">
+    <el-dialog :title="$t('form.edit')" v-model="isAddDialogVisible">
       <el-form
         :model="addForm"
         :rules="rules"
         ref="addFormRef"
         label-width="100px"
       >
-        <el-form-item :label="$t('form.coin')" prop="coin">
-          <el-select v-model="addForm.coin" placeholder="Select Coin">
-            <el-option
-              v-for="item in coinOptions"
-              :key="item"
-              :label="item"
-              :value="item"
-            ></el-option>
-          </el-select>
+        <el-form-item :label="$t('form.total')" prop="total">
+          <el-input type="number" v-model="addForm.total"></el-input>
         </el-form-item>
         <el-form-item :label="$t('form.total')" prop="total">
           <el-input type="number" v-model="addForm.total"></el-input>
         </el-form-item>
-        <el-form-item :label="$t('form.legalCurrency')" prop="legalCurrency">
-          <el-select
-            v-model="addForm.legalCurrency"
-            placeholder="Select Currency"
+
+        <el-form-item :label="$t('form.expirationDate')" prop="expirationDate">
+          <el-input type="number" v-model="addForm.expirationDate">
+            <template #append>{{ $t("form.minute") }}</template></el-input
           >
-            <el-option
-              v-for="item in legalCurrencyOptions"
-              :key="item"
-              :label="item"
-              :value="item"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="$t('form.buyMin')" prop="buyMin">
-          <el-input type="number" v-model="addForm.buyMin"></el-input>
-        </el-form-item>
-        <el-form-item :label="$t('form.buyMax')" prop="buyMax">
-          <el-input type="number" v-model="addForm.buyMax"></el-input>
-        </el-form-item>
-        <el-form-item :label="$t('form.desc')" prop="desc">
-          <el-input type="textarea" v-model="addForm.desc"></el-input>
-        </el-form-item>
-        <el-form-item :label="$t('form.mark')" prop="mark">
-          <el-input type="textarea" v-model="addForm.mark"></el-input>
-        </el-form-item>
-        <el-form-item :label="$t('form.supportPay')" prop="supportPay">
-          <el-checkbox-group v-model="addForm.supportPay">
-            <el-checkbox
-              v-for="item in playList"
-              :key="item.key"
-              :label="item.key"
-              >{{ item.name }}</el-checkbox
-            >
-          </el-checkbox-group>
-        </el-form-item>
-        <el-form-item :label="$t('form.saleStartDate')" prop="dateList">
-          <el-date-picker
-            v-model="addForm.dateList"
-            type="daterange"
-            start-placeholder="Start Date"
-            end-placeholder="End Date"
-            align="right"
-            format="YYYY/MM/DD"
-          ></el-date-picker>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -240,7 +213,7 @@
           :loading="dialogLoading"
           @click="handleAddSubmit"
         >
-          {{ $t("form.add") }}
+          {{ $t("form.confirm") }}
         </el-button>
       </template>
     </el-dialog>
@@ -251,12 +224,12 @@
 import { ref, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import {
-  addProduct,
   queryProductList,
   updateProductStatus,
   getLegalCurrencyDict,
   getCoinDict,
 } from "@/api/otc.js";
+import { updateProduct } from "@/api/agent.js";
 import { ElMessage } from "element-plus";
 import moment from "moment";
 const { t } = useI18n();
@@ -268,44 +241,19 @@ const legalCurrencyOptions = ref([]);
 // 表单相关状态
 const searchForm = ref({ coin: "", legalCurrency: "", status: "" });
 const addForm = ref({
-  coin: "",
+  unitPrice: "",
   total: "",
-  legalCurrency: "",
-  buyMin: "",
-  buyMax: "",
-  desc: "",
-  mark: "",
-  supportPay: [],
-  saleStartDate: null,
-  saleEndDate: null,
-  dateList: [],
+  expirationDate: "",
+  productId: "",
 });
 
 const rules = ref({
-  coin: [{ required: true, message: t("form.requiredText"), trigger: "blur" }],
-  supportPay: [
-    { required: true, message: t("form.requiredText"), trigger: "blur" },
-  ],
   total: [{ required: true, message: t("form.requiredText"), trigger: "blur" }],
-  legalCurrency: [
-    {
-      required: true,
-      message: t("form.requiredText"),
-      trigger: "blur",
-    },
-  ],
-  buyMin: [
+  unitPrice: [
     { required: true, message: t("form.requiredText"), trigger: "blur" },
   ],
-  buyMax: [
+  expirationDate: [
     { required: true, message: t("form.requiredText"), trigger: "blur" },
-  ],
-  dateList: [
-    {
-      required: true,
-      message: t("form.requiredText"),
-      trigger: "blur",
-    },
   ],
 });
 
@@ -317,21 +265,6 @@ const tableLoading = ref(false);
 const dialogLoading = ref(false);
 const isAddDialogVisible = ref(false);
 const addFormRef = ref(null);
-// 1:银行卡 2:微信 3:支付宝
-const playList = ref([
-  {
-    key: 2,
-    name: "银行卡",
-  },
-  {
-    key: 1,
-    name: "微信",
-  },
-  {
-    key: 1,
-    name: "支付宝",
-  },
-]);
 
 // 模拟获取 coin 和 legalCurrency 列表
 const fetchOptions = async () => {
@@ -365,30 +298,10 @@ const loadData = async () => {
 const handleAddSubmit = () => {
   dialogLoading.value = true;
   addFormRef.value.validate(async (valid) => {
-    const {
-      coin,
-      total,
-      legalCurrency,
-      buyMin,
-      buyMax,
-      desc,
-      mark,
-      supportPay,
-      dateList,
-    } = addForm.value;
     if (valid) {
       try {
-        await addProduct({
-          coin,
-          total,
-          legalCurrency,
-          buyMin,
-          buyMax,
-          desc,
-          mark,
-          supportPay,
-          saleStartDate: moment(dateList[0]).format("YYYY-MM-DD"),
-          saleEndDate: moment(dateList[1]).format("YYYY-MM-DD"),
+        await updateProduct({
+          ...addForm.value,
         });
         ElMessage.success(t("form.addSuccess"));
         isAddDialogVisible.value = false;
@@ -436,19 +349,12 @@ const handlePageChange = (page) => {
 };
 
 // 显示新增对话框
-const showAddDialog = () => {
+const showAddDialog = (row) => {
   addForm.value = {
-    coin: "",
-    total: "",
-    legalCurrency: "",
-    buyMin: "",
-    buyMax: "",
-    desc: "",
-    mark: "",
-    supportPay: [],
-    saleStartDate: null,
-    saleEndDate: null,
-    dateList: [],
+    unitPrice: row.unitPrice,
+    total: row.total,
+    expirationDate: row.expirationDate,
+    productId: row.productId,
   };
   // addForm.value = {
   //   buyMax: "3",

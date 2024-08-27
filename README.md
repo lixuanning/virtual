@@ -24,13 +24,3 @@ yarn serve
 yarn build:test
 yarn build:prod
 ```
-
-### Lints and fixes files
-
-```
-yarn lint
-```
-
-### Customize configuration
-
-See [Configuration Reference](https://cli.vuejs.org/config/).

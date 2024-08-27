@@ -4,6 +4,9 @@
     <el-header class="header">
       <div>
         <el-form :inline="true" :model="searchForm" class="demo-form-inline">
+          <el-form-item :label="$t('form.outOrderId')">
+            <el-input v-model="searchForm.outOrderId"></el-input>
+          </el-form-item>
           <el-form-item :label="$t('form.coin')">
             <el-select
               width="100%"
@@ -18,9 +21,6 @@
               ></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item :label="$t('form.outOrderId')">
-            <el-input v-model="searchForm.outOrderId"></el-input>
-          </el-form-item>
 
           <el-form-item :label="$t('form.status')">
             <el-select
@@ -28,7 +28,7 @@
               :placeholder="$t('form.select')"
             >
               <el-option
-                v-for="item in getStatus()"
+                v-for="item in getWithdrawalList()"
                 :key="item.key"
                 :value="item.key"
                 :label="item.name"
@@ -64,8 +64,8 @@
         ></el-table-column>
         <el-table-column prop="status" :label="$t('form.status')" width="100">
           <template #default="scope">
-            <el-tag :type="getStatus(scope.row.status).type">
-              {{ getStatus(scope.row.status).name }}</el-tag
+            <el-tag :type="getWithdrawalList(scope.row.status).type">
+              {{ getWithdrawalList(scope.row.status).name }}</el-tag
             >
           </template>
         </el-table-column>
@@ -100,18 +100,28 @@
           </template>
         </el-table-column>
 
-        <el-table-column :label="$t('form.actions')" width="150" fixed="right">
+        <el-table-column :label="$t('form.actions')" width="200" fixed="right">
           <template #default="scope">
             <el-popconfirm
-              :title="$t('form.transferCompletedText')"
+              :title="$t('form.confirmRecharge')"
               confirm-button-text="是"
               cancel-button-text="否"
-              @confirm="() => handleDelete(scope.row)"
+              @confirm="() => handleDelete(scope.row, 2)"
             >
               <template #reference>
                 <el-button type="text">{{
                   $t("form.transferCompleted")
                 }}</el-button>
+              </template>
+            </el-popconfirm>
+            <el-popconfirm
+              :title="$t('form.confirmRecharge')"
+              confirm-button-text="是"
+              cancel-button-text="否"
+              @confirm="() => handleDelete(scope.row, 3)"
+            >
+              <template #reference>
+                <el-button type="text">{{ $t("form.dismiss") }}</el-button>
               </template>
             </el-popconfirm>
             <el-button type="text" @click="showAddDialog(scope.row)">{{
@@ -185,7 +195,7 @@ import {
 import { getLegalCurrencyDict, getCoinDict } from "@/api/buyer.js";
 import { ElMessage } from "element-plus";
 import moment from "moment";
-import { getPlay, getStatus } from "@/utils/enumerate.js";
+import { getPlay, getWithdrawalList } from "@/utils/enumerate.js";
 import { uploadPicture, previewPicture } from "@/api/file";
 import { assignSelectedData, clearFormFields } from "@/utils/tool.js";
 const paymentOptions = computed(() => getPlay());
@@ -286,10 +296,10 @@ const handleSearch = () => {
   loadData();
 };
 //上架和下载
-const handleDelete = async (row) => {
+const handleDelete = async (row, key) => {
   const res = await updateWithdrawalOrderStatus({
     withdrawalOrderId: row.withdrawalId,
-    status: 2,
+    status: key,
   });
   console.log(res);
   ElMessage.success(t("form.successText"));

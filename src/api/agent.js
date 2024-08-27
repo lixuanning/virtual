@@ -179,3 +179,15 @@ export const updateSupportLegalCurrency = (params) => {
     ...params,
   });
 };
+
+// 获取OTC列表
+export const getOtcSelectData = () => {
+  return http.post(`/getOtcSelectData`);
+};
+
+// 更新广告
+export const updateProduct = (params) => {
+  return http.post(`/updateProduct`, {
+    ...params,
+  });
+};

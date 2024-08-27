@@ -88,3 +88,31 @@ export const getAuditStatus = (key) => {
     return list;
   }
 };
+
+// 1:待审核 2:审核通过 3:审核未通过 4:封禁
+export const getWithdrawalList = (key) => {
+  const list = [
+    {
+      key: 1,
+      name: "新建",
+      type: "default",
+    },
+    {
+      key: 2,
+      name: "完成",
+      type: "success",
+    },
+    {
+      key: 3,
+      name: "取消",
+      type: "info",
+    },
+  ];
+
+  if (key) {
+    const item = list.find((item) => item.key === key);
+    return item;
+  } else {
+    return list;
+  }
+};

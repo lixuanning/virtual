@@ -86,6 +86,19 @@
           width="150"
         ></el-table-column>
         <el-table-column
+          prop="expirationDate"
+          :label="$t('form.expirationDate')"
+          width="150"
+        >
+          <template #default="scope">
+            {{
+              scope.row.expirationDate
+                ? `${scope.row.expirationDate} ${$t("form.minute")}`
+                : ""
+            }}
+          </template>
+        </el-table-column>
+        <el-table-column
           prop="saleStartDate"
           :label="$t('form.tabSaleStartDate')"
           width="200"
@@ -165,9 +178,9 @@
           <el-select v-model="addForm.coin" placeholder="Select Coin">
             <el-option
               v-for="item in coinOptions"
-              :key="item"
-              :label="item"
-              :value="item"
+              :key="item.id"
+              :label="item.id"
+              :value="item.id"
             ></el-option>
           </el-select>
         </el-form-item>
@@ -208,6 +221,11 @@
               >{{ item.name }}</el-checkbox
             >
           </el-checkbox-group>
+        </el-form-item>
+        <el-form-item :label="$t('form.expirationDate')" prop="expirationDate">
+          <el-input type="number" v-model="addForm.expirationDate">
+            <template #append>{{ $t("form.minute") }}</template></el-input
+          >
         </el-form-item>
         <el-form-item :label="$t('form.saleStartDate')" prop="dateList">
           <el-date-picker
@@ -269,6 +287,7 @@ const addForm = ref({
   saleStartDate: null,
   saleEndDate: null,
   dateList: [],
+  expirationDate: "",
 });
 
 const rules = ref({
@@ -351,6 +370,7 @@ const handleAddSubmit = () => {
       mark,
       supportPay,
       dateList,
+      expirationDate,
     } = addForm.value;
     if (valid) {
       try {
@@ -365,6 +385,7 @@ const handleAddSubmit = () => {
           supportPay,
           saleStartDate: moment(dateList[0]).format("YYYY-MM-DD"),
           saleEndDate: moment(dateList[1]).format("YYYY-MM-DD"),
+          expirationDate,
         });
         ElMessage.success(t("form.addSuccess"));
         isAddDialogVisible.value = false;
@@ -425,19 +446,8 @@ const showAddDialog = () => {
     saleStartDate: null,
     saleEndDate: null,
     dateList: [],
+    expirationDate: "",
   };
-  // addForm.value = {
-  //   buyMax: "3",
-  //   buyMin: "3",
-  //   coin: "USDT",
-  //   desc: "3",
-  //   legalCurrency: "CNY",
-  //   mark: "3",
-  //   saleEndDate: "2024-09-23",
-  //   saleStartDate: "2024-08-22",
-  //   supportPay: [2],
-  //   total: "33",
-  // };
 
   isAddDialogVisible.value = true;
 };

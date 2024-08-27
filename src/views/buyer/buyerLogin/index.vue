@@ -89,6 +89,12 @@
             :placeholder="$t('login.password')"
           ></el-input>
         </el-form-item>
+        <el-form-item :label="$t('form.proxyFlag')" prop="proxyFlag">
+          <el-radio-group v-model="form.proxyFlag">
+            <el-radio :value="0">{{ $t("form.no") }}</el-radio>
+            <el-radio :value="1">{{ $t("form.yes") }}</el-radio>
+          </el-radio-group>
+        </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="submitForm">{{
             $t("register.submit")
@@ -129,6 +135,7 @@ const form = ref({
   name: "",
   mobile: "",
   password: "",
+  proxyFlag: 0,
 });
 
 const loginRules = ref({
@@ -166,6 +173,13 @@ const registerRules = ref({
     },
   ],
   mobile: [
+    {
+      required: true,
+      message: t("register.mobile_placeholder"),
+      trigger: "blur",
+    },
+  ],
+  proxyFlag: [
     {
       required: true,
       message: t("register.mobile_placeholder"),

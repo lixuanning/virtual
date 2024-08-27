@@ -4,6 +4,9 @@
     <el-header class="header">
       <div>
         <el-form :inline="true" :model="searchForm" class="demo-form-inline">
+          <el-form-item :label="$t('form.inOrderId')">
+            <el-input type="text" v-model="searchForm.inOrderId"></el-input>
+          </el-form-item>
           <el-form-item :label="$t('form.coin')">
             <el-select
               width="100%"
@@ -92,27 +95,32 @@
         <el-table-column
           prop="realTransferPrice"
           :label="$t('form.realTransferPrice')"
-          width="120"
+          width="140"
+          sortable
         ></el-table-column>
         <el-table-column
           prop="realQuantity"
+          sortable
           :label="$t('form.realQuantity')"
-          width="100"
+          width="120"
         ></el-table-column>
         <el-table-column
           prop="unitPrice"
           :label="$t('form.unitPrice')"
-          width="70"
+          width="100"
+          sortable
         ></el-table-column>
         <el-table-column
           prop="quantity"
           :label="$t('form.quantity')"
-          width="100"
+          width="120"
+          sortable
         ></el-table-column>
         <el-table-column
           prop="totalPrice"
           :label="$t('form.totalPrice')"
           width="100"
+          sortable
         ></el-table-column>
 
         <el-table-column
@@ -284,7 +292,12 @@ const coinOptions = ref([]);
 const legalCurrencyOptions = ref([]);
 
 // 表单相关状态
-const searchForm = ref({ coin: "", legalCurrency: "", status: "" });
+const searchForm = ref({
+  coin: "",
+  legalCurrency: "",
+  status: "",
+  inOrderId: "",
+});
 const addForm = ref({
   coin: "",
   legalCurrency: "",
@@ -361,9 +374,7 @@ const loadData = async () => {
     const { data } = await queryInOrderList({
       pageNum: currentPage.value,
       pageSize: pageSize.value,
-      status: searchForm.value.status,
-      coin: searchForm.value.coin,
-      legalCurrency: searchForm.value.legalCurrency,
+      ...searchForm.value,
     });
     tableData.value = data.records;
     totalItems.value = data.totalNum;
@@ -414,7 +425,7 @@ const handleDelete = async (row) => {
 };
 // 重置搜索表单
 const handleReset = () => {
-  searchForm.value = { coin: "", legalCurrency: "", status: "" };
+  searchForm.value = { coin: "", legalCurrency: "", status: "", inOrderId: "" };
   loadData();
 };
 
