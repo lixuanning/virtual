@@ -1,6 +1,6 @@
 <template>
   <div class="dashboard">
-    <el-row :gutter="20">
+    <el-row :gutter="20" class="top-row">
       <el-col :span="8">
         <el-card class="stat-card">
           <div class="card-header">
@@ -30,6 +30,60 @@
             <span>{{ $t("dashboard.frozenBalance") }} (USDT)</span>
           </div>
           <div class="card-content">{{ data.otcFreezeBalance }}</div>
+        </el-card>
+      </el-col>
+    </el-row>
+    <el-row :gutter="20" class="top-row">
+      <el-col :span="6">
+        <el-card class="stat-card">
+          <div class="card-header">
+            <span>{{ $t("form.weekForInOrder") }}</span>
+          </div>
+          <div class="card-content">
+            USDT: {{ data.countDataCurrentDayForInOrder?.countU }}
+          </div>
+          <div class="card-content">
+            CNY: {{ data.countDataCurrentDayForInOrder?.countCNY }}
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :span="6">
+        <el-card class="stat-card">
+          <div class="card-header">
+            <span>{{ $t("form.dayForInOrder") }}</span>
+          </div>
+          <div class="card-content">
+            USDT: {{ data.countDataCurrentWeekForInOrder?.countU }}
+          </div>
+          <div class="card-content">
+            CNY: {{ data.countDataCurrentWeekForInOrder?.countCNY }}
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :span="6">
+        <el-card class="stat-card">
+          <div class="card-header">
+            <span>{{ $t("form.dayForOutOrder") }}</span>
+          </div>
+          <div class="card-content">
+            USDT: {{ data.countDataCurrentDayForOutOrder?.countU }}
+          </div>
+          <div class="card-content">
+            CNY: {{ data.countDataCurrentDayForOutOrder?.countCNY }}
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :span="6">
+        <el-card class="stat-card">
+          <div class="card-header">
+            <span>{{ $t("form.weekForOutOrder") }}</span>
+          </div>
+          <div class="card-content">
+            USDT: {{ data.countDataCurrentWeekForOutOrder?.countU }}
+          </div>
+          <div class="card-content">
+            CNY: {{ data.countDataCurrentWeekForOutOrder?.countCNY }}
+          </div>
         </el-card>
       </el-col>
     </el-row>
@@ -158,7 +212,9 @@ onMounted(() => {
   padding: 20px;
   background: #f5f7fa;
 }
-
+.top-row {
+  margin-bottom: 20px;
+}
 .stat-card {
   background-color: #fff;
   border-radius: 10px;

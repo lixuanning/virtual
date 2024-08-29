@@ -53,11 +53,11 @@
         </el-form>
       </div>
 
-      <!-- <div class="rigth">
-        <el-button type="primary" @click="showAddDialog">
-          {{ $t("form.add") }}
+      <div class="rigth">
+        <el-button type="primary" @click="showExportDialog">
+          {{ $t("form.export") }}
         </el-button>
-      </div> -->
+      </div>
     </el-header>
 
     <!-- 表格和分页 -->
@@ -216,6 +216,41 @@
         ></el-pagination>
       </div>
     </el-main>
+    <!-- 导出 -->
+    <el-dialog :title="$t('form.export')" v-model="exportDialogVisible">
+      <el-form
+        :model="exportData"
+        :rules="rules3"
+        ref="addFormRef3"
+        label-width="120px"
+      >
+        <el-form-item :label="$t('form.startAndEndTime')" prop="dateList">
+          <el-date-picker
+            v-model="exportData.dateList"
+            type="daterange"
+            start-placeholder="Start Date"
+            end-placeholder="End Date"
+            align="right"
+            format="YYYY/MM/DD"
+            :disabled-date="disabledDate"
+          ></el-date-picker>
+        </el-form-item>
+        <el-form-item :label="$t('form.otcName2')" prop="otcName">
+          <el-input v-model="exportData.otcName"></el-input>
+        </el-form-item>
+        <el-form-item :label="$t('form.merchantName')" prop="merchantName">
+          <el-input v-model="exportData.merchantName"></el-input>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="exportDialogVisible = false">
+          {{ $t("form.cancel") }}
+        </el-button>
+        <el-button type="primary" :loading="exportLoading" @click="exportFn">
+          {{ $t("form.confirm") }}
+        </el-button>
+      </template>
+    </el-dialog>
 
     <!-- 分配对话框 -->
     <el-dialog :title="$t('form.edit')" v-model="isAddDialogVisible2">
@@ -302,18 +337,6 @@
             v-model="addForm.realTransferPrice"
           ></el-input>
         </el-form-item>
-        <!-- <el-form-item
-          :label="$t('form.inServiceChargePrice')"
-          prop="inServiceChargePrice"
-        >
-          <el-input
-            type="number"
-            v-model="addForm.inServiceChargePrice"
-          ></el-input>
-        </el-form-item> -->
-        <!-- <el-form-item :label="$t('form.proxyPrice')" prop="proxyPrice">
-          <el-input type="number" v-model="addForm.proxyPrice"></el-input>
-        </el-form-item> -->
         <el-form-item :label="$t('form.quantity')" prop="quantity">
           <el-input type="number" v-model="addForm.quantity"></el-input>
         </el-form-item>
@@ -361,6 +384,7 @@ import {
   shareOutOrderToOtc,
   updateOutOrder,
   getOtcSelectData,
+  downloadOutOrderData,
 } from "@/api/agent.js";
 import { ElMessage } from "element-plus";
 import moment from "moment";
@@ -400,7 +424,7 @@ const addForm2 = ref({
   unitPrice: "",
 });
 const addFormRef2 = ref(null);
-
+const addFormRef3 = ref(null);
 const rules = ref({
   coin: [{ required: true, message: t("form.requiredText"), trigger: "blur" }],
   supportPay: [
@@ -456,6 +480,11 @@ const rules2 = ref({
     { required: true, message: t("form.requiredText"), trigger: "blur" },
   ],
 });
+const rules3 = ref({
+  dateList: [
+    { required: true, message: t("form.requiredText"), trigger: "blur" },
+  ],
+});
 
 const tableData = ref([]);
 const totalItems = ref(0);
@@ -465,7 +494,56 @@ const tableLoading = ref(false);
 const dialogLoading = ref(false);
 const isAddDialogVisible = ref(false);
 const addFormRef = ref(null);
+const exportDialogVisible = ref(false);
+const exportData = ref({
+  startDate: "",
+  endDate: "",
+  merchantName: "",
+  otcName: "",
+  dateList: [],
+});
+const showExportDialog = () => {
+  exportDialogVisible.value = true;
+  exportData.value = {
+    startDate: "",
+    endDate: "",
+    merchantName: "",
+    otcName: "",
+    dateList: [],
+  };
+};
 
+// 禁用超过当前日期的日期
+const disabledDate = (time) => {
+  return time.getTime() > Date.now();
+};
+
+const exportLoading = ref(false);
+const exportFn = async () => {
+  exportLoading.value = true;
+  addFormRef3.value.validate(async (valid) => {
+    if (valid) {
+      const { merchantName, otcName, dateList } = exportData.value;
+      try {
+        const res = await downloadOutOrderData({
+          startDate: moment(dateList[0]).format("YYYY-MM-DD"),
+          endDate: moment(dateList[1]).format("YYYY-MM-DD"),
+          merchantName,
+          otcName,
+        });
+        const downloadUrl = res.data.downloadUrl;
+        const link = document.createElement("a");
+        link.href = `http://47.122.43.46:7070/api/${downloadUrl}`;
+        link.click();
+        exportLoading.value = false;
+      } catch (error) {
+        exportLoading.value = false;
+      }
+    } else {
+      exportLoading.value = false;
+    }
+  });
+};
 // 模拟获取 coin 和 legalCurrency 列表
 const fetchOptions = async () => {
   const res = await getCoinDict();

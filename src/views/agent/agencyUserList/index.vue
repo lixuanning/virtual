@@ -63,26 +63,32 @@
           </template>
         </el-table-column>
         <el-table-column
-          prop="otcBalance"
+          prop="merchantBalance"
           :label="$t('form.residue')"
           sortable
           width="120"
         >
         </el-table-column>
         <el-table-column
-          prop="otcAvailableBalance"
+          prop="merchantAvailableBalance"
           :label="$t('form.otcAvailableBalance')"
           sortable
           width="120"
         >
         </el-table-column>
+
         <el-table-column
-          prop="otcFreezeBalance"
-          :label="$t('form.otcFreezeBalance')"
-          sortable
-          width="120"
+          prop="lowerMerchant"
+          :label="$t('form.lowerMerchant')"
+          width="200"
         >
+          <template #default="scope">
+            <p v-for="item in scope.row.lowerMerchant" :key="item">
+              {{ item.name }}/{{ item.email }}
+            </p>
+          </template>
         </el-table-column>
+
         <el-table-column
           prop="createDate"
           :label="$t('form.created')"
@@ -93,7 +99,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column :label="$t('form.actions')" width="180" fixed="right">
+        <!-- <el-table-column :label="$t('form.actions')" width="180" fixed="right">
           <template #default="scope">
             <el-button type="text" @click="showEditDialog(scope.row, 1)">
               {{ $t("form.userAudit") }}
@@ -111,11 +117,8 @@
             >
               {{ $t("form.userDetails") }}
             </el-button>
-            <!-- <el-button type="text" @click="showAddDialog(scope.row)">{{
-              $t("form.edit")
-            }}</el-button> -->
           </template>
-        </el-table-column>
+        </el-table-column> -->
       </el-table>
       <div class="rigth">
         <el-pagination
@@ -194,78 +197,6 @@
             </el-button>
           </template>
         </el-popconfirm>
-      </template>
-    </el-dialog>
-    <!-- 新增对话框 -->
-    <el-dialog :title="$t('form.add')" v-model="isAddDialogVisible">
-      <el-form
-        :model="addForm"
-        :rules="rules"
-        ref="addFormRef"
-        label-width="100px"
-      >
-        <el-form-item :label="$t('form.coin')" prop="coin">
-          <el-select v-model="addForm.coin" placeholder="Select Coin">
-            <el-option
-              v-for="item in coinOptions"
-              :key="item"
-              :label="item"
-              :value="item"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="$t('form.total')" prop="total">
-          <el-input type="number" v-model="addForm.total"></el-input>
-        </el-form-item>
-        <el-form-item :label="$t('form.legalCurrency')" prop="legalCurrency">
-          <el-select
-            v-model="addForm.legalCurrency"
-            placeholder="Select Currency"
-          >
-            <el-option
-              v-for="item in legalCurrencyOptions"
-              :key="item"
-              :label="item"
-              :value="item"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="$t('form.buyMin')" prop="buyMin">
-          <el-input type="number" v-model="addForm.buyMin"></el-input>
-        </el-form-item>
-        <el-form-item :label="$t('form.buyMax')" prop="buyMax">
-          <el-input type="number" v-model="addForm.buyMax"></el-input>
-        </el-form-item>
-        <el-form-item :label="$t('form.desc')" prop="desc">
-          <el-input type="textarea" v-model="addForm.desc"></el-input>
-        </el-form-item>
-        <el-form-item :label="$t('form.mark')" prop="mark">
-          <el-input type="textarea" v-model="addForm.mark"></el-input>
-        </el-form-item>
-
-        <el-form-item :label="$t('form.saleStartDate')" prop="dateList">
-          <el-date-picker
-            v-model="addForm.dateList"
-            type="daterange"
-            start-placeholder="Start Date"
-            end-placeholder="End Date"
-            align="right"
-            format="YYYY/MM/DD"
-          ></el-date-picker>
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <el-button @click="isAddDialogVisible = false">
-          {{ $t("form.cancel") }}
-        </el-button>
-
-        <el-button
-          type="primary"
-          :loading="dialogLoading"
-          @click="handleAddSubmit"
-        >
-          {{ $t("form.add") }}
-        </el-button>
       </template>
     </el-dialog>
 
@@ -357,7 +288,7 @@ import {
   getCoinDict,
 } from "@/api/otc.js";
 import {
-  queryOtcUserList,
+  queryProxyMerchantUserList,
   updateUserStatus,
   otcRecharge,
   otcSubtract,
@@ -449,7 +380,7 @@ const fetchOptions = async () => {
 const loadData = async () => {
   tableLoading.value = true;
   try {
-    const { data } = await queryOtcUserList({
+    const { data } = await queryProxyMerchantUserList({
       pageNum: currentPage.value,
       pageSize: pageSize.value,
       ...searchForm.value,

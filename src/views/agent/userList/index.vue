@@ -4,6 +4,9 @@
     <el-header class="header">
       <div>
         <el-form :inline="true" :model="searchForm" class="demo-form-inline">
+          <el-form-item :label="$t('form.name')">
+            <el-input v-model="searchForm.name"></el-input>
+          </el-form-item>
           <el-form-item :label="$t('form.email')">
             <el-input v-model="searchForm.email"></el-input>
           </el-form-item>
@@ -121,16 +124,24 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="merchantBalance" :label="$t('form.residue')">
+        <el-table-column
+          prop="merchantBalance"
+          :label="$t('form.residue')"
+          sortable
+        >
         </el-table-column>
         <el-table-column
           prop="merchantAvailableBalance"
           :label="$t('form.otcAvailableBalance')"
+          sortable
+          width="120"
         >
         </el-table-column>
         <el-table-column
           prop="merchantFreezeBalance"
           :label="$t('form.otcFreezeBalance')"
+          sortable
+          width="120"
         >
         </el-table-column>
         <el-table-column
@@ -223,7 +234,7 @@
             />
           </template>
         </el-table-column> -->
-        <el-table-column :label="$t('form.actions')" width="240" fixed="right">
+        <el-table-column :label="$t('form.actions')" width="280" fixed="right">
           <template #default="scope">
             <el-button type="text" @click="showEditDialog(scope.row, 1)">
               {{ $t("form.userAudit") }}
@@ -254,6 +265,12 @@
             </el-button>
             <el-button type="text" @click="showEditDialog(scope.row, 10)">
               {{ $t("form.updateUserName") }}
+            </el-button>
+            <el-button type="text" @click="showEditDialog(scope.row, 11)">
+              {{ $t("form.running") }}
+            </el-button>
+            <el-button type="text" @click="showEditDialog(scope.row, 12)">
+              {{ $t("form.userDetails") }}
             </el-button>
             <!-- <el-button type="text" @click="showEditDialog(scope.row, 2)">
               {{ $t("form.exchangeRate") }}
@@ -543,6 +560,101 @@
         </el-button>
       </template>
     </el-dialog>
+
+    <el-dialog :title="$t('form.view')" v-model="showDialogVisible">
+      <template v-if="thisFromKey === 11">
+        <el-table :data="uLogList" height="500">
+          <el-table-column
+            prop="operation"
+            :label="$t('form.operation')"
+          ></el-table-column>
+          <el-table-column
+            prop="amount"
+            :label="$t('form.amount')"
+          ></el-table-column>
+          <el-table-column prop="createDate" :label="$t('form.created')">
+            <template #default="scope">
+              {{ moment(scope.row.createDate).format("YYYY-MM-DD") }}
+            </template>
+          </el-table-column>
+        </el-table>
+      </template>
+      <template v-if="thisFromKey === 12">
+        <div class="text item">
+          <el-row :gutter="20">
+            <el-col :span="24">
+              <el-descriptions :border="true" :column="1">
+                <el-descriptions-item :label="$t('userProfile.userId')">{{
+                  userData.userId
+                }}</el-descriptions-item>
+                <el-descriptions-item :label="$t('userProfile.email')">{{
+                  userData.email
+                }}</el-descriptions-item>
+                <el-descriptions-item :label="$t('userProfile.name')">{{
+                  userData.name
+                }}</el-descriptions-item>
+                <el-descriptions-item :label="$t('userProfile.mobile')">{{
+                  userData.mobile
+                }}</el-descriptions-item>
+                <el-descriptions-item :label="$t('userProfile.status')">{{
+                  userStatus === 1 ? $t("form.enable") : $t("form.disable")
+                }}</el-descriptions-item>
+                <el-descriptions-item :label="$t('register.idCardFrontId')">
+                  <el-image
+                    style="width: 30px; height: 30px"
+                    :src="`data:image/jpeg;base64,${userData.idCardFrontPicture}`"
+                    :zoom-rate="1.2"
+                    :max-scale="7"
+                    :min-scale="0.2"
+                    :preview-src-list="[
+                      `data:image/jpeg;base64,${userData.idCardFrontPicture}`,
+                    ]"
+                    :initial-index="1"
+                    fit="cover"
+                    :preview-teleported="true"
+                  />
+                </el-descriptions-item>
+                <el-descriptions-item :label="$t('register.idCardBackId')">
+                  <el-image
+                    style="width: 30px; height: 30px"
+                    :src="`data:image/jpeg;base64,${userData.idCardBackPicture}`"
+                    :zoom-rate="1.2"
+                    :max-scale="7"
+                    :min-scale="0.2"
+                    :preview-src-list="[
+                      `data:image/jpeg;base64,${userData.idCardBackPicture}`,
+                    ]"
+                    :initial-index="1"
+                    fit="cover"
+                    :preview-teleported="true"
+                  />
+                </el-descriptions-item>
+                <el-descriptions-item :label="$t('register.idCardInHandId')">
+                  <el-image
+                    style="width: 30px; height: 30px"
+                    :src="`data:image/jpeg;base64,${userData.idCardInHandPicture}`"
+                    :zoom-rate="1.2"
+                    :max-scale="7"
+                    :min-scale="0.2"
+                    :preview-src-list="[
+                      `data:image/jpeg;base64,${userData.idCardInHandPicture}`,
+                    ]"
+                    :initial-index="1"
+                    fit="cover"
+                    :preview-teleported="true"
+                  />
+                </el-descriptions-item>
+              </el-descriptions>
+            </el-col>
+          </el-row>
+        </div>
+      </template>
+      <template #footer>
+        <el-button @click="showDialogVisible = false">
+          {{ $t("form.cancel") }}
+        </el-button>
+      </template>
+    </el-dialog>
   </el-container>
 </template>
 
@@ -567,6 +679,8 @@ import {
   merchantSubtract,
   updateSupportLegalCurrency,
   updateUserName,
+  getULog,
+  getMerchantDetail,
 } from "@/api/agent.js";
 import { ElMessage } from "element-plus";
 import moment from "moment";
@@ -580,7 +694,7 @@ const legalCurrencyOptions = ref([]);
 const isAddDialogVisible2 = ref(false);
 const addFormRef2 = ref(null);
 // 表单相关状态
-const searchForm = ref({ email: "", status: "" });
+const searchForm = ref({ email: "", status: "", name: "" });
 const addForm = ref({
   coin: "",
   total: "",
@@ -709,8 +823,7 @@ const loadData = async () => {
     const { data } = await queryMerchantUserList({
       pageNum: currentPage.value,
       pageSize: pageSize.value,
-      status: searchForm.value.status,
-      coin: searchForm.value.email,
+      ...searchForm.value,
     });
     tableData.value = data.records;
     totalItems.value = data.totalNum;
@@ -785,7 +898,7 @@ const handleDelete = async (row) => {
 };
 // 重置搜索表单
 const handleReset = () => {
-  searchForm.value = { email: "", status: "" };
+  searchForm.value = { email: "", status: "", name: "" };
   loadData();
 };
 
@@ -804,15 +917,39 @@ const showAddDialog = (row) => {
 };
 const thisItem = ref({});
 const thisFromKey = ref();
+const uLogList = ref([]);
+const userData = ref({});
+const showDialogVisible = ref(false);
+
+const getULogFn = async () => {
+  const res = await getULog({
+    merchantId: thisItem.value.merchantId,
+  });
+  uLogList.value = res.data.records;
+  showDialogVisible.value = true;
+};
+const getMerchantDetailFn = async () => {
+  const res = await getMerchantDetail({
+    merchantId: thisItem.value.merchantId,
+  });
+  userData.value = res.data;
+  showDialogVisible.value = true;
+};
 // 操作
-const showEditDialog = (row, key) => {
+const showEditDialog = async (row, key) => {
+  thisItem.value = row;
+  thisFromKey.value = key;
+  if (key === 11) {
+    await getULogFn();
+    return;
+  } else if (key === 12) {
+    await getMerchantDetailFn();
+    return;
+  }
   clearFormFields(updateStatusData.value);
   updateStatusData.value = assignSelectedData(updateStatusData.value, row);
   updateStatusData.value.type = "";
   updateStatusData.value.OTCemail = "";
-  console.log(updateStatusData.value, "updateStatusData.value");
-  thisItem.value = row;
-  thisFromKey.value = key;
   isAddDialogVisible2.value = true;
 };
 // 修改状态

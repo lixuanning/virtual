@@ -60,6 +60,7 @@ instance.interceptors.request.use(
         config.headers["Content-Type"] = "multipart/form-data";
       }
     }
+
     if (store.getToken()) {
       config.headers["token"] = store.getToken();
     }
@@ -80,6 +81,18 @@ instance.interceptors.request.use(
 instance.interceptors.response.use(
   // 请求成功
   (res) => {
+    // if (res.status === 200) {
+    //   console.log(res, "res");
+    //   console.log(res.config.url);
+    //   if (
+    //     ["/api/downloadOutOrderData", "/api/downloadInOrderData"].includes(
+    //       res.config.url
+    //     )
+    //   ) {
+    //     console.log(111);
+    //     return res.data;
+    //   }
+    // }
     if (res.data.code === "0") {
       return res.data;
     } else if (["70001", "70002", "70003"].includes(res.data.code)) {

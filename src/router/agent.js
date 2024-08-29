@@ -30,6 +30,12 @@ const routes = [
         meta: { pathName: "routerName.OTCManagement" },
         component: () => import("@/views/agent/otcUserList/index.vue"),
       },
+      {
+        path: "/agent/user/agencyUserList",
+        name: "agencyUserList",
+        meta: { pathName: "routerName.agencyUserList" },
+        component: () => import("@/views/agent/agencyUserList/index.vue"),
+      },
     ],
   },
   {

@@ -165,6 +165,9 @@
           @submit.prevent="submitForm2"
           label-width="150px"
         >
+          <el-form-item :label="$t('form.appid')">
+            {{ userData.appId }}
+          </el-form-item>
           <el-form-item :label="$t('form.accessKey')" prop="accessKey">
             <el-input v-model="apiInfo.accessKey"></el-input>
           </el-form-item>

@@ -198,3 +198,42 @@ export const updateUserName = (params) => {
     ...params,
   });
 };
+
+export const getULog = (params) => {
+  return http.post(`/getULog`, {
+    ...params,
+  });
+};
+
+export const getMerchantDetail = (params) => {
+  return http.post(`/getMerchantDetail`, {
+    ...params,
+  });
+};
+
+export const getOtcDetail = (params) => {
+  return http.post(`/getOtcDetail`, {
+    ...params,
+  });
+};
+
+// 代理商列表
+export const queryProxyMerchantUserList = (params) => {
+  return http.post(`/queryProxyMerchantUserList`, {
+    ...params,
+  });
+};
+
+// 导出
+export const downloadOutOrderData = (params) => {
+  return http.post(`/downloadOutOrderData`, {
+    ...params,
+  });
+};
+
+// 导出
+export const downloadInOrderData = (params) => {
+  return http.post(`/downloadInOrderData`, {
+    ...params,
+  });
+};

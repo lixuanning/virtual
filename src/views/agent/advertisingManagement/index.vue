@@ -48,12 +48,6 @@
           </el-form-item>
         </el-form>
       </div>
-      <!-- 
-      <div class="rigth">
-        <el-button type="primary" @click="showAddDialog">
-          {{ $t("form.add") }}
-        </el-button>
-      </div> -->
     </el-header>
 
     <!-- 表格和分页 -->
