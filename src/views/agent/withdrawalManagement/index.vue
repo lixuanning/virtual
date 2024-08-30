@@ -59,8 +59,13 @@
         v-loading="tableLoading"
       >
         <el-table-column
+          prop="merchantName"
+          :label="$t('form.name')"
+        ></el-table-column>
+        <el-table-column
           prop="withdrawalId"
           :label="$t('form.outOrderId')"
+          width="220"
         ></el-table-column>
         <el-table-column prop="status" :label="$t('form.status')" width="100">
           <template #default="scope">
@@ -73,6 +78,8 @@
         <el-table-column
           prop="quantity"
           :label="$t('form.quantity2')"
+          sortable
+          width="120"
         ></el-table-column>
 
         <el-table-column
@@ -80,15 +87,16 @@
           :label="$t('form.coin')"
           width="70"
         ></el-table-column>
-
+        <el-table-column prop="walletType" :label="$t('form.walletType')">
+        </el-table-column>
         <el-table-column prop="walletUrl" :label="$t('form.walletUrl')">
         </el-table-column>
 
-        <el-table-column
+        <!-- <el-table-column
           prop="withdrawalServiceChargePrice"
           :label="$t('form.withdrawalServiceChargePrice')"
         >
-        </el-table-column>
+        </el-table-column> -->
 
         <el-table-column
           prop="createDate"

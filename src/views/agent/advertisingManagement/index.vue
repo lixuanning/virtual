@@ -112,7 +112,7 @@
             }}
           </template>
         </el-table-column>
-        <el-table-column
+        <!-- <el-table-column
           prop="saleStartDate"
           :label="$t('form.tabSaleStartDate')"
           width="150"
@@ -129,7 +129,7 @@
           <template #default="scope">
             {{ moment(scope.row.saleEndDate).format("YYYY-MM-DD") }}
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column
           prop="residue"
           :label="$t('form.residue')"
