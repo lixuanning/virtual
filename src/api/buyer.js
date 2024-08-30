@@ -16,6 +16,10 @@ export const createOutOrder = (params) => {
 export const getUserInfoForMerchant = () => {
   return http.post(`/getUserInfoForMerchant`);
 };
+// 钱包类型字典
+export const getWalletTypeDict = () => {
+  return http.post(`/getWalletTypeDict`);
+};
 
 // 法币
 export const getLegalCurrencyDict = () => {

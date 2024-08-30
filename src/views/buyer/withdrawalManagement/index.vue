@@ -40,7 +40,7 @@
               :placeholder="$t('form.select')"
             >
               <el-option
-                v-for="item in getStatus()"
+                v-for="item in getWithdrawalList()"
                 :key="item.key"
                 :value="item.key"
                 :label="item.name"
@@ -76,31 +76,33 @@
         ></el-table-column>
         <el-table-column prop="status" :label="$t('form.status')" width="100">
           <template #default="scope">
-            <el-tag :type="getStatus(scope.row.status).type">
-              {{ getStatus(scope.row.status).name }}</el-tag
+            <el-tag :type="getWithdrawalList(scope.row.status).type">
+              {{ getWithdrawalList(scope.row.status).name }}</el-tag
             >
           </template>
         </el-table-column>
 
         <el-table-column
-          prop="quantity"
-          :label="$t('form.quantity2')"
-        ></el-table-column>
-
-        <el-table-column
           prop="coin"
           :label="$t('form.coin')"
-          width="70"
+          width="100"
         ></el-table-column>
-
+        <el-table-column
+          prop="quantity"
+          :label="$t('form.quantity2')"
+          width="150"
+          sortable
+        ></el-table-column>
+        <el-table-column prop="walletType" :label="$t('form.walletType')">
+        </el-table-column>
         <el-table-column prop="walletUrl" :label="$t('form.walletUrl')">
         </el-table-column>
 
-        <el-table-column
+        <!-- <el-table-column
           prop="withdrawalServiceChargePrice"
           :label="$t('form.withdrawalServiceChargePrice')"
         >
-        </el-table-column>
+        </el-table-column> -->
 
         <el-table-column
           prop="createDate"
@@ -151,7 +153,7 @@
         ref="addFormRef"
         label-width="100px"
       >
-        <el-form-item :label="$t('form.coin')">
+        <el-form-item :label="$t('form.coin')" prop="coin">
           <el-select v-model="addForm.coin" :placeholder="$t('form.select')">
             <el-option
               v-for="item in coinOptions"
@@ -163,6 +165,19 @@
         </el-form-item>
         <el-form-item :label="$t('form.quantity2')" prop="quantity">
           <el-input v-model="addForm.quantity"></el-input>
+        </el-form-item>
+        <el-form-item :label="$t('form.walletType')" prop="walletType">
+          <el-select
+            v-model="addForm.walletType"
+            :placeholder="$t('form.select')"
+          >
+            <el-option
+              v-for="item in walletTypeList"
+              :key="item.id"
+              :label="item.value"
+              :value="item.id"
+            ></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item :label="$t('form.walletUrl')" prop="walletUrl">
           <el-input v-model="addForm.walletUrl"></el-input>
@@ -193,10 +208,11 @@ import {
   getCoinDict,
   createWithdrawalOrder,
   queryWithdrawalList,
+  getWalletTypeDict,
 } from "@/api/buyer.js";
 import { ElMessage } from "element-plus";
 import moment from "moment";
-import { getPlay, getStatus } from "@/utils/enumerate.js";
+import { getPlay, getWithdrawalList } from "@/utils/enumerate.js";
 import { uploadPicture, previewPicture } from "@/api/file";
 const paymentOptions = computed(() => getPlay());
 
@@ -205,6 +221,7 @@ const { t } = useI18n();
 // 初始化数据
 const coinOptions = ref([]);
 const legalCurrencyOptions = ref([]);
+const walletTypeList = ref([]);
 
 // 表单相关状态
 const searchForm = ref({ coin: "", legalCurrency: "", status: "" });
@@ -212,6 +229,7 @@ const addForm = ref({
   coin: "USDT",
   quantity: "",
   walletUrl: "",
+  walletType: "",
 });
 const imgUrl = ref({
   alipayQRcode: "",
@@ -251,6 +269,9 @@ const rules = ref({
   walletUrl: [
     { required: true, message: t("form.requiredText"), trigger: "blur" },
   ],
+  walletType: [
+    { required: true, message: t("form.requiredText"), trigger: "blur" },
+  ],
 });
 
 const tableData = ref([]);
@@ -266,8 +287,10 @@ const addFormRef = ref(null);
 const fetchOptions = async () => {
   const res = await getCoinDict();
   const res2 = await getLegalCurrencyDict();
+  const res3 = await getWalletTypeDict();
   coinOptions.value = res.data;
   legalCurrencyOptions.value = res2.data;
+  walletTypeList.value = res3.data;
 };
 
 // 查询列表数据
@@ -349,6 +372,7 @@ const showAddDialog = () => {
     coin: "USDT",
     quantity: "",
     walletUrl: "",
+    walletType: "",
   };
 
   isAddDialogVisible.value = true;

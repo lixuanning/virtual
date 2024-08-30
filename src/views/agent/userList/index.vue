@@ -93,7 +93,7 @@
         </el-table-column>
         <!-- <el-table-column prop="proxyRate" :label="$t('form.proxyRate')">
         </el-table-column> -->
-        <el-table-column
+        <!-- <el-table-column
           prop="inServiceChargeType"
           :label="$t('form.outServiceCharge')"
           width="120"
@@ -109,7 +109,7 @@
                 : ""
             }}
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column
           prop="status"
           :label="$t('form.intoServiceCharge')"
@@ -350,9 +350,17 @@
             {{ $t("form.AddBinding") }}
           </p>
           <el-form-item :label="$t('form.OTCemail')" prop="OTCemail">
-            <el-input v-model="updateStatusData.OTCemail"></el-input>
+            <!-- <el-input v-model="updateStatusData.OTCemail"></el-input> -->
+            <el-select v-model="updateStatusData.OTCemail" filterable>
+              <el-option
+                v-for="item in otcSelectData"
+                :key="item.email"
+                :label="`${item.name}（${item.email}）`"
+                :value="item.email"
+              ></el-option>
+            </el-select>
           </el-form-item>
-
+          <!-- 
           <el-form-item :label="$t('form.type')" prop="type">
             <el-select
               width="100%"
@@ -362,7 +370,7 @@
               <el-option label="入金" :value="1"></el-option>
               <el-option label="出金" :value="2"></el-option>
             </el-select>
-          </el-form-item>
+          </el-form-item> -->
         </template>
 
         <template v-if="thisFromKey === 4">
@@ -681,6 +689,7 @@ import {
   updateUserName,
   getULog,
   getMerchantDetail,
+  getOtcSelectData,
 } from "@/api/agent.js";
 import { ElMessage } from "element-plus";
 import moment from "moment";
@@ -693,6 +702,7 @@ const coinOptions = ref([]);
 const legalCurrencyOptions = ref([]);
 const isAddDialogVisible2 = ref(false);
 const addFormRef2 = ref(null);
+const otcSelectData = ref([]);
 // 表单相关状态
 const searchForm = ref({ email: "", status: "", name: "" });
 const addForm = ref({
@@ -812,8 +822,10 @@ const addFormRef = ref(null);
 const fetchOptions = async () => {
   const res = await getCoinDict();
   const res2 = await getLegalCurrencyDict();
+  const res3 = await getOtcSelectData();
   coinOptions.value = res.data;
   legalCurrencyOptions.value = res2.data;
+  otcSelectData.value = res3.data;
 };
 
 // 查询列表数据
@@ -988,7 +1000,7 @@ const bindFn = async () => {
   try {
     await merchantBindOtc({
       merchantId: thisItem.value.merchantId,
-      type: updateStatusData.value.type,
+      type: 1,
       otcEmail: updateStatusData.value.OTCemail,
     });
     dialogLoading.value = false;

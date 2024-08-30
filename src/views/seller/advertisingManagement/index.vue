@@ -95,6 +95,12 @@
           sortable
         ></el-table-column>
         <el-table-column
+          prop="residue"
+          :label="$t('form.residue')"
+          width="100"
+          sortable
+        ></el-table-column>
+        <el-table-column
           prop="expirationDate"
           :label="$t('form.expirationDate')"
           width="150"
@@ -107,7 +113,7 @@
             }}
           </template>
         </el-table-column>
-        <el-table-column
+        <!-- <el-table-column
           prop="saleStartDate"
           :label="$t('form.tabSaleStartDate')"
           width="200"
@@ -124,12 +130,8 @@
           <template #default="scope">
             {{ moment(scope.row.saleEndDate).format("YYYY-MM-DD") }}
           </template>
-        </el-table-column>
-        <el-table-column
-          prop="residue"
-          :label="$t('form.residue')"
-          width="100"
-        ></el-table-column>
+        </el-table-column> -->
+
         <el-table-column :label="$t('form.actions')" width="150" fixed="right">
           <template #default="scope">
             <!-- <el-button type="text" @click="showViewDialog(scope.row)">
@@ -239,7 +241,7 @@
             <template #append>{{ $t("form.minute") }}</template></el-input
           >
         </el-form-item>
-        <el-form-item :label="$t('form.saleStartDate')" prop="dateList">
+        <!-- <el-form-item :label="$t('form.saleStartDate')" prop="dateList">
           <el-date-picker
             v-model="addForm.dateList"
             type="daterange"
@@ -248,7 +250,7 @@
             align="right"
             format="YYYY/MM/DD"
           ></el-date-picker>
-        </el-form-item>
+        </el-form-item> -->
       </el-form>
       <template #footer>
         <el-button @click="isAddDialogVisible = false">
@@ -388,7 +390,6 @@ const handleAddSubmit = () => {
       desc,
       mark,
       supportPay,
-      dateList,
       expirationDate,
       unitPrice,
     } = addForm.value;
@@ -403,8 +404,8 @@ const handleAddSubmit = () => {
           desc,
           mark,
           supportPay,
-          saleStartDate: moment(dateList[0]).format("YYYY-MM-DD"),
-          saleEndDate: moment(dateList[1]).format("YYYY-MM-DD"),
+          // saleStartDate: moment(dateList[0]).format("YYYY-MM-DD"),
+          // saleEndDate: moment(dateList[1]).format("YYYY-MM-DD"),
           expirationDate,
           unitPrice,
         });

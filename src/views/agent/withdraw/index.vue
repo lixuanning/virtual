@@ -260,13 +260,13 @@
         ref="addFormRef2"
         label-width="120px"
       >
-        <el-form-item :label="$t('form.OTCemail')" prop="email">
+        <el-form-item :label="$t('form.nameEmail')" prop="email">
           <!-- <el-input v-model="addForm2.email"></el-input> -->
           <el-select v-model="addForm2.email" filterable>
             <el-option
               v-for="item in otcSelectData"
               :key="item.email"
-              :label="item.email"
+              :label="`${item.name}（${item.email}）`"
               :value="item.email"
             ></el-option>
           </el-select>

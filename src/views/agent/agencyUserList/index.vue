@@ -49,7 +49,11 @@
         style="width: 100%; min-height: calc(100vh - 330px)"
         v-loading="tableLoading"
       >
-        <el-table-column prop="name" :label="$t('form.name')"></el-table-column>
+        <el-table-column
+          prop="name"
+          :label="$t('form.name')"
+          width="180"
+        ></el-table-column>
         <el-table-column
           prop="email"
           :label="$t('form.email')"
@@ -99,12 +103,15 @@
           </template>
         </el-table-column>
 
-        <!-- <el-table-column :label="$t('form.actions')" width="180" fixed="right">
+        <el-table-column :label="$t('form.actions')" width="180" fixed="right">
           <template #default="scope">
             <el-button type="text" @click="showEditDialog(scope.row, 1)">
               {{ $t("form.userAudit") }}
             </el-button>
             <el-button type="text" @click="showEditDialog(scope.row, 2)">
+              {{ $t("form.updateUserName") }}
+            </el-button>
+            <!-- <el-button type="text" @click="showEditDialog(scope.row, 2)">
               {{ $t("form.topUp") }}
             </el-button>
             <el-button type="text" @click="showEditDialog(scope.row, 3)">
@@ -116,9 +123,9 @@
               @click="showEditDialog(scope.row, 4)"
             >
               {{ $t("form.userDetails") }}
-            </el-button>
+            </el-button> -->
           </template>
-        </el-table-column> -->
+        </el-table-column>
       </el-table>
       <div class="rigth">
         <el-pagination
@@ -157,13 +164,10 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item
-          :label="$t('form.quantity3')"
-          prop="quantity"
-          v-if="thisKey === 2"
-        >
-          <el-input type="number" v-model="updateStatusData.quantity" />
+        <el-form-item :label="$t('form.name')" prop="name" v-if="thisKey === 2">
+          <el-input type="text" v-model="updateStatusData.name" />
         </el-form-item>
+
         <el-form-item
           :label="$t('form.quantity4')"
           prop="quantity"
@@ -180,23 +184,9 @@
           type="primary"
           :loading="dialogLoading"
           @click="updateStatusFn"
-          v-if="thisKey === 1"
         >
           {{ $t("form.confirm") }}
         </el-button>
-        <el-popconfirm
-          :title="$t('form.confirmRecharge')"
-          :confirm-button-text="$t('form.yes')"
-          :cancel-button-text="$t('form.no')"
-          @confirm="() => updateStatusFn()"
-          v-else
-        >
-          <template #reference>
-            <el-button type="primary" :loading="dialogLoading">
-              {{ $t("form.confirm") }}
-            </el-button>
-          </template>
-        </el-popconfirm>
       </template>
     </el-dialog>
 
@@ -293,6 +283,7 @@ import {
   otcRecharge,
   otcSubtract,
   getOtcDetail,
+  updateUserName,
 } from "@/api/agent.js";
 import { ElMessage } from "element-plus";
 import moment from "moment";
@@ -322,6 +313,7 @@ const addForm = ref({
 const updateStatusData = ref({
   status: "",
   quantity: "",
+  name: "",
 });
 const rules2 = ref({
   status: [
@@ -330,6 +322,7 @@ const rules2 = ref({
   quantity: [
     { required: true, message: t("form.requiredText"), trigger: "blur" },
   ],
+  name: [{ required: true, message: t("form.requiredText"), trigger: "blur" }],
 });
 const rules = ref({
   coin: [{ required: true, message: t("form.requiredText"), trigger: "blur" }],
@@ -494,6 +487,7 @@ const showEditDialog = async (row, key) => {
   updateStatusData.value = {
     status: "",
     quantity: "",
+    name: "",
   };
   thisItem.value = row;
   thisKey.value = key;
@@ -545,6 +539,21 @@ const otcSubtractFn = async () => {
     dialogLoading.value = false;
   }
 };
+// 修改用户昵称
+const updateUserNameFn = async () => {
+  try {
+    await updateUserName({
+      userId: thisItem.value.userId,
+      name: updateStatusData.value.name,
+    });
+    dialogLoading.value = false;
+    ElMessage.success(t("form.successText"));
+    isAddDialogVisible2.value = false;
+    loadData(); // 重新加载数据
+  } catch (error) {
+    dialogLoading.value = false;
+  }
+};
 const updateStatusFn = async () => {
   dialogLoading.value = true;
   addFormRef2.value.validate(async (valid) => {
@@ -552,7 +561,7 @@ const updateStatusFn = async () => {
       if (thisKey.value === 1) {
         updateUserStatusFn();
       } else if (thisKey.value === 2) {
-        otcRechargeFn();
+        updateUserNameFn();
       } else if (thisKey.value === 3) {
         otcSubtractFn();
       }

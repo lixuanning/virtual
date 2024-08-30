@@ -135,6 +135,15 @@
           :label="$t('form.residue')"
           width="100"
         ></el-table-column>
+        <el-table-column
+          prop="createDate"
+          :label="$t('form.createDate')"
+          width="200"
+        >
+          <template #default="scope">
+            {{ moment(scope.row.createDate).format("YYYY-MM-DD HH:MM:SS") }}
+          </template>
+        </el-table-column>
         <el-table-column :label="$t('form.actions')" width="150" fixed="right">
           <template #default="scope">
             <!-- <el-button type="text" @click="showViewDialog(scope.row)">
@@ -193,8 +202,8 @@
         <el-form-item :label="$t('form.total')" prop="total">
           <el-input type="number" v-model="addForm.total"></el-input>
         </el-form-item>
-        <el-form-item :label="$t('form.total')" prop="total">
-          <el-input type="number" v-model="addForm.total"></el-input>
+        <el-form-item :label="$t('form.unitPrice')" prop="unitPrice">
+          <el-input type="number" v-model="addForm.unitPrice"></el-input>
         </el-form-item>
 
         <el-form-item :label="$t('form.expirationDate')" prop="expirationDate">

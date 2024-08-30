@@ -14,8 +14,8 @@
     </div>
 
     <div class="from-nav" v-if="step === 1">
-      <el-form :model="form" ref="formRef" label-width="120px">
-        <el-form-item :label="$t('form.payType')">
+      <el-form :model="form" ref="formRef" :rules="rules" label-width="120px">
+        <el-form-item :label="$t('form.payType')" prop="payType">
           <el-select
             width="100%"
             v-model="form.payType"
@@ -92,7 +92,8 @@ import {
 } from "@/api/buyer";
 import axios from "axios";
 
-const { t } = useI18n();import store from "@/store/index";
+const { t } = useI18n();
+import store from "@/store/index";
 
 const form = ref({
   payee: "",
@@ -100,7 +101,11 @@ const form = ref({
   realName: "",
   payType: "",
 });
-
+const rules = ref({
+  payType: [
+    { required: true, message: t("form.requiredText"), trigger: "blur" },
+  ],
+});
 const step = ref(1);
 const formRef = ref(null);
 const route = useRoute();
@@ -111,7 +116,7 @@ const setType = (value) => {
   form.value.payee = changeItem.payee;
   thisItem.value = changeItem;
 };
-
+const reqData = ref({});
 const fetchData = async (params) => {
   try {
     const response = await getPaymentConfigForMerchant({
@@ -130,6 +135,7 @@ const fetchStatus = async (params) => {
       inOrderId: params.inOrderId,
     });
     const data = response.data;
+    reqData.value = data;
     updateStep(data.status);
   } catch (error) {
     ElMessage.error(t("errors.fetchFailed"));
@@ -141,7 +147,16 @@ const updateStep = (status) => {
 };
 
 const submitForm = async () => {
-  console.log(form.value);
+  let newData = {
+    ...form.value,
+  };
+  if (form.value.payType === 1) {
+    newData.payCardId = thisItem.value.cardId;
+  } else {
+    newData.payQrCodeId = thisItem.value.qrCodeId;
+  }
+  console.log(newData);
+
   try {
     const response = await merchantConfirmInOrder({
       ...form.value,

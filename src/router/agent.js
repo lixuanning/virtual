@@ -71,12 +71,12 @@ const routes = [
         component: () => import("@/views/agent/withdrawalManagement/index.vue"),
         meta: { pathName: "routerName.withdrawalManagement" },
       },
-      {
-        path: "/agent/rectransactionManagementharge/rateConfig",
-        name: "agentRateConfigt",
-        component: () => import("@/views/agent/rateConfig/index.vue"),
-        meta: { pathName: "routerName.rateConfig" },
-      },
+      // {
+      //   path: "/agent/rectransactionManagementharge/rateConfig",
+      //   name: "agentRateConfigt",
+      //   component: () => import("@/views/agent/rateConfig/index.vue"),
+      //   meta: { pathName: "routerName.rateConfig" },
+      // },
     ],
   },
   {

@@ -34,7 +34,7 @@
       </el-col>
     </el-row>
     <el-row :gutter="20" class="top-row">
-      <el-col :span="6">
+      <!-- <el-col :span="6">
         <el-card class="stat-card">
           <div class="card-header">
             <span>{{ $t("form.weekForInOrder") }}</span>
@@ -46,8 +46,8 @@
             CNY: {{ data.countDataCurrentDayForInOrder?.countCNY }}
           </div>
         </el-card>
-      </el-col>
-      <el-col :span="6">
+      </el-col> -->
+      <el-col :span="8">
         <el-card class="stat-card">
           <div class="card-header">
             <span>{{ $t("form.dayForInOrder") }}</span>
@@ -60,7 +60,7 @@
           </div>
         </el-card>
       </el-col>
-      <el-col :span="6">
+      <el-col :span="8">
         <el-card class="stat-card">
           <div class="card-header">
             <span>{{ $t("form.dayForOutOrder") }}</span>
@@ -73,7 +73,7 @@
           </div>
         </el-card>
       </el-col>
-      <el-col :span="6">
+      <!-- <el-col :span="6">
         <el-card class="stat-card">
           <div class="card-header">
             <span>{{ $t("form.weekForOutOrder") }}</span>
@@ -85,7 +85,7 @@
             CNY: {{ data.countDataCurrentWeekForOutOrder?.countCNY }}
           </div>
         </el-card>
-      </el-col>
+      </el-col> -->
     </el-row>
 
     <el-row :gutter="20" class="order-summary">
