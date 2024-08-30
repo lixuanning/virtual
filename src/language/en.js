@@ -276,4 +276,17 @@ export default {
     otcAvailableBalance: "Available Balance",
     freezeAmount: "Frozen Balance",
   },
+  enumerate: {
+    bankCard: "Bank Card",
+    weChat: "WeChat",
+    aliPay: "Alipay",
+    new: "New",
+    transferred: "Transferred",
+    completed: "Completed",
+    cancelled: "Cancelled",
+    pending: "Pending Review",
+    approved: "Approved",
+    rejected: "Rejected",
+    banned: "Banned",
+  },
 };

@@ -16,7 +16,7 @@ const routes = [
     path: "/agent/user",
     name: "agentManagement",
     redirect: "/agent/user/userList",
-    meta: { pathName: "用户管理", icon: "User" },
+    meta: { pathName: "routerName.userManagement", icon: "User" },
     children: [
       {
         path: "/agent/user/userList",

@@ -75,7 +75,7 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, watch, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 import store from "@/store/index";
@@ -84,7 +84,21 @@ const { t, locale } = useI18n();
 
 const router = useRouter();
 const route = useRoute();
-
+onMounted(() => {
+  if (!sessionStorage.getItem("locale")) {
+    sessionStorage.setItem("locale", locale.value);
+  }
+});
+watch(
+  () => locale.value,
+  (newLocale) => {
+    if (newLocale !== sessionStorage.getItem("locale")) {
+      console.log(newLocale, "newLocale", sessionStorage.getItem("locale"));
+      sessionStorage.setItem("locale", newLocale);
+      router.go(0);
+    }
+  }
+);
 const menuRoutes = computed(() => {
   const role = store.getRole();
 
