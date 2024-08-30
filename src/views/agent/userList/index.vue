@@ -88,7 +88,7 @@
         >
           <template #default="{ row }">
             {{ row.higherMerchantEmail }}/
-            {{ row.proxyRate ? `${row.proxyRate * 100}%` : "" }}
+            {{ row.proxyRate ? `${row.proxyRate * 1}%` : "" }}
           </template>
         </el-table-column>
         <!-- <el-table-column prop="proxyRate" :label="$t('form.proxyRate')">
@@ -120,7 +120,12 @@
               scope.row.inServiceChargeType === 1
                 ? $t("form.merchant")
                 : $t("form.user")
-            }}{{ scope.row.inServiceChargeRate }}
+            }}/
+            {{
+              scope.row.inServiceChargeRate
+                ? `${scope.row.inServiceChargeRate * 1}%`
+                : ""
+            }}
           </template>
         </el-table-column>
 
@@ -168,72 +173,6 @@
           </template>
         </el-table-column>
 
-        <!-- <el-table-column
-          prop="idCardFrontPicture"
-          :label="$t('register.idCardFrontId')"
-          width="200"
-        >
-          <template #default="scope">
-            <el-image
-              v-if="scope.row.idCardFrontPicture"
-              style="width: 60px; height: 60px"
-              :src="`data:image/jpeg;base64,${scope.row.idCardFrontPicture}`"
-              :zoom-rate="1.2"
-              :max-scale="7"
-              :min-scale="0.2"
-              :preview-src-list="[
-                `data:image/jpeg;base64,${scope.row.idCardFrontPicture}`,
-              ]"
-              :initial-index="1"
-              fit="cover"
-              :preview-teleported="true"
-            />
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="idCardBackPicture"
-          :label="$t('register.idCardBackId')"
-          width="200"
-        >
-          <template #default="scope">
-            <el-image
-              v-if="scope.row.idCardBackPicture"
-              style="width: 60px; height: 60px"
-              :src="`data:image/jpeg;base64,${scope.row.idCardBackPicture}`"
-              :zoom-rate="1.2"
-              :max-scale="7"
-              :min-scale="0.2"
-              :preview-src-list="[
-                `data:image/jpeg;base64,${scope.row.idCardBackPicture}`,
-              ]"
-              :initial-index="1"
-              fit="cover"
-              :preview-teleported="true"
-            />
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="idCardInHandPicture"
-          :label="$t('register.idCardInHandId')"
-          width="200"
-        >
-          <template #default="scope">
-            <el-image
-              v-if="scope.row.idCardInHandPicture"
-              style="width: 60px; height: 60px"
-              :src="`data:image/jpeg;base64,${scope.row.idCardInHandPicture}`"
-              :zoom-rate="1.2"
-              :max-scale="7"
-              :min-scale="0.2"
-              :preview-src-list="[
-                `data:image/jpeg;base64,${scope.row.idCardInHandPicture}`,
-              ]"
-              :initial-index="1"
-              fit="cover"
-              :preview-teleported="true"
-            />
-          </template>
-        </el-table-column> -->
         <el-table-column :label="$t('form.actions')" width="280" fixed="right">
           <template #default="scope">
             <el-button type="text" @click="showEditDialog(scope.row, 1)">
@@ -248,9 +187,9 @@
             <el-button type="text" @click="showEditDialog(scope.row, 4)">
               {{ $t("form.rating") }}
             </el-button>
-            <el-button type="text" @click="showEditDialog(scope.row, 5)">
+            <!-- <el-button type="text" @click="showEditDialog(scope.row, 5)">
               {{ $t("form.outServiceCharge") }}
-            </el-button>
+            </el-button> -->
             <el-button type="text" @click="showEditDialog(scope.row, 6)">
               {{ $t("form.intoServiceCharge") }}
             </el-button>
@@ -387,7 +326,9 @@
               :precision="4"
               :step="0.0001"
               :max="10000"
-            />
+            >
+            </el-input-number>
+            <span> %</span>
           </el-form-item>
         </template>
         <template v-if="thisFromKey === 5">
@@ -413,7 +354,9 @@
               :precision="2"
               :step="0.1"
               :max="10000"
-            />
+            ></el-input-number>
+
+            <span> %</span>
           </el-form-item>
         </template>
 
@@ -427,8 +370,11 @@
               v-model="updateStatusData.inServiceChargeType"
               :placeholder="$t('form.select')"
             >
-              <el-option label="商家" :value="1"></el-option>
-              <el-option label="用户" :value="2"></el-option>
+              <el-option
+                :label="$t('form.optionMerchant')"
+                :value="1"
+              ></el-option>
+              <el-option :label="$t('form.optionUser')" :value="2"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item
@@ -441,6 +387,8 @@
               :step="0.1"
               :max="10000"
             />
+
+            <span> %</span>
           </el-form-item>
         </template>
 

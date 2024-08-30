@@ -57,16 +57,20 @@
         style="width: 100%; min-height: calc(100vh - 330px)"
         v-loading="tableLoading"
       >
+        <!-- <el-table-column
+          prop="merchantName"
+          :label="$t('form.name')"
+        ></el-table-column> -->
         <el-table-column
           prop="productId"
           :label="$t('form.productId')"
           width="180"
         ></el-table-column>
-        <el-table-column
-          prop="otcId"
-          :label="$t('form.otcId')"
+        <!-- <el-table-column
+          prop="otcName"
+          :label="$t('form.otcName2')"
           width="120"
-        ></el-table-column>
+        ></el-table-column> -->
         <el-table-column
           prop="coin"
           :label="$t('form.coin')"

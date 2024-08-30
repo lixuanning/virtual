@@ -4,6 +4,9 @@
     <el-header class="header">
       <div>
         <el-form :inline="true" :model="searchForm" class="demo-form-inline">
+          <el-form-item :label="$t('form.inOrderId')">
+            <el-input type="text" v-model="searchForm.inOrderId"></el-input>
+          </el-form-item>
           <el-form-item :label="$t('form.coin')">
             <el-select
               width="100%"
@@ -329,7 +332,12 @@ const coinOptions = ref([]);
 const legalCurrencyOptions = ref([]);
 
 // 表单相关状态
-const searchForm = ref({ coin: "", legalCurrency: "", status: "" });
+const searchForm = ref({
+  coin: "",
+  legalCurrency: "",
+  status: "",
+  inOrderId: "",
+});
 const addForm = ref({
   supportPay: "",
   wechatQRcode: "",
@@ -413,9 +421,8 @@ const loadData = async () => {
     const { data } = await queryOutOrderList({
       pageNum: currentPage.value,
       pageSize: pageSize.value,
-      status: searchForm.value.status,
-      coin: searchForm.value.coin,
-      legalCurrency: searchForm.value.legalCurrency,
+      ...searchForm.value,
+      outOrderId: searchForm.value.inOrderId,
     });
     tableData.value = data.records;
     totalItems.value = data.totalNum;
@@ -480,7 +487,7 @@ const handleDelete = async (row) => {
 };
 // 重置搜索表单
 const handleReset = () => {
-  searchForm.value = { coin: "", legalCurrency: "", status: "" };
+  searchForm.value = { coin: "", legalCurrency: "", status: "", inOrderId: "" };
   loadData();
 };
 

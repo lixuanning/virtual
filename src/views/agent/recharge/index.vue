@@ -85,6 +85,11 @@
           :label="$t('form.productId')"
           width="120"
         ></el-table-column>
+        <el-table-column
+          prop="otcName"
+          :label="$t('form.otcName2')"
+          width="150"
+        ></el-table-column>
         <el-table-column prop="status" :label="$t('form.status')" width="100">
           <template #default="scope">
             <el-tag :type="getStatus(scope.row.status).type">

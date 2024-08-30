@@ -62,6 +62,8 @@ export default {
   },
   form: {
     binding: "已绑定关系",
+    optionUser: "用户",
+    optionMerchant: "商家",
     AddBinding: "新增绑定关系",
     OTCemail: "OTC邮箱",
     addRecharge: "新增利率",

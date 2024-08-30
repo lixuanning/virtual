@@ -4,6 +4,9 @@
     <el-header class="header">
       <div>
         <el-form :inline="true" :model="searchForm" class="demo-form-inline">
+          <el-form-item :label="$t('form.inOrderId')">
+            <el-input type="text" v-model="searchForm.inOrderId"></el-input>
+          </el-form-item>
           <el-form-item :label="$t('form.coin')">
             <el-select
               width="100%"
@@ -49,15 +52,18 @@
               {{ $t("form.search") }}
             </el-button>
             <el-button @click="handleReset">{{ $t("form.reset") }}</el-button>
+            <el-button type="primary" @click="showExportDialog">
+              {{ $t("form.export") }}
+            </el-button>
           </el-form-item>
         </el-form>
       </div>
 
-      <div class="rigth">
+      <!-- <div class="rigth">
         <el-button type="primary" @click="showExportDialog">
           {{ $t("form.export") }}
         </el-button>
-      </div>
+      </div> -->
     </el-header>
 
     <!-- 表格和分页 -->
@@ -94,7 +100,7 @@
 
         <el-table-column
           prop="otcName"
-          :label="$t('form.otcName')"
+          :label="$t('form.otcName2')"
           width="150"
         ></el-table-column>
         <el-table-column
@@ -403,7 +409,12 @@ const otcSelectData = ref([]);
 const isAddDialogVisible2 = ref(false);
 
 // 表单相关状态
-const searchForm = ref({ coin: "", legalCurrency: "", status: "" });
+const searchForm = ref({
+  coin: "",
+  legalCurrency: "",
+  status: "",
+  inOrderId: "",
+});
 const addForm = ref({
   coin: "",
   legalCurrency: "",
@@ -561,9 +572,8 @@ const loadData = async () => {
     const { data } = await queryOutOrderList({
       pageNum: currentPage.value,
       pageSize: pageSize.value,
-      status: searchForm.value.status,
-      coin: searchForm.value.coin,
-      legalCurrency: searchForm.value.legalCurrency,
+      ...searchForm.value,
+      outOrderId: searchForm.value.inOrderId,
     });
     tableData.value = data.records;
     totalItems.value = data.totalNum;
@@ -637,7 +647,7 @@ const handleDelete = async (row) => {
 };
 // 重置搜索表单
 const handleReset = () => {
-  searchForm.value = { coin: "", legalCurrency: "", status: "" };
+  searchForm.value = { coin: "", legalCurrency: "", status: "", inOrderId: "" };
   loadData();
 };
 

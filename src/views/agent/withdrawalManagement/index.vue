@@ -63,6 +63,11 @@
           :label="$t('form.name')"
         ></el-table-column>
         <el-table-column
+          prop="otcName"
+          :label="$t('form.otcName2')"
+          width="150"
+        ></el-table-column>
+        <el-table-column
           prop="withdrawalId"
           :label="$t('form.outOrderId')"
           width="220"
@@ -270,7 +275,7 @@ const loadData = async () => {
       pageSize: pageSize.value,
       status: searchForm.value.status,
       coin: searchForm.value.coin,
-      withdrawalId: "",
+      withdrawalId: searchForm.value.outOrderId,
     });
     tableData.value = data.records;
     totalItems.value = data.totalNum;
