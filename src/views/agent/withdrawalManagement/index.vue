@@ -89,7 +89,11 @@
         ></el-table-column>
         <el-table-column prop="walletType" :label="$t('form.walletType')">
         </el-table-column>
-        <el-table-column prop="walletUrl" :label="$t('form.walletUrl')">
+        <el-table-column
+          prop="walletUrl"
+          :label="$t('form.walletUrl')"
+          width="300"
+        >
         </el-table-column>
 
         <!-- <el-table-column
