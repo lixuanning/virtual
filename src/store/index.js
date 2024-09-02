@@ -8,23 +8,24 @@ const store = {
     //   code: "",
     //   role: "",
     // },
-    userInfo: JSON.parse(sessionStorage.getItem('userInfo')) || {
+    userInfo: JSON.parse(sessionStorage.getItem("userInfo")) || {
       name: "",
       code: "",
       role: "",
-      token:''
+      token: "",
+      proxyFlag: "",
     },
   }),
-  setUserinfo(obj) { 
-    this.state.userInfo = {...obj};
-    sessionStorage.setItem('userInfo', JSON.stringify(this.state.userInfo));
+  setUserinfo(obj) {
+    this.state.userInfo = { ...obj };
+    sessionStorage.setItem("userInfo", JSON.stringify(this.state.userInfo));
   },
-  getRole(){
-    return  this.state.userInfo.role;
+  getRole() {
+    return this.state.userInfo.role;
   },
-  getToken(){
-    return  this.state.userInfo.token;
-  }
+  getToken() {
+    return this.state.userInfo.token;
+  },
 };
 
 export default store;

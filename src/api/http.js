@@ -26,13 +26,14 @@ const roleMap = {
   agent: 1,
   seller: 2,
   buyer: 3,
+  proxyBuyer: 3,
 };
 
 const roleToPath = () => {
   const role = store.getRole();
   if (role === "agent") {
     router.push("/agent-login");
-  } else if (role === "buyer") {
+  } else if (role === "buyer" || role === "proxyBuyer") {
     router.push("/buyer-login");
   } else if (role === "seller") {
     router.push("/seller-login");

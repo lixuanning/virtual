@@ -210,8 +210,20 @@ const loginSubmitForm = async () => {
       });
       if (res.data.type === 3) {
         if (res.data.token) {
-          store.setUserinfo({ role: "buyer", token: res.data.token });
-          router.push("/buyer/home/dashboard");
+          //代理
+          if (res.data.proxyFlag === 1) {
+            store.setUserinfo({
+              role: "proxyBuyer",
+              token: res.data.token,
+            });
+            router.push("/buyer/transactionManagement/proxyRecharge");
+          } else {
+            store.setUserinfo({
+              role: "buyer",
+              token: res.data.token,
+            });
+            router.push("/buyer/home/dashboard");
+          }
         }
       } else {
         ElMessage.error("用户名或密码错误");

@@ -76,3 +76,10 @@ export const updateApiInfo = (params) => {
     ...params,
   });
 };
+
+//设置API
+export const queryProxyInOrderList = (params) => {
+  return http.post(`/queryProxyInOrderList`, {
+    ...params,
+  });
+};

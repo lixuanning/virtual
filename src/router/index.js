@@ -8,6 +8,7 @@ import SellerLogin from "../views/seller/sellerLogin/index.vue";
 import agent from "./agent";
 import buyer from "./buyer";
 import seller from "./seller";
+import proxyBuyer from "./proxyBuyer";
 
 const routes = [
   { path: "/", redirect: "/agent-login" },
@@ -37,6 +38,12 @@ const routes = [
     component: Layout,
     meta: { role: "buyer" },
     children: [...buyer],
+  },
+  {
+    path: "/buyer",
+    component: Layout,
+    meta: { role: "proxyBuyer" },
+    children: [...proxyBuyer],
   },
   {
     path: "/seller",
