@@ -5,7 +5,7 @@
       <div>
         <el-form :inline="true" :model="searchForm" class="demo-form-inline">
           <el-form-item :label="$t('form.inOrderId')">
-            <el-input type="text" v-model="searchForm.inOrderId"></el-input>
+            <el-input type="text" v-model="searchForm.outOrderId"></el-input>
           </el-form-item>
           <el-form-item :label="$t('form.coin')">
             <el-select
@@ -47,19 +47,26 @@
               ></el-option>
             </el-select>
           </el-form-item>
+          <el-form-item :label="$t('form.startAndEndTime')">
+            <el-date-picker
+              v-model="dateList"
+              type="daterange"
+              start-placeholder="Start Date"
+              end-placeholder="End Date"
+              align="right"
+              format="YYYY/MM/DD"
+            ></el-date-picker>
+          </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="handleSearch">
               {{ $t("form.search") }}
             </el-button>
             <el-button @click="handleReset">{{ $t("form.reset") }}</el-button>
+            <el-button type="primary" @click="showExportDialog">
+              {{ $t("form.export") }}
+            </el-button>
           </el-form-item>
         </el-form>
-      </div>
-
-      <div class="rigth">
-        <el-button type="primary" @click="showExportDialog">
-          {{ $t("form.export") }}
-        </el-button>
       </div>
     </el-header>
 
@@ -74,6 +81,11 @@
           prop="inOrderId"
           :label="$t('form.inOrderId')"
           width="200"
+        ></el-table-column>
+        <el-table-column
+          prop="merchantName"
+          :label="$t('form.merchantName')"
+          width="90"
         ></el-table-column>
         <el-table-column
           prop="merchantOrderId"
@@ -159,7 +171,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column :label="$t('form.actions')" width="100" fixed="right">
+        <el-table-column :label="$t('form.actions')" width="120" fixed="right">
           <template #default="scope">
             <el-popconfirm
               :title="$t('form.cancelText')"
@@ -174,6 +186,10 @@
 
             <el-button type="text" @click="showAddDialog(scope.row)">{{
               $t("form.edit")
+            }}</el-button>
+
+            <el-button type="text" @click="showTransferPicture(scope.row)">{{
+              $t("form.transferPicture")
             }}</el-button>
           </template>
         </el-table-column>
@@ -293,6 +309,17 @@
             :disabled-date="disabledDate"
           ></el-date-picker>
         </el-form-item>
+        <el-form-item :label="$t('form.startAndEndTime')" prop="dateList">
+          <el-date-picker
+            v-model="exportData.dateList"
+            type="daterange"
+            start-placeholder="Start Date"
+            end-placeholder="End Date"
+            align="right"
+            format="YYYY/MM/DD"
+            :disabled-date="disabledDate"
+          ></el-date-picker>
+        </el-form-item>
         <el-form-item :label="$t('form.otcName2')" prop="otcName">
           <el-input v-model="exportData.otcName"></el-input>
         </el-form-item>
@@ -306,6 +333,25 @@
         </el-button>
         <el-button type="primary" :loading="exportLoading" @click="exportFn">
           {{ $t("form.confirm") }}
+        </el-button>
+      </template>
+    </el-dialog>
+    <!-- 转账凭证 -->
+    <el-dialog :title="$t('form.view')" v-model="transferPictureVisible">
+      <el-image
+        style="width: 400px; height: 400px"
+        :src="`data:image/jpeg;base64,${transferPictureUrl}`"
+        :zoom-rate="1.2"
+        :max-scale="7"
+        :min-scale="0.2"
+        :preview-src-list="[`data:image/jpeg;base64,${transferPictureUrl}`]"
+        :initial-index="1"
+        fit="cover"
+        :preview-teleported="true"
+      />
+      <template #footer>
+        <el-button @click="transferPictureVisible = false">
+          {{ $t("form.cancel") }}
         </el-button>
       </template>
     </el-dialog>
@@ -324,6 +370,7 @@ import {
   updateInOrderStatus,
   updateInOrder,
   downloadInOrderData,
+  getTransferPicture,
 } from "@/api/agent.js";
 import { ElMessage } from "element-plus";
 import moment from "moment";
@@ -341,8 +388,9 @@ const searchForm = ref({
   coin: "",
   legalCurrency: "",
   status: "",
-  inOrderId: "",
+  outOrderId: "",
 });
+const dateList = ref([]);
 const addForm = ref({
   coin: "",
   legalCurrency: "",
@@ -420,6 +468,12 @@ const loadData = async () => {
       pageNum: currentPage.value,
       pageSize: pageSize.value,
       ...searchForm.value,
+      startDate: dateList.value[0]
+        ? moment(dateList.value[0]).format("YYYY-MM-DD")
+        : "",
+      endDate: dateList.value[1]
+        ? moment(dateList.value[1]).format("YYYY-MM-DD")
+        : "",
     });
     tableData.value = data.records;
     totalItems.value = data.totalNum;
@@ -436,6 +490,7 @@ const exportData = ref({
   endDate: "",
   merchantName: "",
   otcName: "",
+  status: "",
   dateList: [],
 });
 const showExportDialog = () => {
@@ -445,6 +500,7 @@ const showExportDialog = () => {
     endDate: "",
     merchantName: "",
     otcName: "",
+    status: "",
     dateList: [],
   };
 };
@@ -459,13 +515,14 @@ const exportFn = async () => {
   exportLoading.value = true;
   addFormRef3.value.validate(async (valid) => {
     if (valid) {
-      const { merchantName, otcName, dateList } = exportData.value;
+      const { merchantName, otcName, dateList, status } = exportData.value;
       try {
         const res = await downloadInOrderData({
           startDate: moment(dateList[0]).format("YYYY-MM-DD"),
           endDate: moment(dateList[1]).format("YYYY-MM-DD"),
           merchantName,
           otcName,
+          status,
         });
         const downloadUrl = res.data.downloadUrl;
         const link = document.createElement("a");
@@ -520,7 +577,13 @@ const handleDelete = async (row) => {
 };
 // 重置搜索表单
 const handleReset = () => {
-  searchForm.value = { coin: "", legalCurrency: "", status: "", inOrderId: "" };
+  searchForm.value = {
+    coin: "",
+    legalCurrency: "",
+    status: "",
+    outOrderId: "",
+  };
+  dateList.value = [];
   loadData();
 };
 
@@ -536,6 +599,15 @@ const showAddDialog = (row) => {
   addForm.value = assignSelectedData(addForm.value, row);
 
   isAddDialogVisible.value = true;
+};
+const transferPictureVisible = ref(false);
+const transferPictureUrl = ref("");
+const showTransferPicture = async (row) => {
+  const res = await getTransferPicture({
+    transferPictureId: row.transferPictureId,
+  });
+  transferPictureUrl.value = res.data.picture;
+  transferPictureVisible.value = true;
 };
 
 // 页面加载时初始化数据

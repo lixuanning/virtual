@@ -47,6 +47,16 @@
               ></el-option>
             </el-select>
           </el-form-item>
+          <el-form-item :label="$t('form.startAndEndTime')">
+            <el-date-picker
+              v-model="dateList"
+              type="daterange"
+              start-placeholder="Start Date"
+              end-placeholder="End Date"
+              align="right"
+              format="YYYY/MM/DD"
+            ></el-date-picker>
+          </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="handleSearch">
               {{ $t("form.search") }}
@@ -77,6 +87,11 @@
           prop="outOrderId"
           :label="$t('form.outOrderId')"
           width="200"
+        ></el-table-column>
+        <el-table-column
+          prop="merchantName"
+          :label="$t('form.merchantName')"
+          width="90"
         ></el-table-column>
         <el-table-column prop="status" :label="$t('form.status')" width="100">
           <template #default="scope">
@@ -240,6 +255,19 @@
             format="YYYY/MM/DD"
             :disabled-date="disabledDate"
           ></el-date-picker>
+        </el-form-item>
+        <el-form-item :label="$t('form.status')">
+          <el-select
+            v-model="exportData.status"
+            :placeholder="$t('form.select')"
+          >
+            <el-option
+              v-for="item in getStatus()"
+              :key="item.key"
+              :value="item.key"
+              :label="item.name"
+            ></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item :label="$t('form.otcName2')" prop="otcName">
           <el-input v-model="exportData.otcName"></el-input>
@@ -415,6 +443,7 @@ const searchForm = ref({
   status: "",
   inOrderId: "",
 });
+const dateList = ref([]);
 const addForm = ref({
   coin: "",
   legalCurrency: "",
@@ -511,6 +540,7 @@ const exportData = ref({
   endDate: "",
   merchantName: "",
   otcName: "",
+  status: "",
   dateList: [],
 });
 const showExportDialog = () => {
@@ -520,6 +550,7 @@ const showExportDialog = () => {
     endDate: "",
     merchantName: "",
     otcName: "",
+    status: "",
     dateList: [],
   };
 };
@@ -534,18 +565,22 @@ const exportFn = async () => {
   exportLoading.value = true;
   addFormRef3.value.validate(async (valid) => {
     if (valid) {
-      const { merchantName, otcName, dateList } = exportData.value;
+      const { merchantName, otcName, dateList, status } = exportData.value;
       try {
         const res = await downloadOutOrderData({
           startDate: moment(dateList[0]).format("YYYY-MM-DD"),
           endDate: moment(dateList[1]).format("YYYY-MM-DD"),
           merchantName,
           otcName,
+          status,
         });
         const downloadUrl = res.data.downloadUrl;
+        // window.open(`http://47.122.43.46:7070/api${downloadUrl}`);
         const link = document.createElement("a");
-        link.href = `http://47.122.43.46:7070/api/${downloadUrl}`;
+        link.href = `http://47.122.43.46:7070/api${downloadUrl}`;
+        link.download = ""; // This triggers the download
         link.click();
+
         exportLoading.value = false;
       } catch (error) {
         exportLoading.value = false;
@@ -573,7 +608,12 @@ const loadData = async () => {
       pageNum: currentPage.value,
       pageSize: pageSize.value,
       ...searchForm.value,
-      outOrderId: searchForm.value.inOrderId,
+      startDate: dateList.value[0]
+        ? moment(dateList.value[0]).format("YYYY-MM-DD")
+        : "",
+      endDate: dateList.value[1]
+        ? moment(dateList.value[1]).format("YYYY-MM-DD")
+        : "",
     });
     tableData.value = data.records;
     totalItems.value = data.totalNum;
@@ -648,6 +688,7 @@ const handleDelete = async (row) => {
 // 重置搜索表单
 const handleReset = () => {
   searchForm.value = { coin: "", legalCurrency: "", status: "", inOrderId: "" };
+  dateList.value = [];
   loadData();
 };
 

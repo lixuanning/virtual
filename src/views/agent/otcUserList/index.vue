@@ -168,6 +168,13 @@
         >
           <el-input type="number" v-model="updateStatusData.quantity" />
         </el-form-item>
+        <el-form-item
+          :label="$t('form.mark')"
+          prop="mark"
+          v-if="thisKey === 2 || thisKey === 3"
+        >
+          <el-input type="textarea" v-model="updateStatusData.mark"></el-input>
+        </el-form-item>
       </el-form>
       <template #footer>
         <el-button @click="isAddDialogVisible2 = false">
@@ -391,11 +398,13 @@ const addForm = ref({
 const updateStatusData = ref({
   status: "",
   quantity: "",
+  mark: "",
 });
 const rules2 = ref({
   status: [
     { required: true, message: t("form.requiredText"), trigger: "blur" },
   ],
+  mark: [{ required: true, message: t("form.requiredText"), trigger: "blur" }],
   quantity: [
     { required: true, message: t("form.requiredText"), trigger: "blur" },
   ],
@@ -563,6 +572,7 @@ const showEditDialog = async (row, key) => {
   updateStatusData.value = {
     status: "",
     quantity: "",
+    mark: "",
   };
   thisItem.value = row;
   thisKey.value = key;
@@ -586,11 +596,13 @@ const updateUserStatusFn = async () => {
     dialogLoading.value = false;
   }
 };
+// 充值
 const otcRechargeFn = async () => {
   try {
     await otcRecharge({
       quantity: updateStatusData.value.quantity,
       otcId: thisItem.value.otcId,
+      mark: updateStatusData.value.mark,
     });
     ElMessage.success(t("form.successText"));
     isAddDialogVisible2.value = false;
@@ -605,6 +617,7 @@ const otcSubtractFn = async () => {
     await otcSubtract({
       quantity: updateStatusData.value.quantity,
       otcId: thisItem.value.otcId,
+      mark: updateStatusData.value.mark,
     });
     ElMessage.success(t("form.successText"));
     isAddDialogVisible2.value = false;

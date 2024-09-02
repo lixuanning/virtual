@@ -5,7 +5,7 @@
       <div>
         <el-form :inline="true" :model="searchForm" class="demo-form-inline">
           <el-form-item :label="$t('form.outOrderId')">
-            <el-input v-model="searchForm.outOrderId"></el-input>
+            <el-input v-model="searchForm.withdrawalId"></el-input>
           </el-form-item>
           <el-form-item :label="$t('form.coin')">
             <el-select
@@ -34,6 +34,16 @@
                 :label="item.name"
               ></el-option>
             </el-select>
+          </el-form-item>
+          <el-form-item :label="$t('form.startAndEndTime')">
+            <el-date-picker
+              v-model="dateList"
+              type="daterange"
+              start-placeholder="Start Date"
+              end-placeholder="End Date"
+              align="right"
+              format="YYYY/MM/DD"
+            ></el-date-picker>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="handleSearch">
@@ -86,7 +96,20 @@
           sortable
           width="120"
         ></el-table-column>
-
+        <el-table-column
+          prop="withdrawalServiceChargePrice"
+          :label="$t('form.withdrawalServiceChargePrice')"
+          sortable
+          width="120"
+        >
+        </el-table-column>
+        <el-table-column
+          prop="realQuantity"
+          :label="$t('form.realQuantity')"
+          sortable
+          width="120"
+        >
+        </el-table-column>
         <el-table-column
           prop="coin"
           :label="$t('form.coin')"
@@ -100,12 +123,6 @@
           width="300"
         >
         </el-table-column>
-
-        <!-- <el-table-column
-          prop="withdrawalServiceChargePrice"
-          :label="$t('form.withdrawalServiceChargePrice')"
-        >
-        </el-table-column> -->
 
         <el-table-column
           prop="createDate"
@@ -124,6 +141,7 @@
               confirm-button-text="是"
               cancel-button-text="否"
               @confirm="() => handleDelete(scope.row, 2)"
+              v-if="scope.row.status !== 3"
             >
               <template #reference>
                 <el-button type="text">{{
@@ -224,7 +242,13 @@ const coinOptions = ref([]);
 const legalCurrencyOptions = ref([]);
 
 // 表单相关状态
-const searchForm = ref({ coin: "", legalCurrency: "", status: "" });
+const searchForm = ref({
+  coin: "",
+  legalCurrency: "",
+  status: "",
+  withdrawalId: "",
+});
+const dateList = ref([]);
 const addForm = ref({
   withdrawalId: "",
   coin: "",
@@ -273,9 +297,13 @@ const loadData = async () => {
     const { data } = await queryWithdrawalList({
       pageNum: currentPage.value,
       pageSize: pageSize.value,
-      status: searchForm.value.status,
-      coin: searchForm.value.coin,
-      withdrawalId: searchForm.value.outOrderId,
+      ...searchForm.value,
+      startDate: dateList.value[0]
+        ? moment(dateList.value[0]).format("YYYY-MM-DD")
+        : "",
+      endDate: dateList.value[1]
+        ? moment(dateList.value[1]).format("YYYY-MM-DD")
+        : "",
     });
     tableData.value = data.records;
     totalItems.value = data.totalNum;
@@ -328,8 +356,9 @@ const handleReset = () => {
     coin: "",
     legalCurrency: "",
     status: "",
-    outOrderId: "",
+    withdrawalId: "",
   };
+  dateList.value = [];
   loadData();
 };
 

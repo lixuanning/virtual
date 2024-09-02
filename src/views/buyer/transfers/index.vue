@@ -64,10 +64,39 @@
             />
           </span>
         </el-form-item>
+        <el-form-item
+          :label="$t('form.addTransferPicture')"
+          prop="transferPictureId"
+        >
+          <el-upload
+            class="upload-demo"
+            :before-upload="beforeUpload"
+            :show-file-list="false"
+            :http-request="(file) => customUpload(file, 'transferPictureId')"
+            :limit="2"
+          >
+            <el-button type="text">{{ $t("register.uploadInHand") }}</el-button>
+          </el-upload>
+          <span v-if="form.transferPictureId">
+            <el-image
+              style="width: 100px; height: 100px"
+              :src="imgUrl.transferPictureId"
+              :zoom-rate="1.2"
+              :max-scale="7"
+              :min-scale="0.2"
+              :preview-src-list="[imgUrl.transferPictureId]"
+              :initial-index="2"
+              fit="cover"
+          /></span>
+        </el-form-item>
+
         <el-form-item>
-          <el-button type="primary" @click="submitForm" v-if="form.payType">{{
-            $t("form.confirmTheOkBtn")
-          }}</el-button>
+          <el-button
+            type="primary"
+            @click="submitForm"
+            v-if="form.payType && form.transferPictureId"
+            >{{ $t("form.confirmTheOkBtn") }}</el-button
+          >
         </el-form-item>
       </el-form>
     </div>
@@ -90,6 +119,7 @@ import {
   queryInOrderDetail,
   merchantConfirmInOrder,
 } from "@/api/buyer";
+import { uploadPicture, previewPicture } from "@/api/file";
 import axios from "axios";
 
 const { t } = useI18n();
@@ -100,9 +130,16 @@ const form = ref({
   realTransferPrice: "",
   realName: "",
   payType: "",
+  transferPictureId: "",
+});
+const imgUrl = ref({
+  transferPictureId: "",
 });
 const rules = ref({
   payType: [
+    { required: true, message: t("form.requiredText"), trigger: "blur" },
+  ],
+  transferPictureId: [
     { required: true, message: t("form.requiredText"), trigger: "blur" },
   ],
 });
@@ -169,6 +206,19 @@ const submitForm = async () => {
   }
 };
 const routeData = ref({});
+const customUpload = async ({ file, onSuccess, onError }, field) => {
+  console.log(111);
+  try {
+    const response = await uploadPicture({ file: file });
+    form.value[field] = response.data.pictureId;
+    const url = await previewPicture({ pictureId: response.data.pictureId });
+    const base64Url = `data:image/jpeg;base64,${url.data.picture}`;
+    imgUrl.value[field] = base64Url;
+    ElMessage.success("图片上传成功");
+  } catch (error) {
+    onError(error);
+  }
+};
 onMounted(() => {
   const params = route.query;
   routeData.value = params;

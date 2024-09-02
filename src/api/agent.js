@@ -237,3 +237,17 @@ export const downloadInOrderData = (params) => {
     ...params,
   });
 };
+
+// 查看转账凭证
+export const getTransferPicture = (params) => {
+  return http.post(`/getTransferPicture`, {
+    ...params,
+  });
+};
+
+// 查看转账凭证
+export const unbindOtc = (params) => {
+  return http.post(`/unbindOtc`, {
+    ...params,
+  });
+};

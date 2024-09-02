@@ -88,7 +88,7 @@
         >
           <template #default="{ row }">
             {{ row.higherMerchantEmail }}/
-            {{ row.proxyRate ? `${row.proxyRate * 1}%` : "" }}
+            {{ row.proxyRate ? `${row.proxyRate * 100}%` : "" }}
           </template>
         </el-table-column>
         <!-- <el-table-column prop="proxyRate" :label="$t('form.proxyRate')">
@@ -123,7 +123,7 @@
             }}/
             {{
               scope.row.inServiceChargeRate
-                ? `${scope.row.inServiceChargeRate * 1}%`
+                ? `${scope.row.inServiceChargeRate * 100}%`
                 : ""
             }}
           </template>
@@ -273,10 +273,21 @@
           </el-select>
         </el-form-item>
         <template v-if="thisFromKey === 3">
-          <p class="bindingTitle">
+          <p class="bindingTitle" v-if="thisItem.bindOtcs.length > 0">
             {{ $t("form.binding") }}
           </p>
-          <div v-for="(item, index) in thisItem.bindOtcs" :key="index">
+          <div>
+            <el-tag
+              v-for="(item, index) in thisItem.bindOtcs"
+              :key="index"
+              closable
+              :type="item.type"
+              @close="handleClose(item)"
+            >
+              {{ item.otcEmail }}
+            </el-tag>
+          </div>
+          <!-- <div v-for="(item, index) in thisItem.bindOtcs" :key="index">
             <p>
               {{
                 item.type === 1
@@ -284,7 +295,7 @@
                   : $t("routerName.withdraw")
               }}：{{ item.otcEmail }}
             </p>
-          </div>
+          </div> -->
           <p class="bindingTitle">
             {{ $t("form.AddBinding") }}
           </p>
@@ -321,12 +332,7 @@
           </el-form-item>
           <el-form-item :label="$t('form.proxyRate')" prop="proxyRate">
             <!-- <el-input v-model="updateStatusData.proxyRate"></el-input> -->
-            <el-input-number
-              v-model="updateStatusData.proxyRate"
-              :precision="4"
-              :step="0.0001"
-              :max="10000"
-            >
+            <el-input-number v-model="updateStatusData.proxyRate" :step="0">
             </el-input-number>
             <span> %</span>
           </el-form-item>
@@ -351,8 +357,6 @@
           >
             <el-input-number
               v-model="updateStatusData.outServiceChargeRate"
-              :precision="2"
-              :step="0.1"
               :max="10000"
             ></el-input-number>
 
@@ -399,12 +403,20 @@
         >
           <el-input type="number" v-model="updateStatusData.quantity" />
         </el-form-item>
+
         <el-form-item
           :label="$t('form.quantity4')"
           prop="quantity"
           v-if="thisFromKey === 8"
         >
           <el-input type="number" v-model="updateStatusData.quantity" />
+        </el-form-item>
+        <el-form-item
+          :label="$t('form.mark')"
+          prop="mark"
+          v-if="thisFromKey === 8 || thisFromKey === 7"
+        >
+          <el-input type="textarea" v-model="updateStatusData.mark"></el-input>
         </el-form-item>
         <el-form-item
           :label="$t('form.supportLegalCurrencyArr')"
@@ -638,6 +650,7 @@ import {
   getULog,
   getMerchantDetail,
   getOtcSelectData,
+  unbindOtc,
 } from "@/api/agent.js";
 import { ElMessage } from "element-plus";
 import moment from "moment";
@@ -680,11 +693,13 @@ const updateStatusData = ref({
   quantity: "",
   supportLegalCurrencyArr: [],
   name: "",
+  mark: "",
 });
 const rules2 = ref({
   inServiceChargeRate: [
     { required: true, message: t("form.requiredText"), trigger: "blur" },
   ],
+  mark: [{ required: true, message: t("form.requiredText"), trigger: "blur" }],
   name: [{ required: true, message: t("form.requiredText"), trigger: "blur" }],
   supportLegalCurrencyArr: [
     { required: true, message: t("form.requiredText"), trigger: "blur" },
@@ -776,6 +791,12 @@ const fetchOptions = async () => {
   otcSelectData.value = res3.data;
 };
 
+const handleClose = async (item) => {
+  const res = await unbindOtc({ bindId: item.bindId });
+  console.log(res);
+  ElMessage.success(t("form.successText"));
+  thisItem.value.bindOtcs.splice(thisItem.value.bindOtcs.indexOf(item), 1);
+};
 // 查询列表数据
 const loadData = async () => {
   tableLoading.value = true;
@@ -910,6 +931,8 @@ const showEditDialog = async (row, key) => {
   updateStatusData.value = assignSelectedData(updateStatusData.value, row);
   updateStatusData.value.type = "";
   updateStatusData.value.OTCemail = "";
+  updateStatusData.value.inServiceChargeRate = row.inServiceChargeRate * 100;
+  updateStatusData.value.proxyRate = row.proxyRate * 100;
   isAddDialogVisible2.value = true;
 };
 // 修改状态
@@ -964,7 +987,7 @@ const setProxyRateFn = async () => {
   try {
     await setProxyRate({
       merchantId: thisItem.value.merchantId,
-      proxyRate: updateStatusData.value.proxyRate,
+      proxyRate: updateStatusData.value.proxyRate / 100,
       higherMerchantEmail: updateStatusData.value.higherMerchantEmail,
     });
     dialogLoading.value = false;
@@ -980,7 +1003,7 @@ const updateOutServiceChargeFn = async () => {
   try {
     await updateOutServiceCharge({
       merchantId: thisItem.value.merchantId,
-      outServiceChargeRate: updateStatusData.value.outServiceChargeRate,
+      outServiceChargeRate: updateStatusData.value.outServiceChargeRate / 100,
       outServiceChargeType: updateStatusData.value.outServiceChargeType,
     });
     dialogLoading.value = false;
@@ -1013,6 +1036,7 @@ const merchantRechargeFn = async () => {
     await merchantRecharge({
       merchantId: thisItem.value.merchantId,
       quantity: updateStatusData.value.quantity,
+      mark: updateStatusData.value.mark,
     });
     dialogLoading.value = false;
     ElMessage.success(t("form.successText"));
@@ -1027,6 +1051,7 @@ const merchantSubtractFn = async () => {
     await merchantSubtract({
       merchantId: thisItem.value.merchantId,
       quantity: updateStatusData.value.quantity,
+      mark: updateStatusData.value.mark,
     });
     dialogLoading.value = false;
     ElMessage.success(t("form.successText"));

@@ -185,6 +185,8 @@ export default {
     created: "创建时间",
     supportPay: "支付方式",
     yes: "是",
+    transferPicture: "查看转账凭证",
+    addTransferPicture: "转账凭证",
     no: "否",
     cardld: "卡号",
     running: "查看流水",
