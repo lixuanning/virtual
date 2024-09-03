@@ -155,8 +155,8 @@ const handleCommand = (command) => {
       router.push("/buyer-login");
     } else if (role === "seller") {
       router.push("/seller-login");
-    } else {
-      router.push("/");
+    } else if (role === "proxyBuyer") {
+      router.push("/buyer-login");
     }
   } else if (command === "language") {
     locale.value = locale.value === "zh" ? "en" : "zh";

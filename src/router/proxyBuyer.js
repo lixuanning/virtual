@@ -14,7 +14,7 @@ const routes = [
   // },
   {
     path: "/buyer/transactionManagement",
-    name: "buyerTransactionManagement",
+    name: "buyerProxyTransactionManagement",
     meta: {
       pathName: "routerName.transactionManagement",
       icon: "Management",
@@ -34,7 +34,7 @@ const routes = [
       },
       {
         path: "/buyer/transactionManagement/withdrawalManagement",
-        name: "buyerWithdrawalManagement",
+        name: "buyerProxyWithdrawalManagement",
         component: () => import("@/views/buyer/withdrawalManagement/index.vue"),
         meta: { pathName: "routerName.withdrawalManagement" },
       },

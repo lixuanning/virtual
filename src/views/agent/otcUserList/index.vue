@@ -111,9 +111,9 @@
             >
               {{ $t("form.userDetails") }}
             </el-button>
-            <!-- <el-button type="text" @click="showAddDialog(scope.row)">{{
-              $t("form.edit")
-            }}</el-button> -->
+            <el-button type="text" @click="showEditDialog(scope.row, 5)">
+              {{ $t("form.bind") }}
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -175,6 +175,38 @@
         >
           <el-input type="textarea" v-model="updateStatusData.mark"></el-input>
         </el-form-item>
+        <template v-if="thisKey === 5">
+          <p class="bindingTitle" v-if="thisItem.bindMerchants.length > 0">
+            {{ $t("form.binding") }}
+          </p>
+          <div>
+            <el-tag
+              v-for="(item, index) in thisItem.bindMerchants"
+              :key="index"
+              closable
+              :type="item.type"
+              @close="handleClose(item)"
+            >
+              {{ item.merchantEmail }}
+            </el-tag>
+          </div>
+          <p class="bindingTitle">
+            {{ $t("form.AddBinding") }}
+          </p>
+          <el-form-item
+            :label="$t('form.merchantEmailantId')"
+            prop="merchantEmailantId"
+          >
+            <el-select v-model="updateStatusData.merchantEmailantId" filterable>
+              <el-option
+                v-for="item in otcSelectData"
+                :key="item.email"
+                :label="`${item.name}（${item.email}）`"
+                :value="item.email"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+        </template>
       </el-form>
       <template #footer>
         <el-button @click="isAddDialogVisible2 = false">
@@ -184,7 +216,7 @@
           type="primary"
           :loading="dialogLoading"
           @click="updateStatusFn"
-          v-if="thisKey === 1"
+          v-if="thisKey === 1 || thisKey === 5"
         >
           {{ $t("form.confirm") }}
         </el-button>
@@ -369,6 +401,9 @@ import {
   otcRecharge,
   otcSubtract,
   getOtcDetail,
+  getMerchantSelectData,
+  otcBindMerchant,
+  unbindOtc,
 } from "@/api/agent.js";
 import { ElMessage } from "element-plus";
 import moment from "moment";
@@ -399,8 +434,12 @@ const updateStatusData = ref({
   status: "",
   quantity: "",
   mark: "",
+  merchantEmailantId: "",
 });
 const rules2 = ref({
+  merchantEmailantId: [
+    { required: true, message: t("form.requiredText"), trigger: "blur" },
+  ],
   status: [
     { required: true, message: t("form.requiredText"), trigger: "blur" },
   ],
@@ -445,13 +484,15 @@ const tableLoading = ref(false);
 const dialogLoading = ref(false);
 const isAddDialogVisible = ref(false);
 const addFormRef = ref(null);
-
+const otcSelectData = ref([]);
 // 模拟获取 coin 和 legalCurrency 列表
 const fetchOptions = async () => {
   const res = await getCoinDict();
   const res2 = await getLegalCurrencyDict();
+  const res3 = await getMerchantSelectData();
   coinOptions.value = res.data;
   legalCurrencyOptions.value = res2.data;
+  otcSelectData.value = res3.data;
 };
 
 // 查询列表数据
@@ -627,6 +668,34 @@ const otcSubtractFn = async () => {
     dialogLoading.value = false;
   }
 };
+// 解绑
+const handleClose = async (item) => {
+  if (!item.bindId) {
+    return;
+  }
+  const res = await unbindOtc({ bindId: item.bindId });
+  console.log(res);
+  ElMessage.success(t("form.successText"));
+  thisItem.value.bindMerchants.splice(
+    thisItem.value.bindMerchants.indexOf(item),
+    1
+  );
+};
+// 绑定
+const bindFn = async () => {
+  try {
+    await otcBindMerchant({
+      otcId: thisItem.value.otcId,
+      merchantEmail: updateStatusData.value.merchantEmailantId,
+    });
+    dialogLoading.value = false;
+    ElMessage.success(t("form.successText"));
+    isAddDialogVisible2.value = false;
+    loadData(); // 重新加载数据
+  } catch (error) {
+    dialogLoading.value = false;
+  }
+};
 const updateStatusFn = async () => {
   dialogLoading.value = true;
   addFormRef2.value.validate(async (valid) => {
@@ -637,6 +706,8 @@ const updateStatusFn = async () => {
         otcRechargeFn();
       } else if (thisKey.value === 3) {
         otcSubtractFn();
+      } else if (thisKey.value === 5) {
+        bindFn();
       }
     } else {
       dialogLoading.value = false;

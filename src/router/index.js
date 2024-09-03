@@ -85,6 +85,8 @@ router.beforeEach((to, from, next) => {
       next("/buyer-login");
     } else if (to.path.startsWith("/seller")) {
       next("/seller-login");
+    } else if (to.path.startsWith("/proxyBuyer")) {
+      next("/buyer-login");
     } else {
       next("/");
     }
@@ -97,6 +99,8 @@ router.beforeEach((to, from, next) => {
       if (role === "agent") {
         next("/agent-login");
       } else if (role === "buyer") {
+        next("/buyer-login");
+      } else if (role === "proxyBuyer") {
         next("/buyer-login");
       } else if (role === "seller") {
         next("/seller-login");

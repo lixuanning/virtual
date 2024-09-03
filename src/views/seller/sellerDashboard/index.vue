@@ -34,10 +34,10 @@
       </el-col>
     </el-row>
     <el-row :gutter="20" class="top-row">
-      <!-- <el-col :span="6">
+      <el-col :span="8">
         <el-card class="stat-card">
           <div class="card-header">
-            <span>{{ $t("form.weekForInOrder") }}</span>
+            <span>{{ $t("form.dayForInOrder") }}</span>
           </div>
           <div class="card-content">
             USDT: {{ data.countDataCurrentDayForInOrder?.countU }}
@@ -46,11 +46,11 @@
             CNY: {{ data.countDataCurrentDayForInOrder?.countCNY }}
           </div>
         </el-card>
-      </el-col> -->
+      </el-col>
       <el-col :span="8">
         <el-card class="stat-card">
           <div class="card-header">
-            <span>{{ $t("form.dayForInOrder") }}</span>
+            <span>{{ $t("form.weekForInOrder") }}</span>
           </div>
           <div class="card-content">
             USDT: {{ data.countDataCurrentWeekForInOrder?.countU }}
@@ -60,19 +60,7 @@
           </div>
         </el-card>
       </el-col>
-      <el-col :span="8">
-        <el-card class="stat-card">
-          <div class="card-header">
-            <span>{{ $t("form.dayForOutOrder") }}</span>
-          </div>
-          <div class="card-content">
-            USDT: {{ data.countDataCurrentDayForOutOrder?.countU }}
-          </div>
-          <div class="card-content">
-            CNY: {{ data.countDataCurrentDayForOutOrder?.countCNY }}
-          </div>
-        </el-card>
-      </el-col>
+
       <!-- <el-col :span="6">
         <el-card class="stat-card">
           <div class="card-header">

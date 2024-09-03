@@ -193,10 +193,9 @@ const submitForm = async () => {
     newData.payQrCodeId = thisItem.value.qrCodeId;
   }
   console.log(newData);
-
   try {
     const response = await merchantConfirmInOrder({
-      ...form.value,
+      ...newData,
       inOrderId: routeData.value.inOrderId,
     });
     fetchStatus(routeData.value);

@@ -251,3 +251,19 @@ export const unbindOtc = (params) => {
     ...params,
   });
 };
+
+// 商户列表
+export const getMerchantSelectData = () => {
+  return http.post(`/getMerchantSelectData`);
+};
+
+// 代理列表
+export const getProxySelectData = () => {
+  return http.post(`/getProxySelectData`);
+};
+// 绑定商户
+export const otcBindMerchant = (params) => {
+  return http.post(`/otcBindMerchant`, {
+    ...params,
+  });
+};

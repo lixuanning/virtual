@@ -54,6 +54,48 @@
         </el-card>
       </el-col>
     </el-row>
+    <el-row :gutter="20" class="top-row">
+      <el-col :span="6">
+        <el-card class="stat-card">
+          <div class="card-header">
+            <span>{{ $t("form.countDataCurrentDayForServiceCharge") }}</span>
+          </div>
+          <div class="card-content">
+            {{ data.countDataCurrentDayForServiceCharge }}
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :span="6">
+        <el-card class="stat-card">
+          <div class="card-header">
+            <span>{{ $t("form.countDataCurrentWeekForServiceCharge") }}</span>
+          </div>
+          <div class="card-content">
+            {{ data.countDataCurrentWeekForServiceCharge }}
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :span="6">
+        <el-card class="stat-card">
+          <div class="card-header">
+            <span>{{ $t("form.countDataCurrentDayForProxy") }}</span>
+          </div>
+          <div class="card-content">
+            {{ data.countDataCurrentDayForProxy }}
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :span="6">
+        <el-card class="stat-card">
+          <div class="card-header">
+            <span>{{ $t("form.countDataCurrentWeekForProxy") }}</span>
+          </div>
+          <div class="card-content">
+            {{ data.countDataCurrentWeekForProxy }}
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
     <el-row :gutter="20">
       <el-col :span="6" v-for="item in data.walletList" :key="item.id">
         <el-card class="stat-card">

@@ -5,7 +5,7 @@
       <div>
         <el-form :inline="true" :model="searchForm" class="demo-form-inline">
           <el-form-item :label="$t('form.inOrderId')">
-            <el-input type="text" v-model="searchForm.outOrderId"></el-input>
+            <el-input type="text" v-model="searchForm.inOrderId"></el-input>
           </el-form-item>
           <el-form-item :label="$t('form.coin')">
             <el-select
@@ -388,7 +388,7 @@ const searchForm = ref({
   coin: "",
   legalCurrency: "",
   status: "",
-  outOrderId: "",
+  inOrderId: "",
 });
 const dateList = ref([]);
 const addForm = ref({
@@ -581,7 +581,7 @@ const handleReset = () => {
     coin: "",
     legalCurrency: "",
     status: "",
-    outOrderId: "",
+    inOrderId: "",
   };
   dateList.value = [];
   loadData();

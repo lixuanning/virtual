@@ -73,8 +73,8 @@
           :label="$t('form.name')"
         ></el-table-column>
         <el-table-column
-          prop="otcName"
-          :label="$t('form.otcName2')"
+          prop="merchantName"
+          :label="$t('form.merchantName')"
           width="150"
         ></el-table-column>
         <el-table-column

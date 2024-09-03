@@ -4,8 +4,8 @@
     <el-header class="header">
       <div>
         <el-form :inline="true" :model="searchForm" class="demo-form-inline">
-          <el-form-item :label="$t('form.inOrderId')">
-            <el-input type="text" v-model="searchForm.inOrderId"></el-input>
+          <el-form-item :label="$t('form.outOrderId')">
+            <el-input type="text" v-model="searchForm.outOrderId"></el-input>
           </el-form-item>
           <el-form-item :label="$t('form.coin')">
             <el-select
@@ -441,7 +441,7 @@ const searchForm = ref({
   coin: "",
   legalCurrency: "",
   status: "",
-  inOrderId: "",
+  outOrderId: "",
 });
 const dateList = ref([]);
 const addForm = ref({
@@ -687,7 +687,12 @@ const handleDelete = async (row) => {
 };
 // 重置搜索表单
 const handleReset = () => {
-  searchForm.value = { coin: "", legalCurrency: "", status: "", inOrderId: "" };
+  searchForm.value = {
+    coin: "",
+    legalCurrency: "",
+    status: "",
+    outOrderId: "",
+  };
   dateList.value = [];
   loadData();
 };

@@ -159,7 +159,7 @@
               v-for="(item, index) in scope.row.supportLegalCurrencyArr"
               :key="index"
             >
-              {{ item }}，
+              {{ item }}
             </span>
           </template>
         </el-table-column>
@@ -287,20 +287,10 @@
               {{ item.otcEmail }}
             </el-tag>
           </div>
-          <!-- <div v-for="(item, index) in thisItem.bindOtcs" :key="index">
-            <p>
-              {{
-                item.type === 1
-                  ? $t("routerName.recharge")
-                  : $t("routerName.withdraw")
-              }}：{{ item.otcEmail }}
-            </p>
-          </div> -->
           <p class="bindingTitle">
             {{ $t("form.AddBinding") }}
           </p>
           <el-form-item :label="$t('form.OTCemail')" prop="OTCemail">
-            <!-- <el-input v-model="updateStatusData.OTCemail"></el-input> -->
             <el-select v-model="updateStatusData.OTCemail" filterable>
               <el-option
                 v-for="item in otcSelectData"
@@ -310,17 +300,6 @@
               ></el-option>
             </el-select>
           </el-form-item>
-          <!-- 
-          <el-form-item :label="$t('form.type')" prop="type">
-            <el-select
-              width="100%"
-              v-model="updateStatusData.type"
-              :placeholder="$t('form.select')"
-            >
-              <el-option label="入金" :value="1"></el-option>
-              <el-option label="出金" :value="2"></el-option>
-            </el-select>
-          </el-form-item> -->
         </template>
 
         <template v-if="thisFromKey === 4">
@@ -328,7 +307,18 @@
             :label="$t('form.higherMerchantEmail')"
             prop="higherMerchantEmail"
           >
-            <el-input v-model="updateStatusData.higherMerchantEmail"></el-input>
+            <!-- <el-input v-model="updateStatusData.higherMerchantEmail"></el-input> -->
+            <el-select
+              v-model="updateStatusData.higherMerchantEmail"
+              filterable
+            >
+              <el-option
+                v-for="item in proxySelectData"
+                :key="item.email"
+                :label="`${item.name}（${item.email}）`"
+                :value="item.email"
+              ></el-option>
+            </el-select>
           </el-form-item>
           <el-form-item :label="$t('form.proxyRate')" prop="proxyRate">
             <!-- <el-input v-model="updateStatusData.proxyRate"></el-input> -->
@@ -651,6 +641,7 @@ import {
   getMerchantDetail,
   getOtcSelectData,
   unbindOtc,
+  getProxySelectData,
 } from "@/api/agent.js";
 import { ElMessage } from "element-plus";
 import moment from "moment";
@@ -780,15 +771,17 @@ const tableLoading = ref(false);
 const dialogLoading = ref(false);
 const isAddDialogVisible = ref(false);
 const addFormRef = ref(null);
-
+const proxySelectData = ref(null);
 // 模拟获取 coin 和 legalCurrency 列表
 const fetchOptions = async () => {
   const res = await getCoinDict();
   const res2 = await getLegalCurrencyDict();
   const res3 = await getOtcSelectData();
+  const res4 = await getProxySelectData({});
   coinOptions.value = res.data;
   legalCurrencyOptions.value = res2.data;
   otcSelectData.value = res3.data;
+  proxySelectData.value = res4.data;
 };
 
 const handleClose = async (item) => {
