@@ -45,14 +45,11 @@
               {{ $t("form.search") }}
             </el-button>
             <el-button @click="handleReset">{{ $t("form.reset") }}</el-button>
+            <el-button type="primary" @click="showAddDialog()">
+              {{ $t("form.add") }}
+            </el-button>
           </el-form-item>
         </el-form>
-      </div>
-
-      <div class="rigth">
-        <el-button type="primary" @click="showAddDialog">
-          {{ $t("form.add") }}
-        </el-button>
       </div>
     </el-header>
 
@@ -63,6 +60,16 @@
         style="width: 100%; min-height: calc(100vh - 330px)"
         v-loading="tableLoading"
       >
+        <el-table-column prop="status" :label="$t('form.status')" width="80">
+          <template #default="{ row }">
+            <el-tag type="success" v-if="row.status === 1">
+              {{ $t("form.putaway") }}
+            </el-tag>
+            <el-tag type="success" v-else>
+              {{ $t("form.takeaway") }}
+            </el-tag>
+          </template>
+        </el-table-column>
         <el-table-column
           prop="coin"
           :label="$t('form.coin')"
@@ -117,33 +124,9 @@
             }}
           </template>
         </el-table-column>
-        <!-- <el-table-column
-          prop="saleStartDate"
-          :label="$t('form.tabSaleStartDate')"
-          width="200"
-        >
-          <template #default="scope">
-            {{ moment(scope.row.saleStartDate).format("YYYY-MM-DD") }}
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="saleEndDate"
-          :label="$t('form.tabSaleEndDate')"
-          width="200"
-        >
-          <template #default="scope">
-            {{ moment(scope.row.saleEndDate).format("YYYY-MM-DD") }}
-          </template>
-        </el-table-column> -->
 
         <el-table-column :label="$t('form.actions')" width="150" fixed="right">
           <template #default="scope">
-            <!-- <el-button type="text" @click="showViewDialog(scope.row)">
-              {{ $t("form.view") }}
-            </el-button>
-            <el-button type="text" @click="showEditDialog(scope.row)">
-              {{ $t("form.edit") }}
-            </el-button> -->
             <el-popconfirm
               :title="$t('form.isPutaway')"
               confirm-button-text="是"
@@ -166,6 +149,13 @@
                 <el-button type="text">{{ $t("form.takeaway") }}</el-button>
               </template>
             </el-popconfirm>
+            <el-button
+              type="text"
+              @click="showAddDialog(scope.row)"
+              v-if="scope.row.status === 1"
+            >
+              {{ $t("form.edit") }}
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -182,14 +172,17 @@
     </el-main>
 
     <!-- 新增对话框 -->
-    <el-dialog :title="$t('form.add')" v-model="isAddDialogVisible">
+    <el-dialog
+      :title="isAdd ? $t('form.add') : $t('form.edit')"
+      v-model="isAddDialogVisible"
+    >
       <el-form
         :model="addForm"
         :rules="rules"
         ref="addFormRef"
         label-width="100px"
       >
-        <el-form-item :label="$t('form.coin')" prop="coin">
+        <el-form-item v-if="isAdd" :label="$t('form.coin')" prop="coin">
           <el-select v-model="addForm.coin" placeholder="Select Coin">
             <el-option
               v-for="item in coinOptions"
@@ -205,7 +198,11 @@
         <el-form-item :label="$t('form.unitPrice')" prop="unitPrice">
           <el-input type="number" v-model="addForm.unitPrice"> </el-input>
         </el-form-item>
-        <el-form-item :label="$t('form.legalCurrency')" prop="legalCurrency">
+        <el-form-item
+          v-if="isAdd"
+          :label="$t('form.legalCurrency')"
+          prop="legalCurrency"
+        >
           <el-select
             v-model="addForm.legalCurrency"
             placeholder="Select Currency"
@@ -230,7 +227,11 @@
         <el-form-item :label="$t('form.mark')" prop="mark">
           <el-input type="textarea" v-model="addForm.mark"></el-input>
         </el-form-item>
-        <el-form-item :label="$t('form.supportPay')" prop="supportPay">
+        <el-form-item
+          v-if="isAdd"
+          :label="$t('form.supportPay')"
+          prop="supportPay"
+        >
           <el-checkbox-group v-model="addForm.supportPay">
             <el-checkbox
               v-for="item in getPlay()"
@@ -240,21 +241,15 @@
             >
           </el-checkbox-group>
         </el-form-item>
-        <el-form-item :label="$t('form.expirationDate')" prop="expirationDate">
+        <el-form-item
+          v-if="isAdd"
+          :label="$t('form.expirationDate')"
+          prop="expirationDate"
+        >
           <el-input type="number" v-model="addForm.expirationDate">
             <template #append>{{ $t("form.minute") }}</template></el-input
           >
         </el-form-item>
-        <!-- <el-form-item :label="$t('form.saleStartDate')" prop="dateList">
-          <el-date-picker
-            v-model="addForm.dateList"
-            type="daterange"
-            start-placeholder="Start Date"
-            end-placeholder="End Date"
-            align="right"
-            format="YYYY/MM/DD"
-          ></el-date-picker>
-        </el-form-item> -->
       </el-form>
       <template #footer>
         <el-button @click="isAddDialogVisible = false">
@@ -264,8 +259,17 @@
           type="primary"
           :loading="dialogLoading"
           @click="handleAddSubmit"
+          v-if="isAdd"
         >
           {{ $t("form.add") }}
+        </el-button>
+        <el-button
+          v-else
+          type="primary"
+          :loading="dialogLoading"
+          @click="editSubmit"
+        >
+          {{ $t("form.confirm") }}
         </el-button>
       </template>
     </el-dialog>
@@ -282,6 +286,7 @@ import {
   getLegalCurrencyDict,
   getCoinDict,
 } from "@/api/otc.js";
+import { updateProduct } from "@/api/agent.js";
 import { ElMessage } from "element-plus";
 import { getPlay } from "@/utils/enumerate";
 import moment from "moment";
@@ -408,8 +413,6 @@ const handleAddSubmit = () => {
           desc,
           mark,
           supportPay,
-          // saleStartDate: moment(dateList[0]).format("YYYY-MM-DD"),
-          // saleEndDate: moment(dateList[1]).format("YYYY-MM-DD"),
           expirationDate,
           unitPrice: unitPrice,
         });
@@ -457,26 +460,72 @@ const handlePageChange = (page) => {
   currentPage.value = page;
   loadData();
 };
-
+const isAdd = ref(false);
 // 显示新增对话框
-const showAddDialog = () => {
-  addForm.value = {
-    coin: "",
-    total: "",
-    legalCurrency: "",
-    buyMin: "",
-    buyMax: "",
-    desc: "",
-    mark: "",
-    supportPay: [],
-    saleStartDate: null,
-    saleEndDate: null,
-    dateList: [],
-    expirationDate: "",
-    unitPrice: "",
-  };
+const showAddDialog = (row) => {
+  console.log(row);
+  if (row) {
+    console.log(111);
+    isAdd.value = false;
+    addForm.value = {
+      unitPrice: row.unitPrice,
+      total: row.total,
+      expirationDate: row.expirationDate,
+      productId: row.productId,
+      buyMin: row.buyMin,
+      buyMax: row.buyMax,
+      desc: row.desc,
+      mark: row.mark,
+    };
+  } else {
+    console.log(222);
+    isAdd.value = true;
+    addForm.value = {
+      coin: "",
+      total: "",
+      legalCurrency: "",
+      buyMin: "",
+      buyMax: "",
+      desc: "",
+      mark: "",
+      supportPay: [],
+      saleStartDate: null,
+      saleEndDate: null,
+      dateList: [],
+      expirationDate: "",
+      unitPrice: "",
+    };
+  }
 
   isAddDialogVisible.value = true;
+};
+
+const editSubmit = () => {
+  dialogLoading.value = true;
+
+  addFormRef.value.validate(async (valid) => {
+    if (valid) {
+      console.log(111);
+      try {
+        console.log(1222);
+        await updateProduct({
+          ...addForm.value,
+        });
+        console.log(1333);
+        ElMessage.success(t("form.successText"));
+        isAddDialogVisible.value = false;
+        loadData(); // 重新加载数据
+      } catch (error) {
+        dialogLoading.value = false;
+        // console.log(error,'error');
+        // ElMessage.error(error.data.msg || 'errpr');
+      } finally {
+        dialogLoading.value = false;
+      }
+    } else {
+      dialogLoading.value = false;
+    }
+  });
 };
 
 // 页面加载时初始化数据

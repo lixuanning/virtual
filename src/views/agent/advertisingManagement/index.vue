@@ -57,20 +57,21 @@
         style="width: 100%; min-height: calc(100vh - 330px)"
         v-loading="tableLoading"
       >
-        <!-- <el-table-column
-          prop="merchantName"
-          :label="$t('form.name')"
-        ></el-table-column> -->
         <el-table-column
           prop="productId"
           :label="$t('form.productId')"
-          width="180"
+          width="150"
         ></el-table-column>
-        <!-- <el-table-column
-          prop="otcName"
-          :label="$t('form.otcName2')"
-          width="120"
-        ></el-table-column> -->
+        <el-table-column prop="status" :label="$t('form.status')" width="80">
+          <template #default="{ row }">
+            <el-tag type="success" v-if="row.status === 1">
+              {{ $t("form.putaway") }}
+            </el-tag>
+            <el-tag type="success" v-else>
+              {{ $t("form.takeaway") }}
+            </el-tag>
+          </template>
+        </el-table-column>
         <el-table-column
           prop="coin"
           :label="$t('form.coin')"
@@ -177,7 +178,11 @@
               </template>
             </el-popconfirm>
 
-            <el-button type="text" @click="showAddDialog(scope.row)">
+            <el-button
+              type="text"
+              @click="showAddDialog(scope.row)"
+              v-if="scope.row.status === 1"
+            >
               {{ $t("form.edit") }}
             </el-button>
           </template>
@@ -209,7 +214,18 @@
         <el-form-item :label="$t('form.unitPrice')" prop="unitPrice">
           <el-input type="number" v-model="addForm.unitPrice"></el-input>
         </el-form-item>
-
+        <el-form-item :label="$t('form.buyMin')" prop="buyMin">
+          <el-input type="number" v-model="addForm.buyMin"></el-input>
+        </el-form-item>
+        <el-form-item :label="$t('form.buyMax')" prop="buyMax">
+          <el-input type="number" v-model="addForm.buyMax"></el-input>
+        </el-form-item>
+        <el-form-item :label="$t('form.desc')" prop="desc">
+          <el-input type="textarea" v-model="addForm.desc"></el-input>
+        </el-form-item>
+        <el-form-item :label="$t('form.mark')" prop="mark">
+          <el-input type="textarea" v-model="addForm.mark"></el-input>
+        </el-form-item>
         <el-form-item :label="$t('form.expirationDate')" prop="expirationDate">
           <el-input type="number" v-model="addForm.expirationDate">
             <template #append>{{ $t("form.minute") }}</template></el-input
@@ -257,11 +273,21 @@ const addForm = ref({
   total: "",
   expirationDate: "",
   productId: "",
+  buyMin: "",
+  buyMax: "",
+  desc: "",
+  mark: "",
 });
 
 const rules = ref({
   total: [{ required: true, message: t("form.requiredText"), trigger: "blur" }],
   unitPrice: [
+    { required: true, message: t("form.requiredText"), trigger: "blur" },
+  ],
+  buyMin: [
+    { required: true, message: t("form.requiredText"), trigger: "blur" },
+  ],
+  buyMax: [
     { required: true, message: t("form.requiredText"), trigger: "blur" },
   ],
   expirationDate: [
@@ -306,7 +332,7 @@ const loadData = async () => {
   }
 };
 
-// 新增产品
+// 编辑产品
 const handleAddSubmit = () => {
   dialogLoading.value = true;
   addFormRef.value.validate(async (valid) => {
@@ -315,7 +341,7 @@ const handleAddSubmit = () => {
         await updateProduct({
           ...addForm.value,
         });
-        ElMessage.success(t("form.addSuccess"));
+        ElMessage.success(t("form.successText"));
         isAddDialogVisible.value = false;
         loadData(); // 重新加载数据
       } catch (error) {
@@ -367,19 +393,11 @@ const showAddDialog = (row) => {
     total: row.total,
     expirationDate: row.expirationDate,
     productId: row.productId,
+    buyMin: row.buyMin,
+    buyMax: row.buyMax,
+    desc: row.desc,
+    mark: row.mark,
   };
-  // addForm.value = {
-  //   buyMax: "3",
-  //   buyMin: "3",
-  //   coin: "USDT",
-  //   desc: "3",
-  //   legalCurrency: "CNY",
-  //   mark: "3",
-  //   saleEndDate: "2024-09-23",
-  //   saleStartDate: "2024-08-22",
-  //   supportPay: [2],
-  //   total: "33",
-  // };
 
   isAddDialogVisible.value = true;
 };
