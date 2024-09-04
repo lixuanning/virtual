@@ -33,7 +33,7 @@ const routes = [
         meta: { pathName: "routerName.recharge" },
       },
       {
-        path: "/buyer/transactionManagement/withdrawalManagement",
+        path: "/buyer/transactionManagement/proxyWithdrawalManagement",
         name: "buyerProxyWithdrawalManagement",
         component: () => import("@/views/buyer/withdrawalManagement/index.vue"),
         meta: { pathName: "routerName.withdrawalManagement" },

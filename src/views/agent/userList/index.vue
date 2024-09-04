@@ -1013,7 +1013,7 @@ const updateInServiceChargeFn = async () => {
     await updateInServiceCharge({
       merchantId: thisItem.value.merchantId,
       inServiceChargeType: updateStatusData.value.inServiceChargeType,
-      inServiceChargeRate: updateStatusData.value.inServiceChargeRate,
+      inServiceChargeRate: updateStatusData.value.inServiceChargeRate / 100,
     });
     dialogLoading.value = false;
     ElMessage.success(t("form.successText"));

@@ -174,6 +174,8 @@ const roleText = computed(() => {
       return t("layout.agentTitle");
     case "buyer":
       return t("layout.buyerTitle");
+    case "proxyBuyer":
+      return t("layout.buyerTitle");
     case "seller":
       return t("layout.sellerTitle");
     default:

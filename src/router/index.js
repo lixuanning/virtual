@@ -95,7 +95,8 @@ router.beforeEach((to, from, next) => {
       to.matched.some((record) => record.meta.role && record.meta.role !== role)
     ) {
       // 已登录，但访问的路径不属于该角色，跳转到相应的角色首页
-
+      console.log(to.matched);
+      console.log(role);
       if (role === "agent") {
         next("/agent-login");
       } else if (role === "buyer") {
