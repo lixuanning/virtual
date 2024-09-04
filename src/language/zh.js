@@ -222,7 +222,7 @@ export default {
     dismiss: "驳回",
     openingBank: "开户行",
     realTransferPrice: "真实转账金额",
-    realQuantity: "真实数量",
+    realQuantity: "实际到账",
     bank: "卡号",
     instructions: "交易说明：请认真阅读以下文字",
     // realTransferPrice: "应付金额",

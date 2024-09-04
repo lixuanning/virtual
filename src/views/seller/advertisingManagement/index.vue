@@ -83,7 +83,7 @@
           sortable
         >
           <template #default="{ row }">
-            {{ row.unitPrice ? `${row.unitPrice * 100}%` : "" }}
+            {{ row.unitPrice }}
           </template>
         </el-table-column>
         <el-table-column
@@ -203,9 +203,7 @@
           <el-input type="number" v-model="addForm.total"></el-input>
         </el-form-item>
         <el-form-item :label="$t('form.unitPrice')" prop="unitPrice">
-          <el-input type="number" v-model="addForm.unitPrice">
-            <template #append>%</template></el-input
-          >
+          <el-input type="number" v-model="addForm.unitPrice"> </el-input>
         </el-form-item>
         <el-form-item :label="$t('form.legalCurrency')" prop="legalCurrency">
           <el-select
@@ -413,7 +411,7 @@ const handleAddSubmit = () => {
           // saleStartDate: moment(dateList[0]).format("YYYY-MM-DD"),
           // saleEndDate: moment(dateList[1]).format("YYYY-MM-DD"),
           expirationDate,
-          unitPrice: unitPrice / 100,
+          unitPrice: unitPrice,
         });
         ElMessage.success(t("form.addSuccess"));
         isAddDialogVisible.value = false;

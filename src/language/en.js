@@ -222,7 +222,7 @@ export default {
     dismiss: "Reject",
     openingBank: "Bank",
     realTransferPrice: "Actual Transfer Amount",
-    realQuantity: "Actual Quantity",
+    realQuantity: "Actual Arrival",
     bank: "Card Number",
     instructions: "Trading Instructions: Please read the following carefully",
     realName: "Payee's Name",
