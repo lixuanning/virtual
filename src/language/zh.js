@@ -87,6 +87,7 @@ export default {
     quantity2: "提币数量",
     quantity3: "充值数量",
     quantity4: "扣币数量",
+    quantity5: "扣除U",
     walletUrl: "钱包地址",
     updateApiStatus: "修改API状态",
     withdrawalServiceChargePrice: "手续费",
@@ -302,5 +303,6 @@ export default {
     approved: "审核通过",
     rejected: "审核未通过",
     banned: "封禁",
+    overdue: "已过期",
   },
 };

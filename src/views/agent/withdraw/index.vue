@@ -83,6 +83,7 @@
         style="width: 100%; min-height: calc(100vh - 330px)"
         v-loading="tableLoading"
       >
+        <el-table-column type="index" width="50" />
         <el-table-column
           prop="outOrderId"
           :label="$t('form.outOrderId')"
@@ -135,7 +136,7 @@
         ></el-table-column>
         <el-table-column
           prop="quantity"
-          :label="$t('form.quantity')"
+          :label="$t('form.quantity5')"
           width="100"
         ></el-table-column>
         <el-table-column
@@ -158,6 +159,11 @@
         <el-table-column
           prop="payee"
           :label="$t('form.withdrawPayee')"
+          width="100"
+        ></el-table-column>
+        <el-table-column
+          prop="openingBank"
+          :label="$t('form.openingBank')"
           width="100"
         ></el-table-column>
         <el-table-column prop="payType" :label="$t('form.payType')" width="100">
@@ -200,7 +206,7 @@
           width="120"
         >
           <template #default="scope">
-            {{ moment(scope.row.createDate).format("YYYY-MM-DD") }}
+            {{ moment(scope.row.createDate).format("YYYY-MM-DD hh:mm:ss") }}
           </template>
         </el-table-column>
 
@@ -211,18 +217,28 @@
               :confirm-button-text="$t('form.yes')"
               :cancel-button-text="$t('form.no')"
               @confirm="() => handleDelete(scope.row)"
+              v-if="scope.row.status !== 4"
             >
               <template #reference>
                 <el-button type="text">{{ $t("form.cancel") }}</el-button>
               </template>
             </el-popconfirm>
 
-            <el-button type="text" @click="showAddDialog(scope.row)">{{
-              $t("form.edit")
-            }}</el-button>
+            <el-button
+              v-if="scope.row.status !== 4"
+              type="text"
+              @click="showAddDialog(scope.row)"
+              >{{ $t("form.edit") }}</el-button
+            >
             <el-button type="text" @click="showAddDialog2(scope.row)">{{
               $t("form.allocateOrder")
             }}</el-button>
+            <el-button
+              v-if="scope.row.status !== 4"
+              type="text"
+              @click="showTransferPicture(scope.row)"
+              >{{ $t("form.transferPicture") }}</el-button
+            >
           </template>
         </el-table-column>
       </el-table>
@@ -406,6 +422,26 @@
         </el-button>
       </template>
     </el-dialog>
+
+    <!-- 转账凭证 -->
+    <el-dialog :title="$t('form.view')" v-model="transferPictureVisible">
+      <el-image
+        style="width: 400px; height: 400px"
+        :src="`data:image/jpeg;base64,${transferPictureUrl}`"
+        :zoom-rate="1.2"
+        :max-scale="7"
+        :min-scale="0.2"
+        :preview-src-list="[`data:image/jpeg;base64,${transferPictureUrl}`]"
+        :initial-index="1"
+        fit="cover"
+        :preview-teleported="true"
+      />
+      <template #footer>
+        <el-button @click="transferPictureVisible = false">
+          {{ $t("form.cancel") }}
+        </el-button>
+      </template>
+    </el-dialog>
   </el-container>
 </template>
 
@@ -419,6 +455,7 @@ import {
   updateOutOrder,
   getOtcSelectData,
   downloadOutOrderData,
+  getTransferPicture,
 } from "@/api/agent.js";
 import { ElMessage } from "element-plus";
 import moment from "moment";
@@ -554,7 +591,15 @@ const showExportDialog = () => {
     dateList: [],
   };
 };
-
+const transferPictureVisible = ref(false);
+const transferPictureUrl = ref("");
+const showTransferPicture = async (row) => {
+  const res = await getTransferPicture({
+    transferPictureId: row.transferPictureId,
+  });
+  transferPictureUrl.value = res.data.picture;
+  transferPictureVisible.value = true;
+};
 // 禁用超过当前日期的日期
 const disabledDate = (time) => {
   return time.getTime() > Date.now();

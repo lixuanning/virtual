@@ -70,6 +70,7 @@
         style="width: 100%; min-height: calc(100vh - 330px)"
         v-loading="tableLoading"
       >
+        <el-table-column type="index" width="50" />
         <el-table-column
           prop="outOrderId"
           :label="$t('form.outOrderId')"
@@ -99,7 +100,7 @@
         ></el-table-column>
         <el-table-column
           prop="quantity"
-          :label="$t('form.quantity')"
+          :label="$t('form.quantity5')"
           width="100"
         ></el-table-column>
         <el-table-column
@@ -122,6 +123,11 @@
         <el-table-column
           prop="payee"
           :label="$t('form.withdrawPayee')"
+          width="100"
+        ></el-table-column>
+        <el-table-column
+          prop="openingBank"
+          :label="$t('form.openingBank')"
           width="100"
         ></el-table-column>
         <el-table-column prop="payType" :label="$t('form.payType')" width="100">
@@ -160,16 +166,16 @@
         <el-table-column
           prop="createDate"
           :label="$t('form.createDate')"
-          width="120"
+          width="180"
         >
           <template #default="scope">
-            {{ moment(scope.row.createDate).format("YYYY-MM-DD") }}
+            {{ moment(scope.row.createDate).format("YYYY-MM-DD hh:mm:ss") }}
           </template>
         </el-table-column>
 
-        <el-table-column :label="$t('form.actions')" width="100" fixed="right">
-          <template #default="scope">
-            <el-popconfirm
+        <el-table-column :label="$t('form.actions')" width="150" fixed="right">
+          <template #default="{ row }">
+            <!-- <el-popconfirm
               :title="$t('form.confirmTheOk')"
               confirm-button-text="是"
               cancel-button-text="否"
@@ -181,7 +187,16 @@
                   $t("form.confirmTheOkBtn")
                 }}</el-button>
               </template>
-            </el-popconfirm>
+            </el-popconfirm> -->
+            <el-button
+              v-if="row.status === 1"
+              type="text"
+              @click="updateOutOrderStatusFn(row)"
+              >{{ $t("form.confirmTheOkBtn") }}</el-button
+            >
+            <el-button v-else type="text" @click="showTransferPicture(row)">{{
+              $t("form.transferPicture")
+            }}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -198,58 +213,37 @@
     </el-main>
 
     <!-- 新增对话框 -->
-    <el-dialog :title="$t('form.add')" v-model="isAddDialogVisible">
+    <el-dialog :title="$t('form.edit')" v-model="isAddDialogVisible">
       <el-form
         :model="addForm"
         :rules="rules"
         ref="addFormRef"
         label-width="100px"
       >
-        <el-form-item :label="$t('form.legalCurrency')" prop="legalCurrency">
-          <el-select
-            v-model="addForm.legalCurrency"
-            placeholder="Select Currency"
+        <el-form-item
+          :label="$t('form.addTransferPicture')"
+          prop="transferPictureId"
+        >
+          <el-upload
+            class="upload-demo"
+            :before-upload="beforeUpload"
+            :show-file-list="false"
+            :http-request="(file) => customUpload(file, 'transferPictureId')"
+            :limit="2"
           >
-            <el-option
-              v-for="item in legalCurrencyOptions"
-              :key="item"
-              :label="item"
-              :value="item"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="$t('form.buyMin')" prop="buyMin">
-          <el-input type="number" v-model="addForm.buyMin"></el-input>
-        </el-form-item>
-        <el-form-item :label="$t('form.buyMax')" prop="buyMax">
-          <el-input type="number" v-model="addForm.buyMax"></el-input>
-        </el-form-item>
-        <el-form-item :label="$t('form.desc')" prop="desc">
-          <el-input type="textarea" v-model="addForm.desc"></el-input>
-        </el-form-item>
-        <el-form-item :label="$t('form.mark')" prop="mark">
-          <el-input type="textarea" v-model="addForm.mark"></el-input>
-        </el-form-item>
-        <el-form-item :label="$t('form.supportPay')" prop="supportPay">
-          <el-checkbox-group v-model="addForm.supportPay">
-            <el-checkbox
-              v-for="item in getPlay"
-              :key="item.key"
-              :label="item.key"
-              >{{ item.name }}</el-checkbox
-            >
-          </el-checkbox-group>
-        </el-form-item>
-
-        <el-form-item :label="$t('form.saleStartDate')" prop="dateList">
-          <el-date-picker
-            v-model="addForm.dateList"
-            type="daterange"
-            start-placeholder="Start Date"
-            end-placeholder="End Date"
-            align="right"
-            format="YYYY/MM/DD"
-          ></el-date-picker>
+            <el-button type="text">{{ $t("register.uploadInHand") }}</el-button>
+          </el-upload>
+          <span v-if="addForm.transferPictureId">
+            <el-image
+              style="width: 100px; height: 100px"
+              :src="imgUrl.transferPictureId"
+              :zoom-rate="1.2"
+              :max-scale="7"
+              :min-scale="0.2"
+              :preview-src-list="[imgUrl.transferPictureId]"
+              :initial-index="2"
+              fit="cover"
+          /></span>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -259,9 +253,29 @@
         <el-button
           type="primary"
           :loading="dialogLoading"
-          @click="handleAddSubmit"
+          @click="handleDelete"
         >
-          {{ $t("form.add") }}
+          {{ $t("form.confirm") }}
+        </el-button>
+      </template>
+    </el-dialog>
+
+    <!-- 转账凭证 -->
+    <el-dialog :title="$t('form.view')" v-model="transferPictureVisible">
+      <el-image
+        style="width: 400px; height: 400px"
+        :src="`data:image/jpeg;base64,${transferPictureUrl}`"
+        :zoom-rate="1.2"
+        :max-scale="7"
+        :min-scale="0.2"
+        :preview-src-list="[`data:image/jpeg;base64,${transferPictureUrl}`]"
+        :initial-index="1"
+        fit="cover"
+        :preview-teleported="true"
+      />
+      <template #footer>
+        <el-button @click="transferPictureVisible = false">
+          {{ $t("form.cancel") }}
         </el-button>
       </template>
     </el-dialog>
@@ -278,6 +292,8 @@ import {
   getCoinDict,
   getLegalCurrencyDict,
 } from "@/api/otc.js";
+import { getTransferPicture } from "@/api/agent.js";
+import { uploadPicture, previewPicture } from "@/api/file";
 import { ElMessage } from "element-plus";
 import moment from "moment";
 import { getPlay, getStatus } from "@/utils/enumerate.js";
@@ -296,44 +312,15 @@ const searchForm = ref({
   inOrderId: "",
 });
 const addForm = ref({
-  coin: "",
-  total: "",
-  legalCurrency: "",
-  buyMin: "",
-  buyMax: "",
-  desc: "",
-  mark: "",
-  supportPay: [],
-  saleStartDate: null,
-  saleEndDate: null,
-  dateList: [],
+  transferPictureId: "",
+});
+const imgUrl = ref({
+  transferPictureId: "",
 });
 
 const rules = ref({
-  coin: [{ required: true, message: t("form.requiredText"), trigger: "blur" }],
-  supportPay: [
+  transferPictureId: [
     { required: true, message: t("form.requiredText"), trigger: "blur" },
-  ],
-  total: [{ required: true, message: t("form.requiredText"), trigger: "blur" }],
-  legalCurrency: [
-    {
-      required: true,
-      message: t("form.requiredText"),
-      trigger: "blur",
-    },
-  ],
-  buyMin: [
-    { required: true, message: t("form.requiredText"), trigger: "blur" },
-  ],
-  buyMax: [
-    { required: true, message: t("form.requiredText"), trigger: "blur" },
-  ],
-  dateList: [
-    {
-      required: true,
-      message: t("form.requiredText"),
-      trigger: "blur",
-    },
   ],
 });
 
@@ -373,65 +360,57 @@ const loadData = async () => {
   }
 };
 
-// 新增产品
-const handleAddSubmit = () => {
-  dialogLoading.value = true;
-  addFormRef.value.validate(async (valid) => {
-    const {
-      coin,
-      total,
-      legalCurrency,
-      buyMin,
-      buyMax,
-      desc,
-      mark,
-      supportPay,
-      dateList,
-    } = addForm.value;
-    if (valid) {
-      try {
-        await addProduct({
-          coin,
-          total,
-          legalCurrency,
-          buyMin,
-          buyMax,
-          desc,
-          mark,
-          supportPay,
-          saleStartDate: moment(dateList[0]).format("YYYY-MM-DD"),
-          saleEndDate: moment(dateList[1]).format("YYYY-MM-DD"),
-        });
-        ElMessage.success(t("form.addSuccess"));
-        isAddDialogVisible.value = false;
-        loadData(); // 重新加载数据
-      } catch (error) {
-        dialogLoading.value = false;
-        // console.log(error,'error');
-        // ElMessage.error(error.data.msg || 'errpr');
-      } finally {
-        dialogLoading.value = false;
-      }
-    } else {
-      dialogLoading.value = false;
-    }
-  });
-};
-
 // 搜索功能
 const handleSearch = () => {
   currentPage.value = 1;
   loadData();
 };
-//上架和下载
+//确认转账
+const thisItem = ref({});
+const updateOutOrderStatusFn = (row) => {
+  addForm.value = {
+    transferPictureId: "",
+  };
+  imgUrl.value = {
+    transferPictureId: "",
+  };
+  thisItem.value = row;
+  isAddDialogVisible.value = true;
+};
 const handleDelete = async (row) => {
+  dialogLoading.value = true;
   const res = await updateOutOrderStatus({
-    outOrderId: row.outOrderId,
+    outOrderId: thisItem.value.outOrderId,
     status: 2,
+    transferPictureId: addForm.value.transferPictureId,
   });
   console.log(res);
   ElMessage.success(t("form.success"));
+  dialogLoading.value = false;
+  isAddDialogVisible.value = false;
   loadData();
+};
+const customUpload = async ({ file, onSuccess, onError }, field) => {
+  try {
+    const response = await uploadPicture({ file: file });
+    addForm.value[field] = response.data.pictureId;
+    const url = await previewPicture({ pictureId: response.data.pictureId });
+    const base64Url = `data:image/jpeg;base64,${url.data.picture}`;
+    imgUrl.value[field] = base64Url;
+    ElMessage.success("图片上传成功");
+  } catch (error) {
+    onError(error);
+  }
+};
+
+const transferPictureVisible = ref(false);
+const transferPictureUrl = ref("");
+const showTransferPicture = async (row) => {
+  const res = await getTransferPicture({
+    transferPictureId: row.transferPictureId,
+  });
+  transferPictureUrl.value = res.data.picture;
+  transferPictureVisible.value = true;
 };
 // 重置搜索表单
 const handleReset = () => {
@@ -443,37 +422,6 @@ const handleReset = () => {
 const handlePageChange = (page) => {
   currentPage.value = page;
   loadData();
-};
-
-// 显示新增对话框
-const showAddDialog = () => {
-  addForm.value = {
-    coin: "",
-    total: "",
-    legalCurrency: "",
-    buyMin: "",
-    buyMax: "",
-    desc: "",
-    mark: "",
-    supportPay: [],
-    saleStartDate: null,
-    saleEndDate: null,
-    dateList: [],
-  };
-  // addForm.value = {
-  //   buyMax: "3",
-  //   buyMin: "3",
-  //   coin: "USDT",
-  //   desc: "3",
-  //   legalCurrency: "CNY",
-  //   mark: "3",
-  //   saleEndDate: "2024-09-23",
-  //   saleStartDate: "2024-08-22",
-  //   supportPay: [2],
-  //   total: "33",
-  // };
-
-  isAddDialogVisible.value = true;
 };
 
 // 页面加载时初始化数据

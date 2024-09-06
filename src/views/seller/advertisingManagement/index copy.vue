@@ -29,6 +29,7 @@
         style="width: 100%; min-height: calc(100vh - 330px)"
         v-loading="tableLoading"
       >
+        <el-table-column type="index" width="50" />
         <el-table-column
           prop="date"
           :label="$t('form.date')"

@@ -90,3 +90,8 @@ export const queryOtcDashboard = () => {
 export const getUserInfoForOtc = () => {
   return http.post(`/getUserInfoForOtc`);
 };
+
+// OTC可用余额
+export const queryOtcAvailableBalance = () => {
+  return http.post(`/queryOtcAvailableBalance`);
+};

@@ -52,15 +52,18 @@
               {{ $t("form.search") }}
             </el-button>
             <el-button @click="handleReset">{{ $t("form.reset") }}</el-button>
+            <el-button type="primary" @click="showAddDialog">
+              {{ $t("form.add") }}
+            </el-button>
           </el-form-item>
         </el-form>
       </div>
-
-      <div class="rigth">
+      <!-- 
+      <div>
         <el-button type="primary" @click="showAddDialog">
           {{ $t("form.add") }}
         </el-button>
-      </div>
+      </div> -->
     </el-header>
 
     <!-- 表格和分页 -->
@@ -70,6 +73,7 @@
         style="width: 100%; min-height: calc(100vh - 330px)"
         v-loading="tableLoading"
       >
+        <el-table-column type="index" width="50" />
         <el-table-column
           prop="outOrderId"
           :label="$t('form.outOrderId')"
@@ -99,7 +103,7 @@
         ></el-table-column>
         <el-table-column
           prop="quantity"
-          :label="$t('form.quantity')"
+          :label="$t('form.quantity5')"
           width="100"
         ></el-table-column>
         <el-table-column
@@ -122,6 +126,11 @@
         <el-table-column
           prop="payee"
           :label="$t('form.withdrawPayee')"
+          width="100"
+        ></el-table-column>
+        <el-table-column
+          prop="openingBank"
+          :label="$t('form.openingBank')"
           width="100"
         ></el-table-column>
         <el-table-column prop="payType" :label="$t('form.payType')" width="100">
@@ -160,10 +169,10 @@
         <el-table-column
           prop="createDate"
           :label="$t('form.createDate')"
-          width="120"
+          width="180"
         >
           <template #default="scope">
-            {{ moment(scope.row.createDate).format("YYYY-MM-DD") }}
+            {{ moment(scope.row.createDate).format("YYYY-MM-DD hh:mm:ss") }}
           </template>
         </el-table-column>
 

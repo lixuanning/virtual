@@ -298,5 +298,6 @@ export default {
     approved: "Approved",
     rejected: "Rejected",
     banned: "Banned",
+    overdue: "Overdue",
   },
 };

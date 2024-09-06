@@ -40,7 +40,7 @@
               :placeholder="$t('form.select')"
             >
               <el-option
-                v-for="item in getStatus()"
+                v-for="item in getrRchargeStatus()"
                 :key="item.key"
                 :value="item.key"
                 :label="item.name"
@@ -70,6 +70,7 @@
         style="width: 100%; min-height: calc(100vh - 330px)"
         v-loading="tableLoading"
       >
+        <el-table-column type="index" width="50" />
         <el-table-column
           prop="inOrderId"
           :label="$t('form.inOrderId')"
@@ -87,8 +88,8 @@
         ></el-table-column>
         <el-table-column prop="status" :label="$t('form.status')" width="100">
           <template #default="scope">
-            <el-tag :type="getStatus(scope.row.status).type">
-              {{ getStatus(scope.row.status).name }}</el-tag
+            <el-tag :type="getrRchargeStatus(scope.row.status).type">
+              {{ getrRchargeStatus(scope.row.status).name }}</el-tag
             >
           </template>
         </el-table-column>
@@ -150,7 +151,7 @@
           width="120"
         >
           <template #default="scope">
-            {{ moment(scope.row.createDate).format("YYYY-MM-DD") }}
+            {{ moment(scope.row.createDate).format("YYYY-MM-DD hh:mm:ss") }}
           </template>
         </el-table-column>
 
@@ -279,7 +280,7 @@ import {
 } from "@/api/otc.js";
 import { ElMessage } from "element-plus";
 import moment from "moment";
-import { getPlay, getStatus } from "@/utils/enumerate.js";
+import { getPlay, getrRchargeStatus } from "@/utils/enumerate.js";
 
 const { t } = useI18n();
 

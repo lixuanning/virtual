@@ -206,7 +206,6 @@ const submitForm = async () => {
 };
 const routeData = ref({});
 const customUpload = async ({ file, onSuccess, onError }, field) => {
-  console.log(111);
   try {
     const response = await uploadPicture({ file: file });
     form.value[field] = response.data.pictureId;

@@ -49,6 +49,7 @@
         v-loading="tableLoading"
         :span-method="spanMethod"
       >
+        <el-table-column type="index" width="50" />
         <el-table-column prop="coin" :label="$t('form.coin')">
         </el-table-column>
         <el-table-column

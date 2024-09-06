@@ -60,6 +60,7 @@
         style="width: 100%; min-height: calc(100vh - 330px)"
         v-loading="tableLoading"
       >
+        <el-table-column type="index" width="50" />
         <el-table-column prop="status" :label="$t('form.status')" width="80">
           <template #default="{ row }">
             <el-tag type="success" v-if="row.status === 1">
@@ -182,6 +183,9 @@
         ref="addFormRef"
         label-width="100px"
       >
+        <el-form-item :label="$t('form.otcAvailableBalance')">
+          <span style="font-weight: 600">{{ otcAvailableBalance }}</span>
+        </el-form-item>
         <el-form-item v-if="isAdd" :label="$t('form.coin')" prop="coin">
           <el-select v-model="addForm.coin" placeholder="Select Coin">
             <el-option
@@ -285,6 +289,7 @@ import {
   updateProductStatus,
   getLegalCurrencyDict,
   getCoinDict,
+  queryOtcAvailableBalance,
 } from "@/api/otc.js";
 import { updateProduct } from "@/api/agent.js";
 import { ElMessage } from "element-plus";
@@ -365,6 +370,11 @@ const fetchOptions = async () => {
   coinOptions.value = res.data;
   legalCurrencyOptions.value = res2.data;
 };
+const otcAvailableBalance = ref("");
+const getOtcAvailableBalance = async () => {
+  const res = await queryOtcAvailableBalance();
+  otcAvailableBalance.value = res.data.otcAvailableBalance;
+};
 
 // 查询列表数据
 const loadData = async () => {
@@ -379,6 +389,7 @@ const loadData = async () => {
     });
     tableData.value = data.records;
     totalItems.value = data.totalNum;
+    getOtcAvailableBalance();
   } catch (error) {
     ElMessage.error(t("message.loadDataError"));
   } finally {

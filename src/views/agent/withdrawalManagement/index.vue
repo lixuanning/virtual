@@ -68,6 +68,7 @@
         style="width: 100%; min-height: calc(100vh - 330px)"
         v-loading="tableLoading"
       >
+        <el-table-column type="index" width="50" />
         <el-table-column
           prop="merchantName"
           :label="$t('form.name')"
@@ -130,7 +131,7 @@
           width="120"
         >
           <template #default="scope">
-            {{ moment(scope.row.createDate).format("YYYY-MM-DD") }}
+            {{ moment(scope.row.createDate).format("YYYY-MM-DD hh:mm:ss") }}
           </template>
         </el-table-column>
 

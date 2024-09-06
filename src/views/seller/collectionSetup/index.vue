@@ -15,6 +15,7 @@
         style="width: 100%; min-height: calc(100vh - 330px)"
         v-loading="tableLoading"
       >
+        <el-table-column type="index" width="50" />
         <el-table-column prop="payee" :label="$t('form.payee')">
           <template #default="scope">
             {{ scope.row.payee }}
@@ -62,9 +63,13 @@
             }}
           </template>
         </el-table-column>
-        <el-table-column prop="createDate" :label="$t('form.created')">
+        <el-table-column
+          prop="createDate"
+          :label="$t('form.created')"
+          width="180"
+        >
           <template #default="scope">
-            {{ moment(scope.row.createDate).format("YYYY-MM-DD") }}
+            {{ moment(scope.row.createDate).format("YYYY-MM-DD hh:mm:ss") }}
           </template>
         </el-table-column>
 
