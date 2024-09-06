@@ -147,7 +147,8 @@
           width="200"
         >
           <template #default="scope">
-            {{ moment(scope.row.createDate).format("YYYY-MM-DD HH:MM:SS") }}
+            <!-- {{ moment(scope.row.createDate).format("YYYY-MM-DD hh:mm:ss") }} -->
+            {{ scope.row.createDate }}
           </template>
         </el-table-column>
         <el-table-column :label="$t('form.actions')" width="150" fixed="right">

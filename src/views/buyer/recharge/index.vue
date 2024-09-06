@@ -151,7 +151,8 @@
           width="120"
         >
           <template #default="scope">
-            {{ moment(scope.row.createDate).format("YYYY-MM-DD hh:mm:ss") }}
+            <!-- {{ moment(scope.row.createDate).format("YYYY-MM-DD hh:mm:ss") }} -->
+            {{ scope.row.createDate }}
           </template>
         </el-table-column>
 
