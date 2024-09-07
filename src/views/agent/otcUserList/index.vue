@@ -64,12 +64,28 @@
           </template>
         </el-table-column>
         <el-table-column
+          prop="productStatus"
+          :label="$t('form.whetherToMatch')"
+          width="120"
+        >
+          <template #default="scope">
+            {{ scope.row.productStatus === 1 ? $t("form.yes") : $t("form.no") }}
+          </template>
+        </el-table-column>
+        <el-table-column
           prop="otcBalance"
           :label="$t('form.residue')"
           sortable
           width="120"
         >
         </el-table-column>
+        <!-- <el-table-column
+          prop="sortId"
+          :label="$t('form.sort')"
+          sortable
+          width="100"
+        >
+        </el-table-column> -->
         <el-table-column
           prop="otcAvailableBalance"
           :label="$t('form.otcAvailableBalance')"
@@ -116,6 +132,36 @@
             <el-button type="text" @click="showEditDialog(scope.row, 5)">
               {{ $t("form.bind") }}
             </el-button>
+            <el-button type="text" @click="showEditDialog(scope.row, 6)">
+              {{ $t("form.sort") }}
+            </el-button>
+
+            <el-popconfirm
+              :title="$t('form.confirmRecharge')"
+              :confirm-button-text="$t('form.yes')"
+              :cancel-button-text="$t('form.no')"
+              @confirm="() => updateOtcProductStatusFn(scope.row, 0)"
+              v-if="scope.row.productStatus === 1"
+            >
+              <template #reference>
+                <el-button type="text">
+                  {{ $t("form.prohibitMatching") }}
+                </el-button>
+              </template>
+            </el-popconfirm>
+            <el-popconfirm
+              :title="$t('form.confirmRecharge')"
+              :confirm-button-text="$t('form.yes')"
+              :cancel-button-text="$t('form.no')"
+              @confirm="() => updateOtcProductStatusFn(scope.row, 1)"
+              v-else
+            >
+              <template #reference>
+                <el-button type="text">
+                  {{ $t("form.allowMatching") }}
+                </el-button>
+              </template>
+            </el-popconfirm>
           </template>
         </el-table-column>
       </el-table>
@@ -209,6 +255,13 @@
             </el-select>
           </el-form-item>
         </template>
+        <el-form-item
+          :label="$t('form.sort')"
+          prop="sortId"
+          v-if="thisKey === 6"
+        >
+          <el-input type="number" v-model="updateStatusData.sortId" />
+        </el-form-item>
       </el-form>
       <template #footer>
         <el-button @click="isAddDialogVisible2 = false">
@@ -218,7 +271,7 @@
           type="primary"
           :loading="dialogLoading"
           @click="updateStatusFn"
-          v-if="thisKey === 1 || thisKey === 5"
+          v-if="thisKey === 1 || thisKey === 5 || thisKey === 6"
         >
           {{ $t("form.confirm") }}
         </el-button>
@@ -405,7 +458,9 @@ import {
   getOtcDetail,
   getMerchantSelectData,
   otcBindMerchant,
+  updateOtcSort,
   unbindOtc,
+  updateOtcProductStatus,
 } from "@/api/agent.js";
 import { ElMessage } from "element-plus";
 import moment from "moment";
@@ -437,9 +492,13 @@ const updateStatusData = ref({
   quantity: "",
   mark: "",
   merchantEmailantId: "",
+  sortId: "",
 });
 const rules2 = ref({
   merchantEmailantId: [
+    { required: true, message: t("form.requiredText"), trigger: "blur" },
+  ],
+  sortId: [
     { required: true, message: t("form.requiredText"), trigger: "blur" },
   ],
   status: [
@@ -613,9 +672,10 @@ const getOtcDetailFn = async () => {
 };
 const showEditDialog = async (row, key) => {
   updateStatusData.value = {
-    status: "",
+    status: row.status,
     quantity: "",
     mark: "",
+    sortId: row.sortId,
   };
   thisItem.value = row;
   thisKey.value = key;
@@ -698,7 +758,26 @@ const bindFn = async () => {
     dialogLoading.value = false;
   }
 };
+// 排序
+const updateOtcSortFn = async () => {
+  console.log(33);
+  
+  try {
+    await updateOtcSort({
+      otcId: thisItem.value.otcId,
+      sortId: updateStatusData.value.sortId,
+    });
+    dialogLoading.value = false;
+    ElMessage.success(t("form.successText"));
+    isAddDialogVisible2.value = false;
+    loadData(); // 重新加载数据
+  } catch (error) {
+    dialogLoading.value = false;
+  }
+};
 const updateStatusFn = async () => {
+  console.log(1111);
+  
   dialogLoading.value = true;
   addFormRef2.value.validate(async (valid) => {
     if (valid) {
@@ -710,11 +789,24 @@ const updateStatusFn = async () => {
         otcSubtractFn();
       } else if (thisKey.value === 5) {
         bindFn();
+      } else if (thisKey.value === 6) {
+        
+        updateOtcSortFn();
       }
     } else {
       dialogLoading.value = false;
     }
   });
+};
+
+const updateOtcProductStatusFn = async (row, key) => {
+  const res = await updateOtcProductStatus({
+    otcId: row.otcId,
+    productStatus: key,
+  });
+  console.log(res);
+  ElMessage.success(t("form.success"));
+  loadData();
 };
 // 页面加载时初始化数据
 onMounted(() => {

@@ -113,6 +113,19 @@
             <el-button type="text" @click="showEditDialog(scope.row, 2)">
               {{ $t("form.updateUserName") }}
             </el-button>
+            <el-popconfirm
+              :title="$t('form.confirmRecharge')"
+              :confirm-button-text="$t('form.yes')"
+              :cancel-button-text="$t('form.no')"
+              @confirm="() => updateMerchantProxyFlagFn(scope.row)"
+         
+            >
+              <template #reference>
+                <el-button type="text" >
+              {{ $t("form.changeToMerchant") }}
+            </el-button>
+              </template>
+            </el-popconfirm>
             <!-- <el-button type="text" @click="showEditDialog(scope.row, 2)">
               {{ $t("form.topUp") }}
             </el-button>
@@ -189,6 +202,7 @@
         >
           {{ $t("form.confirm") }}
         </el-button>
+
       </template>
     </el-dialog>
 
@@ -286,6 +300,7 @@ import {
   otcSubtract,
   getOtcDetail,
   updateUserName,
+  updateMerchantProxyFlag
 } from "@/api/agent.js";
 import { ElMessage } from "element-plus";
 import moment from "moment";
@@ -388,6 +403,16 @@ const loadData = async () => {
     tableLoading.value = false;
   }
 };
+const updateMerchantProxyFlagFn = async (row)=>{
+  const res = await updateMerchantProxyFlag({
+    merchantId: row.merchantId,
+    proxyFlag: 0,
+  });
+  console.log(res);
+  ElMessage.success(t("form.success"));
+  loadData();
+}
+
 
 // 新增产品
 const handleAddSubmit = () => {

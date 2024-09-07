@@ -267,3 +267,23 @@ export const otcBindMerchant = (params) => {
     ...params,
   });
 };
+
+
+// 修改代理商
+export const updateMerchantProxyFlag = (params) => {
+  return http.post(`/updateMerchantProxyFlag`, {
+    ...params,
+  });
+};
+// 修改OTC匹配
+export const updateOtcProductStatus = (params) => {
+  return http.post(`/updateOtcProductStatus`, {
+    ...params,
+  });
+};
+// 排序
+export const updateOtcSort = (params) => {
+  return http.post(`/updateOtcSort`, {
+    ...params,
+  });
+};

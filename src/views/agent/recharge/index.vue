@@ -65,6 +65,14 @@
             <el-button type="primary" @click="showExportDialog">
               {{ $t("form.export") }}
             </el-button>
+            <el-button @click="toggleAutoRefresh" type="primary" :loading="isRefreshing">
+              {{
+                isRefreshing ? $t("form.refreshing") : $t("form.bootRefresh")
+              }}
+            </el-button>
+            <el-button @click="toggleAutoRefresh">
+              {{ $t("form.stopRefresh") }}
+            </el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -361,7 +369,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onBeforeUnmount } from "vue";
 import { useI18n } from "vue-i18n";
 import {
   queryInOrderList,
@@ -611,7 +619,36 @@ const showTransferPicture = async (row) => {
   transferPictureUrl.value = res.data.picture;
   transferPictureVisible.value = true;
 };
+const isRefreshing = ref(false); // 控制是否自动刷新
+let refreshInterval = null; // 保存定时器ID
 
+// 切换自动刷新状态
+const toggleAutoRefresh = () => {
+  if (isRefreshing.value) {
+    stopAutoRefresh();
+  } else {
+    startAutoRefresh();
+  }
+};
+
+// 启动自动刷新
+const startAutoRefresh = () => {
+  isRefreshing.value = true;
+  refreshInterval = setInterval(() => {
+    loadData();
+  }, 10000); // 每10秒刷新一次
+};
+
+// 停止自动刷新
+const stopAutoRefresh = () => {
+  clearInterval(refreshInterval); // 清除定时器
+  isRefreshing.value = false;
+};
+
+// 页面离开前清除定时器，防止内存泄漏
+onBeforeUnmount(() => {
+  clearInterval(refreshInterval);
+});
 // 页面加载时初始化数据
 onMounted(() => {
   fetchOptions();
